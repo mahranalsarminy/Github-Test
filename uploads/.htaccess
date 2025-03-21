@@ -1,0 +1,10 @@
+# منع عرض محتويات المجلد
+Options -Indexes
+
+# منع الوصول من جميع المستخدمين
+Deny from all
+
+# السماح بالوصول إلى ملفات الصور
+<FilesMatch "\.(jpg|jpeg|png|gif|bmp|webp)$">
+    Allow from all
+</FilesMatch>

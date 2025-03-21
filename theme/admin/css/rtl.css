@@ -1,0 +1,95 @@
+/* RTL Support for Admin Panel */
+
+/* General RTL Adjustments */
+body[dir="rtl"] {
+    text-align: right;
+}
+
+/* Navbar RTL Adjustments */
+body[dir="rtl"] .navbar .mr-2 {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+body[dir="rtl"] .navbar .ml-2 {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+/* Sidebar RTL Adjustments */
+body[dir="rtl"] .sidebar {
+    left: auto;
+    right: 0;
+}
+
+body[dir="rtl"] .content-wrapper {
+    margin-left: 0;
+    margin-right: 250px;
+}
+
+@media (max-width: 768px) {
+    body[dir="rtl"] .sidebar {
+        transform: translateX(100%);
+    }
+    
+    body[dir="rtl"] .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    body[dir="rtl"] .content-wrapper {
+        margin-right: 0 !important;
+    }
+}
+
+/* Menu Icons RTL Adjustments */
+body[dir="rtl"] .sidebar nav ul li a i {
+    margin-right: 0;
+    margin-left: 0.75rem;
+}
+
+/* Form RTL Adjustments */
+body[dir="rtl"] .form-group {
+    text-align: right;
+}
+
+/* Alert RTL Adjustments */
+body[dir="rtl"] .alert .close {
+    right: auto;
+    left: 0;
+}
+
+/* Table RTL Adjustments */
+body[dir="rtl"] table.admin-table th,
+body[dir="rtl"] table.admin-table td {
+    text-align: right;
+}
+
+/* Dropdown RTL Adjustments */
+body[dir="rtl"] .dropdown-menu {
+    left: auto;
+    right: 0;
+    text-align: right;
+}
+
+/* Icon Spacing RTL Adjustments */
+body[dir="rtl"] .fa,
+body[dir="rtl"] .fas,
+body[dir="rtl"] .far {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+/* Flex Direction RTL Adjustments */
+body[dir="rtl"] .flex-row {
+    flex-direction: row-reverse;
+}
+
+body[dir="rtl"] .ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+body[dir="rtl"] .mr-auto {
+    margin-right: 0;
+    margin-left: auto;
+}

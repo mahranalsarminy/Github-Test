@@ -1,0 +1,24 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Redirect all requests to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Prevent Directory Listing
+Options -Indexes
+
+# Secure Access to Sensitive Files
+<FilesMatch "\.(env|log|sql)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Set Default Charset
+AddDefaultCharset UTF-8
+
+# Enable Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json
+</IfModule>

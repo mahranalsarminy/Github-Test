@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.dark-mode {
+    background-color: #1a202c;
+    color: white;
+}
+
+.fixed {
+    position: fixed;
+}
+
+.ml-64 {
+    margin-left: 16rem;
+}

@@ -1,0 +1,201 @@
+<?php
+// Define the project root directory
+define('ROOT_DIR', dirname(__DIR__));
+
+// Include the centralized initialization file
+require_once ROOT_DIR . '/includes/init.php';
+
+// Ensure only admins can access this page
+require_admin();
+
+
+$media_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+// Fetch the media details
+$stmt_media = $pdo->prepare("
+    SELECT m.*, 
+           GROUP_CONCAT(mt.tag_id) AS tag_ids
+    FROM media m
+    LEFT JOIN media_tags mt ON m.id = mt.media_id
+    WHERE m.id = ?
+    GROUP BY m.id
+");
+$stmt_media->execute([$media_id]);
+$media = $stmt_media->fetch(PDO::FETCH_ASSOC);
+
+if (!$media) {
+    die("Media not found.");
+}
+
+$error_message = '';
+$success_message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = trim($_POST['title']);
+    $description = trim($_POST['description']);
+    $category_id = (int)$_POST['category'];
+    $resolution_id = (int)$_POST['resolution'];
+    $color_id = (int)$_POST['color'];
+    $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
+    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+
+    if (empty($title)) {
+        $error_message = "Please enter a valid title.";
+    } else {
+        // Update the media details
+        $stmt_update = $pdo->prepare("
+            UPDATE media 
+            SET title = ?, description = ?, category_id = ?, resolution = ?, color_id = ?, is_featured = ?
+            WHERE id = ?
+        ");
+        $stmt_update->execute([
+            $title,
+            $description,
+            $category_id,
+            $_POST['resolution'],
+            $color_id,
+            $is_featured,
+            $media_id
+        ]);
+
+        // Update tags
+        $stmt_delete_tags = $pdo->prepare("DELETE FROM media_tags WHERE media_id = ?");
+        $stmt_delete_tags->execute([$media_id]);
+
+        if (!empty($tags)) {
+            $stmt_insert_tags = $pdo->prepare("INSERT INTO media_tags (media_id, tag_id) VALUES (?, ?)");
+            foreach ($tags as $tag_id) {
+                $stmt_insert_tags->execute([$media_id, $tag_id]);
+            }
+        }
+
+        $success_message = "Media updated successfully!";
+    }
+}
+
+// Fetch categories, resolutions, colors, and tags for the form
+$stmt_categories = $pdo->query("SELECT * FROM categories");
+$categories = $stmt_categories->fetchAll(PDO::FETCH_ASSOC);
+
+$stmt_resolutions = $pdo->query("SELECT * FROM resolutions");
+$resolutions = $stmt_resolutions->fetchAll(PDO::FETCH_ASSOC);
+
+$stmt_colors = $pdo->query("SELECT * FROM colors");
+$colors = $stmt_colors->fetchAll(PDO::FETCH_ASSOC);
+
+$stmt_tags = $pdo->query("SELECT * FROM tags");
+$tags = $stmt_tags->fetchAll(PDO::FETCH_ASSOC);
+
+// Convert tag_ids string to an array
+$selected_tags = !empty($media['tag_ids']) ? explode(',', $media['tag_ids']) : [];
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Media - WallPix Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="../assets/css/admin.css" rel="stylesheet">
+    <style>
+        .main-container {
+            margin-left: 250px; /* Adjust this value based on the width of your sidebar */
+            padding: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Sidebar -->
+    <?php include 'sidebar.php'; ?>
+
+    <div class="main-container">
+
+    <main class="container mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+        <h1 class="text-3xl font-bold text-center">Edit Media</h1>
+
+        <?php if (!empty($error_message)): ?>
+            <div class="bg-red-200 text-red-800 p-4 mb-4"><?php echo htmlspecialchars($error_message); ?></div>
+        <?php endif; ?>
+
+        <?php if (!empty($success_message)): ?>
+            <div class="bg-green-200 text-green-800 p-4 mb-4"><?php echo htmlspecialchars($success_message); ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="/admin/edit_media.php?id=<?php echo $media_id; ?>" enctype="multipart/form-data" class="grid grid-cols-1 gap-4">
+            <div>
+                <label class="block text-gray-700">Title</label>
+                <input type="text" name="title" value="<?php echo htmlspecialchars($media['title']); ?>" class="w-full p-2 border rounded" required>
+            </div>
+            <div>
+                <label class="block text-gray-700">Description</label>
+                <textarea name="description" rows="3" class="w-full p-2 border rounded"><?php echo htmlspecialchars($media['description']); ?></textarea>
+            </div>
+            <div>
+                <label class="block text-gray-700">Category</label>
+                <select name="category" class="w-full p-2 border rounded" required>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?php echo htmlspecialchars($category['id']); ?>" <?php echo $category['id'] == $media['category_id'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($category['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700">Resolution</label>
+                <select name="resolution" class="w-full p-2 border rounded" required>
+                    <?php foreach ($resolutions as $resolution): ?>
+                        <option value="<?php echo htmlspecialchars($resolution['resolution']); ?>" <?php echo $resolution['resolution'] == $media['resolution'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($resolution['resolution']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700">Color</label>
+                <select name="color" class="w-full p-2 border rounded" required>
+                    <?php foreach ($colors as $color): ?>
+                        <option value="<?php echo htmlspecialchars($color['id']); ?>" <?php echo $color['id'] == $media['color_id'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($color['color_name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700">Tags</label>
+                <div class="flex flex-wrap gap-2">
+                    <?php foreach ($tags as $tag): ?>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="tags[]" value="<?php echo htmlspecialchars($tag['id']); ?>" 
+                                <?php echo in_array($tag['id'], $selected_tags) ? 'checked' : ''; ?> class="mr-2">
+                            <?php echo htmlspecialchars($tag['tag_name']); ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <div>
+                <label class="block text-gray-700">Featured</label>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="is_featured" value="1" <?php echo $media['is_featured'] ? 'checked' : ''; ?> class="mr-2">
+                    Mark as Featured
+                </label>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Update Media</button>
+        </form>
+    </main>
+</body>
+</html>

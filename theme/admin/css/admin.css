@@ -1,0 +1,398 @@
+/* Admin Panel Main CSS */
+
+/* General Styles */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --info-color: #1abc9c;
+    --dark-color: #34495e;
+    --light-color: #ecf0f1;
+}
+
+/* إعدادات الجسم */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--light-color);
+    color: #34495e;
+    margin: 0;
+    padding-top: 4rem; /* يضمن أن المحتوى لا يتداخل مع الشريط العلوي */
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #2d3748;
+    color: #f7fafc;
+}
+
+body.dark-mode .sidebar {
+    background-color: #2d3748;
+    color: #f7fafc;
+}
+
+body.dark-mode .header {
+    background-color: #2d3748;
+}
+
+/* Layout Styles */
+.content-wrapper {
+    flex: 1;
+    min-height: calc(100vh - 4rem); /* Adjust for fixed navbar */
+    margin-left: 250px; /* Adjust for sidebar width */
+    padding-top: 4rem; /* Ensure content does not overlap with fixed navbar */
+    transition: margin-left 0.3s ease-in-out;
+}
+
+body.dark-mode .content-wrapper {
+    margin-left: 250px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .content-wrapper {
+        margin-left: 0 !important;
+    }
+
+    /* Ensure header space is cleared for smaller screens */
+    body {
+        padding-top: 4rem; /* Adjust for mobile view */
+    }
+}
+
+/* إعدادات الـ Sidebar */
+.sidebar {
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: var(--light-color);
+    z-index: 998; /* أقل من الـ Header */
+    padding-top: 4rem; /* لإتاحة مساحة للشريط العلوي */
+    transition: transform 0.3s ease-in-out;
+}
+.sidebar.show {
+    transform: translateX(0);
+}
+
+.sidebar .sidebar-content {
+    padding: 1rem;
+}
+/* إعدادات المحتوى الرئيسي */
+.content-wrapper {
+    flex: 1;
+    margin-left: 250px; /* لضبط عرض Sidebar */
+    padding-top: 4rem; /* ضمان عدم تداخل مع الشريط العلوي */
+    transition: margin-left 0.3s ease-in-out;
+}
+/* إعدادات الشريط العلوي (Header) */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001; /* تأكد من أن الشريط العلوي أعلى من Sidebar */
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--light-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+nav .flex.items-center {
+    justify-content: space-between;
+}
+
+nav .flex.items-center > * {
+    margin-right: 1rem;
+}
+
+body {
+    padding-top: 4rem; /* Add space for fixed navbar */
+}
+
+/* Card Styles */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Styles */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.admin-table th,
+table.admin-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+table.admin-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    text-align: left;
+    color: #4a5568;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    color: #4a5568;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-success {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+/* Alert Styles */
+.alert {
+    position: relative;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    transition: opacity 0.3s ease;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+.alert .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.75rem 1.25rem;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    color: inherit;
+    font-weight: 700;
+}
+
+/* Badge Styles */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+/* تأثير hover على الروابط */
+.sidebar a:hover {
+    background-color: rgba(0, 0, 0, 0.1);  /* تغيير الخلفية */
+    color: #fff;  /* تغيير اللون */
+    transition: background-color 0.3s ease, color 0.3s ease;  /* تأثير انتقال سهل */
+}
+
+/* إضافة تأثير عند التمرير على الأيقونات */
+.sidebar i:hover {
+    transform: scale(1.1);  /* تكبير الأيقونة */
+    transition: transform 0.3s ease;  /* تأثير انتقال سهل */
+}
+
+/* تأثير hover على الأزرار */
+.sidebar button:hover {
+    background-color: rgba(0, 0, 0, 0.1);  /* تغيير الخلفية */
+    color: #fff;  /* تغيير اللون */
+    transform: translateX(5px);  /* تحريك الزر قليلاً لليمين */
+    transition: transform 0.2s ease, background-color 0.3s ease;  /* تأثير انتقال سهل */
+}
+
+/* تأثير hover على الأزرار المنسدلة */
+.sidebar button:hover .fa-chevron-down,
+.sidebar button:hover .fa-chevron-up {
+    transform: rotate(180deg);  /* تدوير الأيقونة عند التمرير */
+    transition: transform 0.3s ease;  /* تأثير انتقال سهل */
+}
+
+/* عند إخفاء القوائم الفرعية */
+.sidebar ul.hidden {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* عند إظهار القوائم الفرعية */
+.sidebar ul:not(.hidden) {
+    display: block;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* تأثير التمرير على القوائم الفرعية */
+.sidebar ul li a:hover {
+    background-color: rgba(0, 0, 0, 0.1);  /* تغيير الخلفية */
+    color: #fff;  /* تغيير اللون */
+    transition: background-color 0.3s ease, color 0.3s ease;  /* تأثير انتقال سهل */
+}
+
+/* تأثير على الـ Sidebar */
+.sidebar:hover {
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);  /* إضافة ظل خفيف عند التمرير */
+    transform: translateX(10px);  /* تحريك الـ Sidebar قليلاً */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;  /* تأثير انتقال سهل */
+}
+
+/* تأثير hover على صورة المستخدم */
+.sidebar .user-info i:hover {
+    transform: rotate(15deg);  /* تدوير الأيقونة عند التمرير */
+    transition: transform 0.3s ease;  /* تأثير انتقال سهل */
+}
+
+/* تغيير النصوص عند التمرير */
+.sidebar .user-info p:hover {
+    color: #FFD700;  /* تغيير اللون عند التمرير */
+    transition: color 0.3s ease;  /* تأثير انتقال سهل */
+}
+
+.badge-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.badge-success {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.badge-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.badge-warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.badge-info {
+    background-color: var(--info-color);
+    color: white;
+}
+
+/* Utilities */
+.shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}

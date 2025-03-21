@@ -1,0 +1,212 @@
+/**
+ * Main Styles for WallPix
+ */
+
+/* ===== أساسيات ===== */
+:root {
+  --font-size-base: 16px;
+  --color-primary: #4A90E2;
+  --color-primary-hover: #3A78C3;
+}
+
+/* ===== إعادة ضبط أساسية ===== */
+html {
+  font-size: var(--font-size-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Roboto', 'Cairo', sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body[dir="rtl"] {
+  font-family: 'Cairo', 'Roboto', sans-serif;
+}
+
+/* ===== رابط التخطي لإمكانية الوصول ===== */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #4A90E2;
+  color: white;
+  padding: 8px;
+  z-index: 1000;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ===== الوضع الفاتح ===== */
+.light-mode {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F9F9F9;
+  --text-primary: #2B2B2B;
+  --text-secondary: #6B6B6B;
+  --border-color: #EAEAEA;
+  --accent-color: #4A90E2;
+}
+
+/* ===== الوضع المظلم ===== */
+.dark-mode {
+  --bg-primary: #1E1E1E;
+  --bg-secondary: #252525;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B0B0B0;
+  --border-color: #3A3A3A;
+  --accent-color: #3A78C3;
+}
+
+/* ===== صندوق البحث الرئيسي ===== */
+.search-hero {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* ===== قسم الفئات ===== */
+.categories-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.categories-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.category-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== الوسائط ===== */
+.media-box {
+  transition: transform 0.3s;
+}
+
+.media-box:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== زر العودة للأعلى ===== */
+#back-to-top {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+#back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== زر إمكانية الوصول ===== */
+.accessibility-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  background: #4A90E2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 49;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.accessibility-button:hover {
+  background: #3A78C3;
+}
+
+/* ===== وضع التباين العالي ===== */
+.high-contrast {
+  --bg-primary: #000000;
+  --bg-secondary: #121212;
+  --text-primary: #FFFFFF;
+  --text-secondary: #EEEEEE;
+  --border-color: #FFFFFF;
+  --accent-color: #FFFF00;
+}
+
+.high-contrast a {
+  color: #FFFF00;
+  text-decoration: underline;
+}
+
+/* ===== دعم التنقل بلوحة المفاتيح ===== */
+.no-outline :focus {
+  outline: none !important;
+}
+
+:focus {
+  outline: 3px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+/* ===== تنسيقات الاستجابة ===== */
+@media (max-width: 768px) {
+  .search-hero {
+    min-height: 300px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ===== نمط اللغة العربية ===== */
+[dir="rtl"] .accessibility-button {
+  left: auto;
+  right: 20px;
+}
+
+/* ===== أنماط الطباعة ===== */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* ===== أنماط قارئ الشاشة ===== */
+.screen-reader-enabled .sr-only {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+  border: 1px solid #4A90E2 !important;
+  background: #eaf2fd !important;
+  color: #000 !important;
+}
+header {
+    position: sticky;
+    top: 0; /* تأكد أن الهيدر يظل في أعلى الصفحة */
+    z-index: 1000; /* تأكد من أن الهيدر فوق جميع العناصر */
+    background-color: var(--bg-primary); /* ضع خلفية للهيدر */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* إضافة ظل بسيط */
+}

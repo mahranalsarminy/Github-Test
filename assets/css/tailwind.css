@@ -1,0 +1,28 @@
+/* Compiled Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Styles */
+body {
+    -webkit-transition: background-color 0.3s ease, color 0.3s ease;
+    -moz-transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-dark {
+    background-color: #1a202c;
+    color: #f7fafc;
+}
+
+img.lazy,
+video.lazy {
+    opacity: 0;
+    will-change: opacity;
+    transition: opacity 0.5s ease-in-out;
+}
+
+img.lazy.loaded,
+video.lazy.loaded {
+    opacity: 1;
+}

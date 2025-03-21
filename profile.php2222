@@ -1,0 +1,175 @@
+<?php
+require_once(__DIR__ . '/includes/init.php');
+require_once(__DIR__ . '/includes/db.php');
+
+// Ensure the user is logged in
+require_login();
+
+// Fetch user details from the database
+$userId = $_SESSION['user_id'];
+$stmtUser = $pdo->prepare("SELECT username, profile_picture, role FROM users WHERE id = ?");
+$stmtUser->execute([$userId]);
+$user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+// Fetch subscription details
+$stmtSubscription = $pdo->prepare("SELECT subscription_plan, end_date FROM user_subscriptions WHERE user_id = ? ORDER BY end_date DESC LIMIT 1");
+$stmtSubscription->execute([$userId]);
+$subscription = $stmtSubscription->fetch(PDO::FETCH_ASSOC);
+
+// Set default subscription values if none found
+if (!$subscription) {
+    $subscription = [
+        'subscription_plan' => 'free',
+        'end_date' => null
+    ];
+}
+
+function safe_echo($str) {
+    return htmlspecialchars($str ?? '', ENT_QUOTES, 'UTF-8');
+}
+?>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Media Platform</title>
+    
+    <!-- Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/custom.css" rel="stylesheet">
+    
+    <style>
+        .vip-badge {
+            background-color: gold;
+            color: black;
+            border-radius: 5px;
+            padding: 2px 5px;
+            font-weight: bold;
+        }
+        .profile-card {
+            background-color: #f0f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .profile-picture {
+            border-radius: 50%;
+            width: 128px;
+            height: 128px;
+            object-fit: cover;
+            border: 4px solid #e2e8f0;
+        }
+        .tab-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .tab-menu a {
+            padding: 1rem 2rem;
+            margin: 0.5rem;
+            background-color: #c4d8e8;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            color: #4a5568;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .tab-menu a:hover {
+            background-color: #d7caee;
+            color: #2d3748;
+        }
+        .card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .profile-card,
+        .dark-mode .tab-menu a,
+        .dark-mode .card {
+            background-color: #2d3748;
+            color: #edf2f7;
+        }
+        .dark-mode .profile-card {
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+        footer {
+    margin-top: auto;
+}
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 dark:text-gray-200">
+    <?php include 'templates/header.php'; ?>
+
+    <!-- Hero Section -->
+<section class="hero-section flex items-center justify-center text-white mb-8 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-gray-800 dark:to-gray-900">
+    <div class="container mx-auto px-4 py-12 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">User Profile</h1>
+    </div>
+</section>
+
+
+    <!-- Tab Menu -->
+    <div class="tab-menu">
+        <a href="#settings">Settings</a>
+        <a href="#favorites">My Favorites</a>
+        <a href="#downloads">My Downloads</a>
+        <a href="#subscription">Buy Subscription</a>
+        <a href="logout.php">Log Out</a>
+    </div>
+
+    <!-- User Info -->
+    <div class="container mx-auto px-4 py-8 profile-card flex flex-col sm:flex-row items-center justify-between">
+        <div class="mb-4 sm:mb-0 flex-1 text-center sm:text-left">
+            <h2 class="text-2xl font-bold"><?php echo safe_echo($user['username']); ?></h2>
+            <p class="mt-2">
+                Subscription: <?php echo safe_echo(ucfirst($subscription['subscription_plan'])); ?>
+                <?php if ($subscription['subscription_plan'] !== 'free'): ?>
+                    <span class="vip-badge">VIP</span>
+                <?php endif; ?>
+            </p>
+            <?php if ($subscription['subscription_plan'] !== 'free'): ?>
+                <p class="mt-1">Expires on: <?php echo safe_echo($subscription['end_date']); ?></p>
+            <?php endif; ?>
+        </div>
+        <div>
+            <img src="<?php echo safe_echo($user['profile_picture']); ?>" alt="Profile Picture" class="profile-picture">
+        </div>
+    </div>
+
+    <!-- Mini Cards -->
+    <div class="container mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <a href="#settings" class="card bg-blue-100 dark:bg-blue-800">
+            <p class="font-semibold text-lg">Settings</p>
+        </a>
+        <a href="#favorites" class="card bg-green-100 dark:bg-green-800">
+            <p class="font-semibold text-lg">My Favorites</p>
+        </a>
+        <a href="#downloads" class="card bg-yellow-100 dark:bg-yellow-800">
+            <p class="font-semibold text-lg">My Downloads</p>
+        </a>
+        <a href="#subscription" class="card bg-purple-100 dark:bg-purple-800">
+            <p class="font-semibold text-lg">Buy Subscription</p>
+        </a>
+        <a href="delete-user.php" class="card bg-red-100 dark:bg-red-800">
+            <p class="font-semibold text-lg">Delete Account</p>
+        </a>
+        <a href="logout.php" class="card bg-gray-100 dark:bg-gray-800">
+            <p class="font-semibold text-lg">Log Out</p>
+        </a>
+        <?php if ($user['role'] === 'admin'): ?>
+            <a href="admin/index.php" class="card bg-indigo-100 dark:bg-indigo-800">
+                <p class="font-semibold text-lg">Site Management</p>
+            </a>
+        <?php endif; ?>
+    </div>
+        <?php include 'templates/footer.php'; ?>
+</body>
+</html>

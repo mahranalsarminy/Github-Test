@@ -1,0 +1,219 @@
+/* تنسيق البحث الذكي */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* تأكد من أن الصفحة تأخذ كل الارتفاع */
+}
+
+footer {
+    margin-top: auto; /* هذا يضمن أن الفوتر سيكون في الأسفل */
+}
+
+/* For day mode */
+body {
+    background-color: #f7fafc;
+    color: #2d3748;
+}
+
+/* For dark mode */
+body.dark {
+    background-color: #1a202c;
+    color: #edf2f7;
+}
+
+.autoComplete_wrapper {
+    width: 100%;
+    position: relative;
+}
+
+.autoComplete_result {
+    margin: 0;
+    padding: 0.6rem 1rem;
+    list-style: none;
+    text-align: right;
+    font-size: 1rem;
+    color: #212121;
+    transition: all 0.1s ease-in-out;
+    border-radius: 0.6rem;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    cursor: pointer;
+}
+
+.autoComplete_result:hover {
+    background-color: #f1f5f9;
+}
+
+.autoComplete_highlighted {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.autoComplete_selected {
+    background-color: #f1f5f9;
+}
+
+.autoComplete_result small {
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+/* تحسينات عامة */
+.search-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+}
+
+[dir="rtl"] .search-icon {
+    right: auto;
+    left: 1rem;
+}
+
+.search-input {
+    padding-right: 3rem;
+    padding-left: 1rem;
+}
+
+[dir="rtl"] .search-input {
+    padding-right: 1rem;
+    padding-left: 3rem;
+}
+
+/* تنسيق سلايدر الفئات */
+.splide__arrow {
+    background: rgba(0, 0, 0, 0.5) !important;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.splide:hover .splide__arrow {
+    opacity: 1;
+}
+
+.splide__arrow svg {
+    fill: #fff;
+}
+
+.category-item {
+    transition: transform 0.3s ease;
+}
+
+.category-item:hover {
+    transform: translateY(-5px);
+}
+
+/* تحسينات متجاوبة */
+@media (max-width: 640px) {
+    .search-section {
+        padding: 2rem 1rem;
+    }
+    
+    .autoComplete_result {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+.media-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}
+/* الوضع المظلم */
+.dark-mode .bg-white {
+    background-color: #2d3748; /* تغيير الخلفية إلى لون داكن */
+}
+
+.dark-mode .text-gray-600 {
+    color: #e2e8f0; /* تغيير اللون النصي إلى فاتح */
+}
+
+.dark-mode .text-gray-300 {
+    color: #e2e8f0; /* نصوص خفيفة للعنوان */
+}
+
+.dark-mode .bg-gray-100 {
+    background-color: #1a202c; /* خلفية فاتحة في الوضع الداكن */
+}
+
+.dark-mode .category-card {
+    background-color: #2d3748; /* خلفية البطاقة في الوضع الداكن */
+    color: #e2e8f0; /* النصوص باللون الفاتح */
+}
+
+.dark-mode .category-card a {
+    color: #e2e8f0; /* النصوص داخل الرابط */
+}
+
+.dark-mode .category-card a:hover {
+    background-color: #4a5568; /* اللون الداكن عند التمرير فوق الرابط */
+}
+
+.dark-mode .swiper-slide .bg-white {
+    background-color: #2d3748; /* الخلفية داخل السلايدر */
+}
+
+.dark-mode .swiper-slide .text-white {
+    color: #e2e8f0; /* النصوص داخل السلايدر */
+}
+    /* Adjust video container for better responsiveness */
+    .relative {
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Ensure videos fill the container without distorting aspect ratio */
+    video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensures the video covers the container */
+    }
+
+    /* Adjust the video container's size for smaller screens */
+    @media (max-width: 768px) {
+        .relative {
+            height: 200px;  /* Set a fixed height for mobile devices */
+        }
+
+        video {
+            height: 100%;  /* Ensure the video takes up the entire height */
+        }
+    }
+        /* Adjust circular category card appearance */
+    .circular-category-card {
+        border-radius: 50%; /* Make the card circular */
+        transition: all 0.3s ease;
+        width: 80px;  /* Set a fixed width */
+        height: 80px;  /* Set a fixed height */
+    }
+
+    .circular-category-card img {
+        transition: transform 0.3s ease;
+    }
+
+    /* Hover effect for the card */
+    .circular-category-card:hover {
+        transform: scale(1.1);  /* Scale up the card */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Shadow effect */
+    }
+
+    .circular-category-card:hover img {
+        transform: scale(1.2);  /* Slight zoom on the icon */
+    }
+
+    /* Responsive design adjustments for smaller screens */
+    @media (max-width: 768px) {
+        .circular-category-card {
+            width: 60px;  /* Smaller width on mobile */
+            height: 60px;  /* Smaller height on mobile */
+        }
+
+        .circular-category-card img {
+            width: 36px;  /* Smaller icon size on mobile */
+            height: 36px;  /* Smaller icon size on mobile */
+        }
+    }

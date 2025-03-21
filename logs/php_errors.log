@@ -1,0 +1,91 @@
+[2023-10-01 12:34:56] Error: Database connection failed: SQLSTATE[HY000] [2002] Connection refused
+[2023-10-01 12:35:10] Warning: File upload failed: File size exceeds the maximum limit (10MB)
+[2023-10-01 12:40:22] Error: Invalid API request: Missing required fields[16-Mar-2025 01:44:18 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 119
+[16-Mar-2025 01:44:18 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 119
+[16-Mar-2025 01:44:22 UTC] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:44:22 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 119
+[16-Mar-2025 01:44:22 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 119
+[16-Mar-2025 01:45:26 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 119
+[16-Mar-2025 01:45:26 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 119
+[16-Mar-2025 01:45:30 UTC] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:45:31 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 119
+[16-Mar-2025 01:45:31 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 119
+[16-Mar-2025 01:47:07 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:47:07 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:47:10 UTC] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:47:10 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:47:10 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:48:15 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:48:15 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:48:18 UTC] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:48:18 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:48:18 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:50:33 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 126
+[16-Mar-2025 01:50:33 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 126
+[16-Mar-2025 01:56:13 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:56:13 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:56:19 UTC] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:56:19 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:56:19 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 120
+[16-Mar-2025 01:57:05 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:57:06 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 121
+[16-Mar-2025 01:57:06 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 121
+[16-Mar-2025 01:57:08 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 121
+[16-Mar-2025 01:57:08 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 121
+[16-Mar-2025 01:57:10 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:57:10 UTC] PHP Warning:  include(../includes/admin_footer.php): Failed to open stream: No such file or directory in /home/uniplat/public_html/admin/edit_tag.php on line 121
+[16-Mar-2025 01:57:10 UTC] PHP Warning:  include(): Failed opening '../includes/admin_footer.php' for inclusion (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/uniplat/public_html/admin/edit_tag.php on line 121
+[16-Mar-2025 01:58:09 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:58:11 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:58:11 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:58:12 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:58:12 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:58:12 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:58:15 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 01:58:19 UTC] Error updating tag: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_by' in 'field list'
+[16-Mar-2025 02:03:00 UTC] PHP Warning:  Undefined array key "media_files" in /home/uniplat/public_html/admin/add_media.php on line 35
+[16-Mar-2025 02:03:00 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/uniplat/public_html/admin/add_media.php on line 36
+[16-Mar-2025 02:03:00 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/uniplat/public_html/admin/add_media.php:36
+Stack trace:
+#0 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 36
+[16-Mar-2025 02:23:41 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1364 Field 'file_path' doesn't have a default value in /home/uniplat/public_html/admin/add_media.php:70
+Stack trace:
+#0 /home/uniplat/public_html/admin/add_media.php(70): PDOStatement->execute(Array)
+#1 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 70
+[16-Mar-2025 02:28:34 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[22007]: Invalid datetime format: 1292 Incorrect date value: '' for column 'publish_date' at row 1 in /home/uniplat/public_html/admin/add_media.php:70
+Stack trace:
+#0 /home/uniplat/public_html/admin/add_media.php(70): PDOStatement->execute(Array)
+#1 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 70
+[16-Mar-2025 02:29:31 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1364 Field 'file_path' doesn't have a default value in /home/uniplat/public_html/admin/add_media.php:70
+Stack trace:
+#0 /home/uniplat/public_html/admin/add_media.php(70): PDOStatement->execute(Array)
+#1 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 70
+[16-Mar-2025 02:34:09 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1364 Field 'file_path' doesn't have a default value in /home/uniplat/public_html/admin/add_media.php:70
+Stack trace:
+#0 /home/uniplat/public_html/admin/add_media.php(70): PDOStatement->execute(Array)
+#1 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 70
+[16-Mar-2025 02:55:07 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1364 Field 'file_path' doesn't have a default value in /home/uniplat/public_html/admin/add_media.php:70
+Stack trace:
+#0 /home/uniplat/public_html/admin/add_media.php(70): PDOStatement->execute(Array)
+#1 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 70
+[16-Mar-2025 02:56:25 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1364 Field 'file_type' doesn't have a default value in /home/uniplat/public_html/admin/add_media.php:70
+Stack trace:
+#0 /home/uniplat/public_html/admin/add_media.php(70): PDOStatement->execute(Array)
+#1 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 70
+[16-Mar-2025 02:57:02 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1364 Field 'file_type' doesn't have a default value in /home/uniplat/public_html/admin/add_media.php:70
+Stack trace:
+#0 /home/uniplat/public_html/admin/add_media.php(70): PDOStatement->execute(Array)
+#1 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 70
+[16-Mar-2025 03:01:18 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1364 Field 'file_type' doesn't have a default value in /home/uniplat/public_html/admin/add_media.php:70
+Stack trace:
+#0 /home/uniplat/public_html/admin/add_media.php(70): PDOStatement->execute(Array)
+#1 {main}
+  thrown in /home/uniplat/public_html/admin/add_media.php on line 70

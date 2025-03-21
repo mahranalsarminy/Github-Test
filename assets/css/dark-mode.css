@@ -1,0 +1,139 @@
+/**
+ * Dark Mode Styles for WallPix
+ */
+
+/* ===== أساسيات الوضع المظلم ===== */
+.dark-mode {
+  background-color: #1E1E1E;
+  color: #FFFFFF;
+}
+
+/* ===== الهيدر ===== */
+.dark-mode header {
+  background-color: #252525;
+  border-bottom-color: #3A3A3A;
+}
+
+.dark-mode header a {
+  color: #FFFFFF;
+}
+
+.dark-mode header a:hover {
+  color: #3A78C3;
+}
+
+/* ===== القائمة ===== */
+.dark-mode .mobile-menu {
+  background-color: #252525;
+}
+
+.dark-mode .mobile-menu a {
+  border-bottom-color: #3A3A3A;
+}
+
+/* ===== أقسام الصفحة ===== */
+.dark-mode .bg-white {
+  background-color: #1E1E1E !important;
+}
+
+.dark-mode .bg-gray-50,
+.dark-mode .bg-gray-100,
+.dark-mode .bg-gray-200 {
+  background-color: #252525 !important;
+}
+
+.dark-mode .text-gray-700,
+.dark-mode .text-gray-800,
+.dark-mode .text-gray-900 {
+  color: #FFFFFF !important;
+}
+
+.dark-mode .text-gray-500,
+.dark-mode .text-gray-600 {
+  color: #B0B0B0 !important;
+}
+
+/* ===== البطاقات والحاويات ===== */
+.dark-mode .bg-white,
+.dark-mode .card {
+  background-color: #252525;
+  border-color: #3A3A3A;
+}
+
+/* ===== الأزرار ===== */
+.dark-mode .btn-light {
+  background-color: #3A3A3A;
+  color: #FFFFFF;
+  border-color: #4A4A4A;
+}
+
+.dark-mode .btn-light:hover {
+  background-color: #4A4A4A;
+}
+
+/* ===== حقول النماذج ===== */
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background-color: #2A2A2A;
+  color: #FFFFFF;
+  border-color: #3A3A3A;
+}
+
+.dark-mode input:focus,
+.dark-mode textarea:focus,
+.dark-mode select:focus {
+  border-color: #3A78C3;
+  box-shadow: 0 0 0 2px rgba(58, 120, 195, 0.25);
+}
+
+.dark-mode ::placeholder {
+  color: #888888;
+}
+
+/* ===== الفوتر ===== */
+.dark-mode footer {
+  background-color: #252525;
+  border-top-color: #3A3A3A;
+}
+
+/* ===== قائمة البحث الذكية ===== */
+.dark-mode #search-suggestions {
+  background-color: #252525;
+  border-color: #3A3A3A;
+}
+
+.dark-mode #search-suggestions a {
+  color: #FFFFFF;
+}
+
+.dark-mode #search-suggestions a:hover,
+.dark-mode #search-suggestions a.active {
+  background-color: #3A3A3A;
+}
+
+/* ===== لوحة إمكانية الوصول ===== */
+.dark-mode #accessibility-panel {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dark-mode .accessibility-panel-content {
+  background-color: #252525;
+}
+
+/* ===== الظلال ===== */
+.dark-mode .shadow-sm,
+.dark-mode .shadow,
+.dark-mode .shadow-md,
+.dark-mode .shadow-lg {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ===== الحدود ===== */
+.dark-mode .border,
+.dark-mode .border-t,
+.dark-mode .border-b,
+.dark-mode .border-l,
+.dark-mode .border-r {
+  border-color: #3A3A3A !important;
+}
