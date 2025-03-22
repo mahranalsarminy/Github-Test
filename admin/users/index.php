@@ -5,6 +5,9 @@ $pageTitle = 'User Management - WallPix Admin';
 // Include header
 require_once '../../theme/admin/header.php';
 
+// Include sidebar (MOVE THIS LINE BEFORE CONTENT DIV)
+require_once '../../theme/admin/slidbar.php';
+
 // Initialize variables
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $role = isset($_GET['role']) ? $_GET['role'] : '';
@@ -90,8 +93,6 @@ try {
     $errorMessage = "Error fetching users: " . $e->getMessage();
 }
 
-// Include sidebar
-require_once '../../theme/admin/slidbar.php';
 ?>
 
 <!-- Main Content -->
@@ -199,7 +200,7 @@ require_once '../../theme/admin/slidbar.php';
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 <?php if (!empty($user['profile_picture'])): ?>
-                                                    <img class="h-10 w-10 rounded-full" src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile picture">
+                                                    <img class="h-10 w-10 rounded-full" src="../../<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile picture">
                                                 <?php else: ?>
                                                     <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center <?php echo $darkMode ? 'bg-gray-700' : ''; ?>">
                                                         <i class="fas fa-user text-gray-500"></i>

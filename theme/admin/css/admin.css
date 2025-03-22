@@ -71,17 +71,7 @@ body.dark-mode .content-wrapper {
 }
 
 /* إعدادات الـ Sidebar */
-.sidebar {
-    width: 250px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    background-color: var(--light-color);
-    z-index: 998; /* أقل من الـ Header */
-    padding-top: 4rem; /* لإتاحة مساحة للشريط العلوي */
-    transition: transform 0.3s ease-in-out;
-}
+
 .sidebar.show {
     transform: translateX(0);
 }

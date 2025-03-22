@@ -1,0 +1,51 @@
+/* Admin Layout Structure */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 4rem; /* Space for fixed header */
+}
+
+/* Header */
+.admin-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+}
+
+/* Sidebar */
+.admin-sidebar {
+    position: fixed;
+    top: 4rem; /* Start below header */
+    left: 0;
+    bottom: 0;
+    width: 16rem;
+    z-index: 20;
+    overflow-y: auto;
+}
+
+/* Main content */
+.content-wrapper {
+    margin-left: 16rem; /* Match sidebar width */
+    margin-top: 1rem; /* Space from header */
+    padding: 1rem;
+    flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .admin-sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+    
+    .content-wrapper {
+        margin-left: 0;
+    }
+}

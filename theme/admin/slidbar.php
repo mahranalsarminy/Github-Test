@@ -6,11 +6,6 @@
  * @version 1.0.0
  */
 
-// Include required files
-require_once __DIR__ . '/../../includes/init.php';
-
-require_once __DIR__ . '/../../includes/auth.php';
-
 // Verify admin login
 require_admin();
 
@@ -41,6 +36,21 @@ require_admin();
                             <li>
                                 <a href="<?php echo $adminUrl; ?>/media/index.php" class="flex items-center p-2 pl-11 text-base rounded-lg <?php echo isMenuActive('media') ? ($darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : ($darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'); ?>">
                                     <?php echo $lang['media'] ?? 'Media'; ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?php echo $adminUrl; ?>/media/resolution.php" class="flex items-center p-2 pl-11 text-base rounded-lg <?php echo isMenuActive('adminresolution') ? ($darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : ($darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'); ?>">
+                                    <?php echo $lang['adminresolution'] ?? 'Resolutions'; ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?php echo $adminUrl; ?>/media/media-colors.php" class="flex items-center p-2 pl-11 text-base rounded-lg <?php echo isMenuActive('mediacolors') ? ($darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : ($darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'); ?>">
+                                    <?php echo $lang['mediacolors'] ?? 'Media Colors'; ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?php echo $adminUrl; ?>/media/colors.php" class="flex items-center p-2 pl-11 text-base rounded-lg <?php echo isMenuActive('mediacolorsmanagement') ? ($darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : ($darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'); ?>">
+                                    <?php echo $lang['mediacolorsmanagement'] ?? 'Colors Management'; ?>
                                 </a>
                             </li>
                             <li>
@@ -112,6 +122,15 @@ require_admin();
                     </li>
                 </ul>
                 
+                                    <!-- ADS -->
+                    <li>
+                        <a href="<?php echo $adminUrl; ?>/ads/index.php" class="flex items-center p-2 text-base rounded-lg <?php echo isMenuActive('ads') ? ($darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : ($darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'); ?>">
+                            <i class="fas fa-chart-bar w-6 h-6 text-gray-500 transition duration-75 <?php echo $darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'group-hover:text-gray-900'; ?>"></i>
+                            <span class="ml-3"><?php echo $lang['ads'] ?? 'Ads'; ?></span>
+                        </a>
+                    </li>
+                </ul>
+                
                 <!-- System Menu -->
                 <ul class="pt-4 mt-4 space-y-2">
                     <li>
@@ -129,12 +148,18 @@ require_admin();
                     </li>
                     
                     <li>
+                        <a href="<?php echo $adminUrl; ?>/reports/system.php" class="flex items-center p-2 text-base rounded-lg <?php echo $darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'; ?>">
+                            <i class="fas fa-external-link-alt w-6 h-6 text-gray-500 transition duration-75 <?php echo $darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'group-hover:text-gray-900'; ?>"></i>
+                            <span class="ml-3"><?php echo $lang['systemwebapp'] ?? 'System CMS'; ?></span>
+                        </a>
+                    </li>
+                    
+                    <li>
                         <a href="<?php echo $siteUrl; ?>" target="_blank" class="flex items-center p-2 text-base rounded-lg <?php echo $darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'; ?>">
                             <i class="fas fa-external-link-alt w-6 h-6 text-gray-500 transition duration-75 <?php echo $darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'group-hover:text-gray-900'; ?>"></i>
                             <span class="ml-3"><?php echo $lang['visit_site'] ?? 'Visit Site'; ?></span>
                         </a>
                     </li>
-                    
                     <li>
                         <a href="<?php echo $adminUrl; ?>/logout.php" class="flex items-center p-2 text-base rounded-lg <?php echo $darkMode ? 'text-red-400 hover:bg-gray-700' : 'text-red-600 hover:bg-gray-100'; ?>">
                                                         <i class="fas fa-sign-out-alt w-6 h-6 text-gray-500 transition duration-75 <?php echo $darkMode ? 'text-red-400 group-hover:text-red-300' : 'text-red-600 group-hover:text-red-700'; ?>"></i>
@@ -167,7 +192,7 @@ require_admin();
                                 <a href="<?php echo $adminUrl; ?>/notifications.php" class="px-2 py-1 text-xs rounded-md <?php echo $darkMode ? 'bg-gray-600 text-gray-300 hover:bg-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'; ?>" title="<?php echo $lang['notifications'] ?? 'Notifications'; ?>">
                                     <i class="fas fa-bell"></i>
                                 </a>
-                                <a href="<?php echo $adminUrl; ?>/settings.php" class="px-2 py-1 text-xs rounded-md <?php echo $darkMode ? 'bg-gray-600 text-gray-300 hover:bg-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'; ?>" title="<?php echo $lang['settings'] ?? 'Settings'; ?>">
+                                <a href="<?php echo $adminUrl; ?>/settings/index.php" class="px-2 py-1 text-xs rounded-md <?php echo $darkMode ? 'bg-gray-600 text-gray-300 hover:bg-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'; ?>" title="<?php echo $lang['settings'] ?? 'Settings'; ?>">
                                     <i class="fas fa-cog"></i>
                                 </a>
                             </div>

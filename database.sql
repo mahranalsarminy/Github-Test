@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- مضيف: localhost:3306
--- وقت الجيل: 21 مارس 2025 الساعة 05:17
+-- وقت الجيل: 22 مارس 2025 الساعة 06:49
 -- إصدار الخادم: 8.0.41
 -- نسخة PHP: 8.3.19
 
@@ -63,7 +63,193 @@ CREATE TABLE `activities` (
 --
 
 INSERT INTO `activities` (`id`, `user_id`, `description`, `created_at`) VALUES
-(1, NULL, 'Viewed media list', '2025-03-21 03:50:09');
+(3, 1, 'تم تسجيل دخول المشرف بنجاح', '2025-03-17 08:28:28'),
+(4, 1, 'تم تسجيل دخول المشرف بنجاح', '2025-03-17 08:28:31'),
+(5, 1, 'تم تسجيل دخول المشرف بنجاح', '2025-03-17 08:28:32'),
+(6, 1, 'Successfully logged in', '2025-03-17 22:21:54'),
+(7, 1, 'Successfully logged in', '2025-03-18 09:10:39'),
+(8, NULL, 'Viewed media list', '2025-03-18 22:06:36'),
+(9, NULL, 'Viewed media list', '2025-03-18 22:23:28'),
+(10, NULL, 'Viewed media list', '2025-03-18 22:47:29'),
+(11, NULL, 'Viewed media list', '2025-03-18 22:49:15'),
+(12, NULL, 'Viewed media list', '2025-03-18 22:49:16'),
+(13, NULL, 'Viewed media list', '2025-03-18 22:49:17'),
+(14, NULL, 'Viewed media list', '2025-03-18 22:52:03'),
+(15, NULL, 'Viewed media list', '2025-03-18 22:52:04'),
+(16, NULL, 'Viewed media list', '2025-03-18 22:52:05'),
+(17, NULL, 'Viewed media list', '2025-03-18 22:52:06'),
+(18, NULL, 'Viewed media list', '2025-03-18 22:52:06'),
+(19, NULL, 'Viewed media list', '2025-03-18 22:52:06'),
+(20, NULL, 'Viewed media list', '2025-03-18 22:52:07'),
+(21, NULL, 'Viewed media list', '2025-03-18 22:52:08'),
+(22, NULL, 'Viewed media list', '2025-03-18 22:52:35'),
+(23, NULL, 'Viewed media list', '2025-03-18 22:52:55'),
+(24, NULL, 'Viewed media list', '2025-03-18 22:53:43'),
+(25, NULL, 'Viewed media list', '2025-03-18 22:56:02'),
+(26, NULL, 'Viewed media list', '2025-03-18 22:57:07'),
+(27, NULL, 'Viewed media list', '2025-03-18 22:58:34'),
+(28, NULL, 'Viewed media list', '2025-03-18 22:58:53'),
+(29, NULL, 'Viewed media list', '2025-03-18 22:58:54'),
+(30, NULL, 'Viewed media list', '2025-03-18 22:59:02'),
+(31, NULL, 'Toggled featured status for media #22', '2025-03-18 22:59:15'),
+(32, NULL, 'Viewed media list', '2025-03-18 22:59:15'),
+(33, NULL, 'Viewed media list', '2025-03-18 22:59:16'),
+(34, NULL, 'Toggled featured status for media #22', '2025-03-18 22:59:18'),
+(35, NULL, 'Viewed media list', '2025-03-18 22:59:18'),
+(36, NULL, 'Viewed media list', '2025-03-18 22:59:18'),
+(37, NULL, 'Changed orientation for media #22 to landscape', '2025-03-18 22:59:23'),
+(38, NULL, 'Viewed media list', '2025-03-18 22:59:23'),
+(39, NULL, 'Viewed media list', '2025-03-18 22:59:23'),
+(40, NULL, 'Changed orientation for media #22 to portrait', '2025-03-18 22:59:24'),
+(41, NULL, 'Viewed media list', '2025-03-18 22:59:24'),
+(42, NULL, 'Viewed media list', '2025-03-18 22:59:25'),
+(43, NULL, 'Toggled active status for media #25', '2025-03-18 22:59:56'),
+(44, NULL, 'Viewed media list', '2025-03-18 22:59:56'),
+(45, NULL, 'Viewed media list', '2025-03-18 22:59:56'),
+(46, NULL, 'Toggled active status for media #25', '2025-03-18 22:59:57'),
+(47, NULL, 'Viewed media list', '2025-03-18 22:59:58'),
+(48, NULL, 'Viewed media list', '2025-03-18 22:59:58'),
+(49, NULL, 'Viewed media list', '2025-03-18 23:00:34'),
+(50, NULL, 'Viewed media list', '2025-03-18 23:17:13'),
+(51, NULL, 'Viewed media list', '2025-03-19 01:05:53'),
+(52, NULL, 'Viewed media list', '2025-03-19 02:30:07'),
+(53, NULL, 'Viewed media list', '2025-03-19 02:41:36'),
+(54, NULL, 'Viewed media list', '2025-03-19 02:43:00'),
+(55, NULL, 'Viewed media list', '2025-03-19 02:44:13'),
+(56, NULL, 'Viewed media list', '2025-03-19 02:59:18'),
+(57, NULL, 'Viewed media list', '2025-03-19 02:59:20'),
+(58, NULL, 'Viewed media list', '2025-03-19 03:11:09'),
+(59, NULL, 'Viewed media list', '2025-03-19 03:11:25'),
+(60, 1, 'Category \"Islamic\" was deactivated', '2025-03-19 03:20:50'),
+(61, 1, 'Category \"Islamic\" was activated', '2025-03-19 03:20:52'),
+(62, 1, 'Category \"Islamic\" was deactivated', '2025-03-19 03:30:19'),
+(63, 1, 'Category \"Islamic\" was activated', '2025-03-19 03:30:24'),
+(64, NULL, 'Viewed media list', '2025-03-19 15:01:11'),
+(65, NULL, 'Viewed media list', '2025-03-19 15:01:11'),
+(66, NULL, 'Viewed media list', '2025-03-19 15:01:21'),
+(67, 1, 'Updated tag: islamic (ID: 19)', '2025-03-20 01:51:41'),
+(68, 1, 'Updated tag: muslim (ID: 18)', '2025-03-20 01:52:04'),
+(69, 1, 'Added new tag: mahran (ID: 20)', '2025-03-20 01:52:17'),
+(70, NULL, 'Viewed media list', '2025-03-20 01:52:27'),
+(71, NULL, 'Viewed media list', '2025-03-20 01:52:36'),
+(72, NULL, 'Viewed media list', '2025-03-20 01:53:10'),
+(73, NULL, 'Viewed media list', '2025-03-20 01:53:44'),
+(74, NULL, 'Viewed media list', '2025-03-20 01:53:50'),
+(75, NULL, 'Viewed media list', '2025-03-20 01:54:04'),
+(76, NULL, 'Viewed media list', '2025-03-20 01:54:10'),
+(77, NULL, 'Viewed media list', '2025-03-20 01:54:22'),
+(78, NULL, 'Viewed media list', '2025-03-20 01:54:31'),
+(79, 1, 'Successfully logged in', '2025-03-20 06:03:03'),
+(80, NULL, 'Viewed media list', '2025-03-20 07:31:06'),
+(81, 1, 'Successfully logged in', '2025-03-20 16:42:06'),
+(82, 1, 'User logged out', '2025-03-20 16:43:51'),
+(83, 1, 'Successfully logged in', '2025-03-20 16:44:04'),
+(84, 1, 'User logged out', '2025-03-20 16:44:15'),
+(85, 1, 'Successfully logged in', '2025-03-20 16:44:27'),
+(86, 1, 'User logged out', '2025-03-20 16:45:03'),
+(87, 1, 'Successfully logged in', '2025-03-20 16:45:08'),
+(88, 1, 'Updated profile information', '2025-03-20 16:45:24'),
+(89, 5, 'New user registered', '2025-03-20 17:58:06'),
+(90, 5, 'Updated profile information', '2025-03-20 17:59:14'),
+(91, 1, 'Successfully logged in', '2025-03-20 22:12:17'),
+(92, 1, 'Successfully logged in', '2025-03-21 02:51:46'),
+(93, NULL, 'Viewed media list', '2025-03-21 03:05:45'),
+(94, NULL, 'Viewed media list', '2025-03-21 03:07:45'),
+(95, NULL, 'Viewed media list', '2025-03-21 03:10:56'),
+(96, 1, 'Added new category #7: Mahran', '2025-03-21 03:11:29'),
+(97, NULL, 'Viewed media list', '2025-03-21 03:11:42'),
+(98, NULL, 'Viewed media list', '2025-03-21 03:12:30'),
+(99, NULL, 'Viewed media list', '2025-03-21 03:15:14'),
+(100, NULL, 'Viewed media list', '2025-03-21 03:18:24'),
+(101, NULL, 'Viewed media list', '2025-03-21 03:18:28'),
+(102, NULL, 'Viewed media list', '2025-03-21 03:20:54'),
+(103, NULL, 'Viewed media list', '2025-03-21 03:21:01'),
+(104, NULL, 'Viewed media list', '2025-03-21 03:23:21'),
+(105, NULL, 'Viewed media list', '2025-03-21 03:24:58'),
+(106, NULL, 'Viewed media list', '2025-03-21 03:25:27'),
+(107, NULL, 'Viewed media list', '2025-03-21 03:25:29'),
+(108, NULL, 'Viewed media list', '2025-03-21 03:27:47'),
+(109, NULL, 'Viewed media list', '2025-03-21 03:29:02'),
+(110, 1, 'Added new media item #29: test2', '2025-03-21 03:29:21'),
+(111, NULL, 'Viewed media list', '2025-03-21 03:29:23'),
+(112, NULL, 'Viewed media list', '2025-03-21 03:30:59'),
+(113, NULL, 'Viewed media list', '2025-03-21 03:31:08'),
+(114, NULL, 'Viewed media list', '2025-03-21 03:33:19'),
+(115, NULL, 'Viewed media list', '2025-03-21 03:47:25'),
+(116, NULL, 'Viewed media list', '2025-03-21 03:50:09'),
+(117, 1, 'Successfully logged in', '2025-03-21 05:47:49'),
+(118, NULL, 'Viewed media list', '2025-03-21 06:22:22'),
+(119, NULL, 'Viewed media list', '2025-03-21 06:23:03'),
+(120, NULL, 'Viewed media list', '2025-03-21 06:39:14'),
+(121, NULL, 'Viewed media list', '2025-03-21 06:40:28'),
+(122, NULL, 'Viewed media list', '2025-03-21 06:40:29'),
+(123, NULL, 'Viewed media list', '2025-03-21 06:40:30'),
+(124, NULL, 'Viewed media list', '2025-03-21 06:40:30'),
+(125, 1, 'Successfully logged in', '2025-03-21 19:41:42'),
+(126, NULL, 'Viewed media list', '2025-03-21 20:45:21'),
+(127, NULL, 'Viewed media list', '2025-03-21 20:45:37'),
+(128, NULL, 'Viewed media list', '2025-03-21 20:45:40'),
+(129, NULL, 'Viewed media list', '2025-03-21 20:45:41'),
+(130, NULL, 'Viewed media list', '2025-03-21 20:45:43'),
+(131, NULL, 'Viewed media list', '2025-03-21 20:49:16'),
+(132, NULL, 'Viewed media list', '2025-03-21 20:55:09'),
+(133, 1, 'Successfully logged in', '2025-03-22 02:57:50'),
+(134, NULL, 'Viewed media list', '2025-03-22 03:01:37'),
+(135, NULL, 'Viewed media list', '2025-03-22 03:03:00'),
+(136, NULL, 'Viewed media list', '2025-03-22 03:03:39'),
+(137, NULL, 'Viewed media list', '2025-03-22 03:04:24'),
+(138, NULL, 'Viewed media list', '2025-03-22 03:06:20'),
+(139, NULL, 'Viewed media list', '2025-03-22 03:10:50'),
+(140, NULL, 'Viewed media list', '2025-03-22 03:10:59'),
+(141, NULL, 'Viewed media list', '2025-03-22 03:11:00'),
+(142, NULL, 'Viewed media list', '2025-03-22 03:16:49'),
+(143, 1, 'تم تحديث إعدادات الموقع', '2025-03-22 03:22:49'),
+(144, 1, 'تم تحديث إعدادات الموقع', '2025-03-22 03:24:14'),
+(145, 1, 'Added menu item: Mahran to menu ID 2', '2025-03-22 03:35:05'),
+(146, 1, 'Updated menu item: Mahran', '2025-03-22 03:35:27'),
+(147, 1, 'Site settings updated', '2025-03-22 03:35:51'),
+(148, 1, 'Site settings updated', '2025-03-22 03:36:23'),
+(149, 1, 'Site settings updated', '2025-03-22 03:36:49'),
+(150, 1, 'Site settings updated', '2025-03-22 03:36:54'),
+(151, 1, 'Successfully logged in', '2025-03-22 05:45:19');
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `ads`
+--
+
+CREATE TABLE `ads` (
+  `id` int NOT NULL,
+  `name` varchar(100) NOT NULL COMMENT 'Identifying name of the ad',
+  `ad_code` text NOT NULL COMMENT 'JavaScript code for the ad',
+  `position` varchar(50) DEFAULT NULL COMMENT 'Default position (header, sidebar, content, footer)',
+  `size` varchar(50) NOT NULL COMMENT 'Ad size (e.g., 300x250)',
+  `type` varchar(50) NOT NULL DEFAULT 'adsense' COMMENT 'Ad type (adsense, custom, etc.)',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Ad status (active/inactive)',
+  `start_date` datetime DEFAULT NULL COMMENT 'Campaign start date',
+  `end_date` datetime DEFAULT NULL COMMENT 'Campaign end date',
+  `impressions` int DEFAULT '0' COMMENT 'Impressions counter',
+  `clicks` int DEFAULT '0' COMMENT 'Estimated clicks counter',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `ad_placements`
+--
+
+CREATE TABLE `ad_placements` (
+  `id` int NOT NULL,
+  `page` varchar(100) NOT NULL COMMENT 'Page or section where it appears (home, category, article, etc.)',
+  `ad_id` int NOT NULL COMMENT 'Ad ID',
+  `position` varchar(50) NOT NULL COMMENT 'Position on the page',
+  `priority` int DEFAULT '0' COMMENT 'Display priority',
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -216,7 +402,7 @@ CREATE TABLE `contact_settings` (
 --
 
 INSERT INTO `contact_settings` (`id`, `contact_email`, `email_subject_prefix`, `recaptcha_site_key`, `recaptcha_secret_key`, `enable_auto_reply`, `auto_reply_template_id`, `enable_attachments`, `max_file_size`, `allowed_file_types`, `required_fields`, `created_at`, `updated_at`) VALUES
-(1, 'play.earn.net@gmail.com', 'WallPix.Top', 'ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 1, 1, 0, 5, 'pdf,doc,docx,jpg,jpeg,png', '[\"name\",\"email\",\"subject\",\"message\"]', '2025-03-14 01:06:51', '2025-03-14 01:45:45');
+(1, 'hhhhhhhhhh@gmail.com', 'WallPix.Top', 'qwdqwdqwdqwdqwdqwdqwdqwdqwd-wqwdqwdqwdqw', 'wqwdqwdqwdqwwqwdqwdqwdqwwqwdqwdqwdqwwqwdqwdqwdqw', 1, 1, 0, 5, 'pdf,doc,docx,jpg,jpeg,png', '[\"name\",\"email\",\"subject\",\"message\"]', '2025-03-14 01:06:51', '2025-03-14 01:45:45');
 
 -- --------------------------------------------------------
 
@@ -345,7 +531,19 @@ CREATE TABLE `login_attempts` (
 --
 
 INSERT INTO `login_attempts` (`id`, `email`, `status`, `ip_address`, `is_admin`, `attempt_details`, `created_at`, `lock_time`) VALUES
-(1, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 02:51:46', NULL);
+(1, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 06:03:03', NULL),
+(2, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:42:06', NULL),
+(3, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:44:04', NULL),
+(4, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:44:27', NULL),
+(5, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:45:08', NULL),
+(6, 'ms.mamym@icloud.com', 'successful', '83.253.108.100', 0, NULL, '2025-03-20 17:58:38', NULL),
+(7, 'ms.mamym@icloud.com', 'successful', '194.11.199.107', 0, NULL, '2025-03-20 18:40:37', NULL),
+(8, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 22:12:17', NULL),
+(9, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 02:51:46', NULL),
+(10, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 05:47:49', NULL),
+(11, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 19:41:42', NULL),
+(12, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 02:57:50', NULL),
+(13, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 05:45:19', NULL);
 
 -- --------------------------------------------------------
 
@@ -398,7 +596,7 @@ INSERT INTO `media` (`id`, `title`, `description`, `category_id`, `file_name`, `
 (23, 'Islamic wallpaper 2', 'Islamic wallpaper 2', 3, NULL, '', '', NULL, NULL, 1, 1, NULL, NULL, NULL, '#ffffff', 0, 'portrait', 'Mahran-Owner', 'Mahran-License', '2025-03-16', 0, NULL, NULL, 'https://i.pinimg.com/736x/ed/4f/66/ed4f666d97d7314ed2215ef3c13c6944.jpg', NULL, '2025-03-16 05:52:24', 0, NULL, NULL, 0.01, 0.00),
 (24, 'Islamic wallpaper 2', 'Islamic wallpaper 2', 3, NULL, '', '', NULL, NULL, 1, 1, NULL, NULL, NULL, '#ffffff', 0, 'portrait', 'Mahran-Owner', 'Mahran-License', '2025-03-16', 0, NULL, NULL, 'https://i.pinimg.com/736x/74/fb/3f/74fb3ff0bc2ed7144e9ada38e5362560.jpg', NULL, '2025-03-16 05:52:24', 0, NULL, NULL, 0.00, 0.00),
 (25, 'Islamic wallpaper 5', 'Islamic wallpaper 5', 3, '1742104740__dc6e93c2-e760-40ec-8d34-ef5f210b2562.jpeg', 'uploads/media/2025/03/1742104740__dc6e93c2-e760-40ec-8d34-ef5f210b2562.jpeg', 'image/jpeg', '124917', NULL, 1, 1, NULL, NULL, NULL, '#ffffff', 0, 'portrait', 'Mahran-Owner', 'Mahran-License', '2025-03-16', 0, '', NULL, NULL, NULL, '2025-03-16 05:59:00', 0, NULL, NULL, 0.01, 0.00),
-(29, 'test2', 'ssssssssssss', 7, '67dcdd1149237_login-page.jpg', '/uploads/media/2025/03/67dcdd1149237_login-page.jpg', '', NULL, '/uploads/thumbnails/2025/03/thumb_67dcdd1149237_login-page.jpg', 1, 1, '1920', '1080', NULL, NULL, 0, 'landscape', NULL, NULL, NULL, 0, NULL, NULL, '', 1, '2025-03-21 03:29:21', 0, NULL, NULL, 0.00, 0.00);
+(29, 'test2', 'ssssssssssss', 7, '67dcdd1149237_login-page.jpg', '/uploads/media/2025/03/67dcdd1149237_login-page.jpg', '', NULL, '/uploads/thumbnails/2025/03/thumb_67dcdd1149237_login-page.jpg', 1, 1, '1920', '1080', NULL, NULL, 0, 'landscape', NULL, NULL, NULL, 0, NULL, NULL, '', 1, '2025-03-21 03:29:21', 0, NULL, NULL, 0.01, 0.00);
 
 --
 -- القوادح `media`
@@ -493,7 +691,8 @@ INSERT INTO `media_downloads` (`id`, `media_id`, `user_id`, `downloaded_at`, `se
 (11, 23, 1, '2025-03-20 03:09:35', 'd92d675a3fd717216367f6724a852f32'),
 (12, 23, NULL, '2025-03-20 17:55:47', '51eed21ee9308fb47aeb0cef97f1d45b'),
 (13, 25, NULL, '2025-03-20 17:55:55', '51eed21ee9308fb47aeb0cef97f1d45b'),
-(14, 29, 1, '2025-03-21 03:55:26', 'ddc29cecf5032c596ff79f139194d1a7');
+(14, 29, 1, '2025-03-21 03:55:26', 'ddc29cecf5032c596ff79f139194d1a7'),
+(15, 23, 1, '2025-03-22 03:04:59', 'ddc29cecf5032c596ff79f139194d1a7');
 
 -- --------------------------------------------------------
 
@@ -579,7 +778,11 @@ INSERT INTO `media_views` (`id`, `media_id`, `user_id`, `viewed_at`, `session_id
 (39, 23, 1, '2025-03-20 16:47:10', 'ddc29cecf5032c596ff79f139194d1a7'),
 (40, 23, NULL, '2025-03-20 17:55:30', '51eed21ee9308fb47aeb0cef97f1d45b'),
 (41, 25, NULL, '2025-03-20 17:55:51', '51eed21ee9308fb47aeb0cef97f1d45b'),
-(42, 29, 1, '2025-03-21 03:29:31', 'ddc29cecf5032c596ff79f139194d1a7');
+(42, 29, 1, '2025-03-21 03:29:31', 'ddc29cecf5032c596ff79f139194d1a7'),
+(43, 29, NULL, '2025-03-21 13:21:33', '814ab00366e01e932f5eb3d9c77708a5'),
+(44, 29, 1, '2025-03-22 03:02:14', 'ddc29cecf5032c596ff79f139194d1a7'),
+(45, 23, 1, '2025-03-22 03:02:17', 'ddc29cecf5032c596ff79f139194d1a7'),
+(46, 24, 1, '2025-03-22 03:07:03', 'ddc29cecf5032c596ff79f139194d1a7');
 
 --
 -- القوادح `media_views`
@@ -640,7 +843,8 @@ CREATE TABLE `menu_items` (
 --
 
 INSERT INTO `menu_items` (`id`, `menu_id`, `name`, `url`, `sort_order`) VALUES
-(1, 2, 'Home', 'https://mahrannnn.se/', 1);
+(1, 2, 'Home', 'https://localeomm.com/', 1),
+(2, 2, 'Mahran', 'https://www.facebook.com/', 2);
 
 -- --------------------------------------------------------
 
@@ -771,7 +975,8 @@ INSERT INTO `resolutions` (`id`, `resolution`, `created_at`) VALUES
 (2, '1280x720', '2025-02-20 03:34:11'),
 (3, '3840x2160', '2025-02-20 03:34:11'),
 (4, '800x600', '2025-02-20 03:34:11'),
-(5, '2560x1440', '2025-02-20 03:34:11');
+(5, '2560x1440', '2025-02-20 03:34:11'),
+(7, '4800x2800', '2025-03-22 03:02:57');
 
 -- --------------------------------------------------------
 
@@ -857,7 +1062,7 @@ CREATE TABLE `site_settings` (
 --
 
 INSERT INTO `site_settings` (`id`, `site_name`, `site_title`, `site_description`, `site_keywords`, `site_url`, `site_email`, `google_analytics`, `latest_items_count`, `featured_wallpapers_count`, `featured_media_count`, `facebook_url`, `twitter_url`, `instagram_url`, `youtube_url`, `created_at`, `updated_at`, `created_by`, `updated_by`, `news_ticker_enabled`, `footer_content`, `site_logo`, `site_favicon`, `footer_text`, `header_menu_id`, `footer_menu_id`, `contact_email`, `dark_mode`, `maintenance_mode`, `language`, `enable_header`, `enable_footer`, `enable_navbar`, `enable_search_box`, `enable_categories`) VALUES
-(1, 'Wallpix Top', '', 'Welcome', 'website,portal,media', 'https://mahrannnn.se', 'admin@example.com', '', 10, 10, 10, 'https://www.facebook.com/unifaktoura/', 'https://twitter.com/unifaktoura', 'https://Instagram.com/unifaktoura', 'https://YouTube.com/unifaktoura', '2025-03-14 04:46:34', '2025-03-17 07:03:47', 'mahranalsarminy', '1', 1, 'All rights reserved 2025 © WallPix Media and Wallpaper Platform', 'logo-wallpix.png', '', '', 2, NULL, '', 0, 0, 'en', 1, 1, 1, 1, 1);
+(1, 'Wallpix', 'Mahran ALSarminy', 'Welcome to', 'website,portal,media', 'https://localeomm.com', 'admin@example.com', '', 10, 10, 10, 'https://www.facebook.com/unifaktoura/', 'https://twitter.com/unifaktoura', 'https://Instagram.com/unifaktoura', 'https://YouTube.com/unifaktoura', '2025-03-14 04:46:34', '2025-03-22 03:36:54', 'mahranalsarminy', '1', 1, 'All rights reserved 2025 © WallPix Media and Wallpaper Platform', 'logo-wallpix.png', '', 'hhhhhhhhhhhhhhhhhhhhh', 2, 2, '', 0, 0, 'en', 1, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -952,10 +1157,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `profile_picture`, `role`, `created_at`, `bio`, `last_login`, `updated_at`, `active`, `last_ip`) VALUES
-(1, 'Admin', 'admin@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'uploads/profile_pictures/1_1742489124_logo-wallpix.png', 'admin', '2025-02-20 01:31:31', '', '2025-03-21 02:51:46', '2025-03-18 09:10:39', 1, '83.253.108.100'),
+(1, 'Admin', 'admin@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'uploads/profile_pictures/1_1742489124_logo-wallpix.png', 'admin', '2025-02-20 01:31:31', '', '2025-03-22 05:45:19', '2025-03-18 09:10:39', 1, '83.253.108.100'),
 (2, '', 'subscriber@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', NULL, 'subscriber', '2025-02-20 01:31:31', NULL, '2025-03-17 06:12:00', '2025-03-17 06:12:00', 1, NULL),
 (3, '', 'freeuser@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', NULL, 'free_user', '2025-02-20 01:31:31', NULL, '2025-03-17 06:12:00', '2025-03-17 06:12:00', 1, NULL),
-(5, 'Test', 'ms.mamym@icloud.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'uploads/profile_pictures/5_1742493554_dc259757-534d-4ba5-aa80-e6bc4c644e71.jpeg', 'free_user', '2025-03-20 17:58:05', 'Mahran', '2025-03-20 18:40:37', NULL, 1, '194.11.199.107');
+(5, 'Test', 'ms.mamym@icloud.com', '$2y$10$iA7GWcnRIJsz0YcLwF26de4W9zQyaYOjkBFp8JkWFfaPAq9fwbofW', 'uploads/profile_pictures/5_1742493554_dc259757-534d-4ba5-aa80-e6bc4c644e71.jpeg', 'free_user', '2025-03-20 17:58:05', 'Mahran', '2025-03-20 18:40:37', NULL, 1, '194.11.199.107');
 
 -- --------------------------------------------------------
 
@@ -997,6 +1202,22 @@ ALTER TABLE `about_content`
 ALTER TABLE `activities`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
+
+--
+-- فهارس للجدول `ads`
+--
+ALTER TABLE `ads`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `position_idx` (`position`),
+  ADD KEY `status_idx` (`status`);
+
+--
+-- فهارس للجدول `ad_placements`
+--
+ALTER TABLE `ad_placements`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ad_id_idx` (`ad_id`),
+  ADD KEY `page_position_idx` (`page`,`position`);
 
 --
 -- فهارس للجدول `categories`
@@ -1251,7 +1472,19 @@ ALTER TABLE `about_content`
 -- AUTO_INCREMENT for table `activities`
 --
 ALTER TABLE `activities`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=152;
+
+--
+-- AUTO_INCREMENT for table `ads`
+--
+ALTER TABLE `ads`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `ad_placements`
+--
+ALTER TABLE `ad_placements`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -1323,7 +1556,7 @@ ALTER TABLE `features`
 -- AUTO_INCREMENT for table `login_attempts`
 --
 ALTER TABLE `login_attempts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `media`
@@ -1347,13 +1580,13 @@ ALTER TABLE `media_color_types`
 -- AUTO_INCREMENT for table `media_downloads`
 --
 ALTER TABLE `media_downloads`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `media_views`
 --
 ALTER TABLE `media_views`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `menus`
@@ -1365,7 +1598,7 @@ ALTER TABLE `menus`
 -- AUTO_INCREMENT for table `menu_items`
 --
 ALTER TABLE `menu_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `navbar`
@@ -1401,7 +1634,7 @@ ALTER TABLE `privacy_content`
 -- AUTO_INCREMENT for table `resolutions`
 --
 ALTER TABLE `resolutions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `search_box_settings`
@@ -1460,6 +1693,12 @@ ALTER TABLE `user_subscriptions`
 --
 ALTER TABLE `activities`
   ADD CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- قيود الجداول `ad_placements`
+--
+ALTER TABLE `ad_placements`
+  ADD CONSTRAINT `fk_ad_id` FOREIGN KEY (`ad_id`) REFERENCES `ads` (`id`) ON DELETE CASCADE;
 
 --
 -- قيود الجداول `downloads`

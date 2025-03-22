@@ -73,71 +73,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
-        // Update settings in database
-        $updateQuery = $pdo->prepare("
-            UPDATE site_settings SET 
-                site_name = :site_name,
-                site_title = :site_title,
-                site_description = :site_description,
-                site_keywords = :site_keywords,
-                site_logo = :site_logo,
-                site_favicon = :site_favicon,
-                maintenance_mode = :maintenance_mode,
-                register_enabled = :register_enabled,
-                email_verification = :email_verification,
-                facebook_url = :facebook_url,
-                twitter_url = :twitter_url,
-                instagram_url = :instagram_url,
-                youtube_url = :youtube_url,
-                pinterest_url = :pinterest_url,
-                contact_email = :contact_email,
-                contact_phone = :contact_phone,
-                contact_address = :contact_address,
-                copyright_text = :copyright_text,
-                google_analytics = :google_analytics,
-                download_limit_free = :download_limit_free,
-                display_watermark = :display_watermark,
-                allow_guest_download = :allow_guest_download,
-                last_updated = NOW(),
-                last_updated_by = :last_updated_by
-            WHERE id = 1
-        ");
+        // Prepare update fields based on site_settings table columns
+        $updateFields = [];
+        $updateParams = [];
         
-        $updateQuery->execute([
-            'site_name' => $_POST['site_name'],
-            'site_title' => $_POST['site_title'],
-            'site_description' => $_POST['site_description'],
-            'site_keywords' => $_POST['site_keywords'],
-            'site_logo' => $logoPath,
-            'site_favicon' => $faviconPath,
-            'maintenance_mode' => isset($_POST['maintenance_mode']) ? 1 : 0,
-            'register_enabled' => isset($_POST['register_enabled']) ? 1 : 0,
-            'email_verification' => isset($_POST['email_verification']) ? 1 : 0,
-            'facebook_url' => $_POST['facebook_url'],
-            'twitter_url' => $_POST['twitter_url'],
-            'instagram_url' => $_POST['instagram_url'],
-            'youtube_url' => $_POST['youtube_url'],
-            'pinterest_url' => $_POST['pinterest_url'],
-            'contact_email' => $_POST['contact_email'],
-            'contact_phone' => $_POST['contact_phone'],
-            'contact_address' => $_POST['contact_address'],
-            'copyright_text' => $_POST['copyright_text'],
-            'google_analytics' => $_POST['google_analytics'],
-            'download_limit_free' => intval($_POST['download_limit_free']),
-            'display_watermark' => isset($_POST['display_watermark']) ? 1 : 0,
-            'allow_guest_download' => isset($_POST['allow_guest_download']) ? 1 : 0,
-            'last_updated_by' => $_SESSION['user_id']
-        ]);
+        // Get all columns from site_settings table
+        $columnsQuery = $pdo->prepare("DESCRIBE site_settings");
+        $columnsQuery->execute();
+        $columns = $columnsQuery->fetchAll(PDO::FETCH_COLUMN);
+        
+        // Build update query dynamically based on table columns and posted data
+        foreach ($columns as $column) {
+            // Skip id, created_at columns, and any other columns we don't want to update
+            if (in_array($column, ['id', 'created_at'])) {
+                continue;
+            }
+            
+            // Handle special cases
+            if ($column === 'site_logo') {
+                $updateFields[] = "$column = :$column";
+                $updateParams[$column] = $logoPath;
+            } 
+            elseif ($column === 'site_favicon') {
+                $updateFields[] = "$column = :$column";
+                $updateParams[$column] = $faviconPath;
+            } 
+            elseif ($column === 'updated_at') {
+                $updateFields[] = "$column = NOW()";
+            } 
+            elseif ($column === 'updated_by') {
+                $updateFields[] = "$column = :updated_by";
+                $updateParams['updated_by'] = $_SESSION['user_id'] ?? 'system';
+            }
+            // Handle Boolean fields
+            elseif (isset($_POST[$column]) && is_string($_POST[$column]) && in_array($_POST[$column], ['0', '1'])) {
+                $updateFields[] = "$column = :$column";
+                $updateParams[$column] = $_POST[$column];
+            }
+            // Handle Boolean fields that come from checkboxes
+            elseif (in_array($column, [
+                'maintenance_mode', 'dark_mode', 'enable_header', 'enable_footer',
+                'enable_navbar', 'enable_search_box', 'enable_categories',
+                'news_ticker_enabled'
+            ])) {
+                $updateFields[] = "$column = :$column";
+                $updateParams[$column] = isset($_POST[$column]) ? 1 : 0;
+            }
+            // Handle fields that can be NULL (like header_menu_id and footer_menu_id)
+            elseif (in_array($column, ['header_menu_id', 'footer_menu_id'])) {
+                $updateFields[] = "$column = :$column";
+                // If value is empty, set to NULL
+                $updateParams[$column] = !empty($_POST[$column]) ? $_POST[$column] : null;
+            }
+            // Handle all other fields that were posted
+            elseif (isset($_POST[$column])) {
+                $updateFields[] = "$column = :$column";
+                $updateParams[$column] = $_POST[$column];
+            }
+        }
+        
+        // Build and execute final update query
+        $updateQuery = $pdo->prepare(
+            "UPDATE site_settings SET " . 
+            implode(", ", $updateFields) . 
+            " WHERE id = 1"
+        );
+        
+        $updateQuery->execute($updateParams);
         
         // Log activity
-        $activityQuery = $pdo->prepare("
-            INSERT INTO activities (user_id, activity_type, activity_description, ip_address, created_at)
-            VALUES (:user_id, 'settings_update', 'Updated site settings', :ip_address, NOW())
-        ");
+        $activityQuery = $pdo->prepare(
+            "INSERT INTO activities (user_id, description, created_at)
+            VALUES (:user_id, :description, NOW())"
+        );
         
         $activityQuery->execute([
-            'user_id' => $_SESSION['user_id'],
-            'ip_address' => $_SERVER['REMOTE_ADDR']
+            'user_id' => $_SESSION['user_id'] ?? null,
+            'description' => 'Site settings updated'
         ]);
         
         // Commit transaction
@@ -164,20 +176,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="bg-white rounded-lg shadow-md p-6 <?php echo $darkMode ? 'bg-gray-800' : ''; ?>">
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-semibold <?php echo $darkMode ? 'text-white' : 'text-gray-800'; ?>">
-                    <i class="fas fa-cog mr-2"></i> <?php echo $lang['site_settings'] ?? 'Site Settings'; ?>
+                    <i class="fas fa-cog mr-2"></i> Site Settings
                 </h1>
                 <nav class="flex" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
                         <li class="inline-flex items-center">
                             <a href="<?php echo $adminUrl; ?>/index.php" class="inline-flex items-center text-sm font-medium <?php echo $darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-blue-600'; ?>">
-                                <i class="fas fa-home mr-2"></i> <?php echo $lang['dashboard'] ?? 'Dashboard'; ?>
+                                <i class="fas fa-home mr-2"></i> Dashboard
                             </a>
                         </li>
                         <li aria-current="page">
                             <div class="flex items-center">
                                 <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
                                 <span class="text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['site_settings'] ?? 'Site Settings'; ?>
+                                    Site Settings
                                 </span>
                             </div>
                         </li>
@@ -203,76 +215,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="mb-4 border-b border-gray-200 <?php echo $darkMode ? 'border-gray-700' : ''; ?>">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="settingsTabs" role="tablist">
                         <li class="mr-2" role="presentation">
-                            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="general-tab" data-tabs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">
-                                <i class="fas fa-sliders-h mr-2"></i> <?php echo $lang['general'] ?? 'General'; ?>
+                            <button type="button" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="general-tab" data-tabs-target="#general" role="tab" aria-controls="general" aria-selected="false">
+                                <i class="fas fa-sliders-h mr-2"></i> General Settings
                             </button>
                         </li>
                         <li class="mr-2" role="presentation">
-                            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="appearance-tab" data-tabs-target="#appearance" type="button" role="tab" aria-controls="appearance" aria-selected="false">
-                                <i class="fas fa-palette mr-2"></i> <?php echo $lang['appearance'] ?? 'Appearance'; ?>
+                            <button type="button" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="appearance-tab" data-tabs-target="#appearance" role="tab" aria-controls="appearance" aria-selected="false">
+                                <i class="fas fa-palette mr-2"></i> Appearance
                             </button>
                         </li>
                         <li class="mr-2" role="presentation">
-                            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="social-tab" data-tabs-target="#social" type="button" role="tab" aria-controls="social" aria-selected="false">
-                                <i class="fas fa-share-alt mr-2"></i> <?php echo $lang['social_media'] ?? 'Social Media'; ?>
+                            <button type="button" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="social-tab" data-tabs-target="#social" role="tab" aria-controls="social" aria-selected="false">
+                                <i class="fas fa-share-alt mr-2"></i> Social Media
                             </button>
                         </li>
                         <li class="mr-2" role="presentation">
-                            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="contact-tab" data-tabs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">
-                                <i class="fas fa-address-card mr-2"></i> <?php echo $lang['contact_info'] ?? 'Contact Info'; ?>
+                            <button type="button" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="contact-tab" data-tabs-target="#contact" role="tab" aria-controls="contact" aria-selected="false">
+                                <i class="fas fa-address-card mr-2"></i> Contact Info
                             </button>
                         </li>
                         <li role="presentation">
-                            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="advanced-tab" data-tabs-target="#advanced" type="button" role="tab" aria-controls="advanced" aria-selected="false">
-                                <i class="fas fa-tools mr-2"></i> <?php echo $lang['advanced'] ?? 'Advanced'; ?>
+                            <button type="button" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="advanced-tab" data-tabs-target="#advanced" role="tab" aria-controls="advanced" aria-selected="false">
+                                <i class="fas fa-tools mr-2"></i> Advanced Settings
                             </button>
                         </li>
                     </ul>
                 </div>
-                                <!-- Tab Content -->
+                
+                <!-- Tab Content -->
                 <div id="settingsTabContent">
                     <!-- General Settings Tab -->
-                    <div class="p-4 rounded-lg bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?>" id="general" role="tabpanel" aria-labelledby="general-tab">
+                    <div class="hidden p-4 rounded-lg bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?>" id="general" role="tabpanel" aria-labelledby="general-tab">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="mb-4">
                                 <label for="site_name" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <?php echo $lang['site_name'] ?? 'Site Name'; ?> <span class="text-red-500">*</span>
+                                    Site Name <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="site_name" name="site_name" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
-                                    value="<?php echo htmlspecialchars($settings['site_name'] ?? 'WallPix'); ?>" required>
+                                    value="<?php echo htmlspecialchars($settings['site_name'] ?? ''); ?>" required>
                             </div>
                             <div class="mb-4">
                                 <label for="site_title" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <?php echo $lang['site_title'] ?? 'Site Title (Meta)'; ?> <span class="text-red-500">*</span>
+                                    Site Title <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="site_title" name="site_title" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
-                                    value="<?php echo htmlspecialchars($settings['site_title'] ?? 'WallPix - Free HD Wallpapers'); ?>" required>
+                                    value="<?php echo htmlspecialchars($settings['site_title'] ?? ''); ?>" required>
                             </div>
                             <div class="mb-4 col-span-1 md:col-span-2">
                                 <label for="site_description" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <?php echo $lang['site_description'] ?? 'Site Description (Meta)'; ?>
+                                    Site Description
                                 </label>
                                 <textarea id="site_description" name="site_description" rows="3" 
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"><?php echo htmlspecialchars($settings['site_description'] ?? 'Download Free HD Wallpapers for your devices'); ?></textarea>
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"><?php echo htmlspecialchars($settings['site_description'] ?? ''); ?></textarea>
                             </div>
                             <div class="mb-4 col-span-1 md:col-span-2">
                                 <label for="site_keywords" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <?php echo $lang['site_keywords'] ?? 'Site Keywords (Meta)'; ?>
+                                    Site Keywords
                                 </label>
                                 <input type="text" id="site_keywords" name="site_keywords" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
-                                    value="<?php echo htmlspecialchars($settings['site_keywords'] ?? 'wallpapers, backgrounds, HD, 4K, free'); ?>" 
-                                    placeholder="<?php echo $lang['keywords_comma_separated'] ?? 'Keywords separated by commas'; ?>">
+                                    value="<?php echo htmlspecialchars($settings['site_keywords'] ?? ''); ?>" 
+                                    placeholder="Keywords separated by commas">
                             </div>
                             <div class="mb-4">
-                                <label for="copyright_text" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <?php echo $lang['copyright_text'] ?? 'Copyright Text'; ?>
+                                <label for="site_url" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Site URL <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="copyright_text" name="copyright_text" 
+                                <input type="url" id="site_url" name="site_url" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
-                                    value="<?php echo htmlspecialchars($settings['copyright_text'] ?? '© ' . date('Y') . ' WallPix.Top. All rights reserved.'); ?>">
+                                    value="<?php echo htmlspecialchars($settings['site_url'] ?? ''); ?>" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="site_email" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Site Email <span class="text-red-500">*</span>
+                                </label>
+                                <input type="email" id="site_email" name="site_email" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
+                                    value="<?php echo htmlspecialchars($settings['site_email'] ?? ''); ?>" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="footer_text" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Footer Text
+                                </label>
+                                <input type="text" id="footer_text" name="footer_text" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
+                                    value="<?php echo htmlspecialchars($settings['footer_text'] ?? '© ' . date('Y') . ' All Rights Reserved'); ?>">
+                            </div>
+                            <div class="mb-4">
+                                <label for="language" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Language
+                                </label>
+                                <select id="language" name="language" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="ar" <?php echo ($settings['language'] ?? 'ar') == 'ar' ? 'selected' : ''; ?>>Arabic</option>
+                                    <option value="en" <?php echo ($settings['language'] ?? 'ar') == 'en' ? 'selected' : ''; ?>>English</option>
+                                </select>
                             </div>
                             <div class="mb-4">
                                 <div class="flex items-center">
@@ -280,11 +319,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
                                         <?php echo ($settings['maintenance_mode'] ?? 0) ? 'checked' : ''; ?>>
                                     <label for="maintenance_mode" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                        <?php echo $lang['maintenance_mode'] ?? 'Enable Maintenance Mode'; ?>
+                                        Maintenance Mode
                                     </label>
                                 </div>
                                 <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['maintenance_mode_help'] ?? 'When enabled, only administrators can access the site.'; ?>
+                                    When enabled, only administrators can access the site
                                 </p>
                             </div>
                         </div>
@@ -295,36 +334,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="mb-4">
                                 <label class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>" for="site_logo">
-                                    <?php echo $lang['site_logo'] ?? 'Site Logo'; ?>
+                                    Site Logo
                                 </label>
                                 <input class="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
                                     id="site_logo" name="site_logo" type="file" accept="image/png, image/jpeg, image/svg+xml">
                                 <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['recommended_size'] ?? 'Recommended size'; ?>: 200x50px (PNG, JPG, or SVG)
+                                    Recommended size: 200x50px (PNG, JPG, or SVG)
                                 </p>
                                 <?php if (!empty($settings['site_logo'])): ?>
                                 <div class="mt-2">
                                     <p class="text-sm mb-1 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                        <?php echo $lang['current_logo'] ?? 'Current Logo'; ?>:
+                                        Current Logo:
                                     </p>
-                                    <img src="<?php echo '../../' . htmlspecialchars($settings['site_logo']); ?>" 
+                                    <img src="<?php echo '../../uploads/' . htmlspecialchars($settings['site_logo']); ?>" 
                                         alt="Current logo" class="h-10 border <?php echo $darkMode ? 'border-gray-600' : 'border-gray-200'; ?> rounded p-1">
                                 </div>
                                 <?php endif; ?>
                             </div>
                             <div class="mb-4">
                                 <label class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>" for="site_favicon">
-                                    <?php echo $lang['site_favicon'] ?? 'Site Favicon'; ?>
+                                    Site Favicon
                                 </label>
                                 <input class="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
                                     id="site_favicon" name="site_favicon" type="file" accept="image/x-icon, image/png, image/svg+xml">
                                 <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['favicon_info'] ?? 'Size 32x32px or 16x16px (ICO, PNG, or SVG)'; ?>
+                                    Size: 32x32px or 16x16px (ICO, PNG, or SVG)
                                 </p>
                                 <?php if (!empty($settings['site_favicon'])): ?>
                                 <div class="mt-2">
                                     <p class="text-sm mb-1 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                        <?php echo $lang['current_favicon'] ?? 'Current Favicon'; ?>:
+                                        Current Favicon:
                                     </p>
                                     <img src="<?php echo '../../' . htmlspecialchars($settings['site_favicon']); ?>" 
                                         alt="Current favicon" class="h-8 border <?php echo $darkMode ? 'border-gray-600' : 'border-gray-200'; ?> rounded p-1">
@@ -333,17 +372,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                             <div class="mb-4">
                                 <div class="flex items-center">
-                                    <input id="display_watermark" name="display_watermark" type="checkbox" 
+                                    <input id="dark_mode" name="dark_mode" type="checkbox" 
                                         class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
-                                        <?php echo ($settings['display_watermark'] ?? 1) ? 'checked' : ''; ?>>
-                                    <label for="display_watermark" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                        <?php echo $lang['display_watermark'] ?? 'Display Watermark on Images'; ?>
+                                        <?php echo ($settings['dark_mode'] ?? 0) ? 'checked' : ''; ?>>
+                                    <label for="dark_mode" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
+                                        Dark Mode
                                     </label>
                                 </div>
                                 <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['watermark_help'] ?? 'Adds your site name as a watermark to prevent unauthorized use.'; ?>
+                                    Enable dark mode by default
                                 </p>
                             </div>
+                            <div class="mb-4">
+                                <div class="flex items-center">
+                                    <input id="enable_header" name="enable_header" type="checkbox" 
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
+                                        <?php echo ($settings['enable_header'] ?? 1) ? 'checked' : ''; ?>>
+                                    <label for="enable_header" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
+                                        Enable Header
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex items-center">
+                                    <input id="enable_footer" name="enable_footer" type="checkbox" 
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
+                                        <?php echo ($settings['enable_footer'] ?? 1) ? 'checked' : ''; ?>>
+                                    <label for="enable_footer" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
+                                        Enable Footer
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex items-center">
+                                    <input id="enable_navbar" name="enable_navbar" type="checkbox" 
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
+                                        <?php echo ($settings['enable_navbar'] ?? 1) ? 'checked' : ''; ?>>
+                                    <label for="enable_navbar" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
+                                        Enable Navigation Bar
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex items-center">
+                                    <input id="enable_search_box" name="enable_search_box" type="checkbox" 
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
+                                        <?php echo ($settings['enable_search_box'] ?? 1) ? 'checked' : ''; ?>>
+                                    <label for="enable_search_box" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
+                                        Enable Search Box
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex items-center">
+                                    <input id="enable_categories" name="enable_categories" type="checkbox" 
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
+                                        <?php echo ($settings['enable_categories'] ?? 1) ? 'checked' : ''; ?>>
+                                    <label for="enable_categories" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
+                                        Enable Categories
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex items-center">
+                                    <input id="news_ticker_enabled" name="news_ticker_enabled" type="checkbox" 
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
+                                        <?php echo ($settings['news_ticker_enabled'] ?? 0) ? 'checked' : ''; ?>>
+                                    <label for="news_ticker_enabled" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
+                                        Enable News Ticker
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4 col-span-1 md:col-span-2">
+                            <label for="footer_content" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                Footer Content
+                            </label>
+                            <textarea id="footer_content" name="footer_content" rows="4" 
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"><?php echo htmlspecialchars($settings['footer_content'] ?? ''); ?></textarea>
                         </div>
                     </div>
 
@@ -352,79 +458,116 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="mb-4">
                                 <label for="facebook_url" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <i class="fab fa-facebook text-blue-600 mr-2"></i> <?php echo $lang['facebook_url'] ?? 'Facebook URL'; ?>
+                                    <i class="fab fa-facebook text-blue-600 mr-2"></i> Facebook
                                 </label>
                                 <input type="url" id="facebook_url" name="facebook_url" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
                                     value="<?php echo htmlspecialchars($settings['facebook_url'] ?? ''); ?>" 
-                                    placeholder="https://facebook.com/wallpix">
+                                    placeholder="https://facebook.com/yourpage">
                             </div>
                             <div class="mb-4">
                                 <label for="twitter_url" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <i class="fab fa-twitter text-blue-400 mr-2"></i> <?php echo $lang['twitter_url'] ?? 'Twitter URL'; ?>
+                                    <i class="fab fa-twitter text-blue-400 mr-2"></i> Twitter
                                 </label>
                                 <input type="url" id="twitter_url" name="twitter_url" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
                                     value="<?php echo htmlspecialchars($settings['twitter_url'] ?? ''); ?>" 
-                                    placeholder="https://twitter.com/wallpix">
+                                    placeholder="https://twitter.com/yourpage">
                             </div>
                             <div class="mb-4">
                                 <label for="instagram_url" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <i class="fab fa-instagram text-pink-600 mr-2"></i> <?php echo $lang['instagram_url'] ?? 'Instagram URL'; ?>
+                                    <i class="fab fa-instagram text-pink-600 mr-2"></i> Instagram
                                 </label>
                                 <input type="url" id="instagram_url" name="instagram_url" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
                                     value="<?php echo htmlspecialchars($settings['instagram_url'] ?? ''); ?>" 
-                                    placeholder="https://instagram.com/wallpix">
+                                    placeholder="https://instagram.com/yourpage">
                             </div>
                             <div class="mb-4">
                                 <label for="youtube_url" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <i class="fab fa-youtube text-red-600 mr-2"></i> <?php echo $lang['youtube_url'] ?? 'YouTube URL'; ?>
+                                    <i class="fab fa-youtube text-red-600 mr-2"></i> YouTube
                                 </label>
                                 <input type="url" id="youtube_url" name="youtube_url" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
                                     value="<?php echo htmlspecialchars($settings['youtube_url'] ?? ''); ?>" 
-                                    placeholder="https://youtube.com/c/wallpix">
+                                    placeholder="https://youtube.com/c/yourchannel">
                             </div>
                             <div class="mb-4">
-                                <label for="pinterest_url" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <i class="fab fa-pinterest text-red-700 mr-2"></i> <?php echo $lang['pinterest_url'] ?? 'Pinterest URL'; ?>
+                                <label for="header_menu_id" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Header Menu
                                 </label>
-                                <input type="url" id="pinterest_url" name="pinterest_url" 
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
-                                    value="<?php echo htmlspecialchars($settings['pinterest_url'] ?? ''); ?>" 
-                                    placeholder="https://pinterest.com/wallpix">
+                                <select id="header_menu_id" name="header_menu_id" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="">-- No Menu --</option>
+                                    <?php 
+                                    // Get all menus from the database
+                                    $menuQuery = $pdo->prepare("SELECT id, name FROM menus ORDER BY name");
+                                    $menuQuery->execute();
+                                    $menus = $menuQuery->fetchAll(PDO::FETCH_ASSOC);
+                                    
+                                    foreach ($menus as $menu) {
+                                        $selected = ($settings['header_menu_id'] ?? '') == $menu['id'] ? 'selected' : '';
+                                        echo '<option value="' . $menu['id'] . '" ' . $selected . '>' . htmlspecialchars($menu['name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="footer_menu_id" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Footer Menu
+                                </label>
+                                <select id="footer_menu_id" name="footer_menu_id" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="">-- No Menu --</option>
+                                    <?php 
+                                    foreach ($menus as $menu) {
+                                        $selected = ($settings['footer_menu_id'] ?? '') == $menu['id'] ? 'selected' : '';
+                                        echo '<option value="' . $menu['id'] . '" ' . $selected . '>' . htmlspecialchars($menu['name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
                             </div>
                         </div>
                     </div>
-                                        <!-- Contact Information Tab -->
+
+                    <!-- Contact Information Tab -->
                     <div class="hidden p-4 rounded-lg bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?>" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="mb-4">
                                 <label for="contact_email" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <i class="fas fa-envelope mr-2"></i> <?php echo $lang['contact_email'] ?? 'Contact Email'; ?>
+                                    <i class="fas fa-envelope mr-2"></i> Contact Email
                                 </label>
                                 <input type="email" id="contact_email" name="contact_email" 
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
                                     value="<?php echo htmlspecialchars($settings['contact_email'] ?? ''); ?>" 
-                                    placeholder="contact@wallpix.top">
+                                    placeholder="contact@example.com">
                             </div>
+
                             <div class="mb-4">
-                                <label for="contact_phone" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <i class="fas fa-phone-alt mr-2"></i> <?php echo $lang['contact_phone'] ?? 'Contact Phone'; ?>
+                                <label for="latest_items_count" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Latest Items Count
                                 </label>
-                                <input type="text" id="contact_phone" name="contact_phone" 
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
-                                    value="<?php echo htmlspecialchars($settings['contact_phone'] ?? ''); ?>" 
-                                    placeholder="+1 (555) 123-4567">
-                            </div>
-                            <div class="mb-4 col-span-1 md:col-span-2">
-                                <label for="contact_address" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <i class="fas fa-map-marker-alt mr-2"></i> <?php echo $lang['contact_address'] ?? 'Contact Address'; ?>
-                                </label>
-                                <textarea id="contact_address" name="contact_address" rows="3" 
+                                <input type="number" id="latest_items_count" name="latest_items_count" min="1" max="50"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
-                                    placeholder="123 Wallpaper St, Suite 456, Pixel City, PC 12345"><?php echo htmlspecialchars($settings['contact_address'] ?? ''); ?></textarea>
+                                    value="<?php echo htmlspecialchars($settings['latest_items_count'] ?? 10); ?>">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="featured_wallpapers_count" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Featured Wallpapers Count
+                                </label>
+                                <input type="number" id="featured_wallpapers_count" name="featured_wallpapers_count" min="1" max="50"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                    value="<?php echo htmlspecialchars($settings['featured_wallpapers_count'] ?? 10); ?>">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="featured_media_count" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
+                                    Featured Media Count
+                                </label>
+                                <input type="number" id="featured_media_count" name="featured_media_count" min="1" max="50"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                    value="<?php echo htmlspecialchars($settings['featured_media_count'] ?? 10); ?>">
                             </div>
                         </div>
                     </div>
@@ -432,98 +575,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- Advanced Settings Tab -->
                     <div class="hidden p-4 rounded-lg bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?>" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="mb-4">
-                                <label for="download_limit_free" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <?php echo $lang['download_limit_free'] ?? 'Daily Download Limit (Free Users)'; ?>
-                                </label>
-                                <input type="number" id="download_limit_free" name="download_limit_free" min="0" max="100"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
-                                    value="<?php echo htmlspecialchars($settings['download_limit_free'] ?? 5); ?>">
-                                <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['download_limit_help'] ?? 'Set to 0 for unlimited downloads'; ?>
-                                </p>
-                            </div>
-                            <div class="mb-4">
-                                <div class="flex items-center">
-                                    <input id="register_enabled" name="register_enabled" type="checkbox" 
-                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
-                                        <?php echo ($settings['register_enabled'] ?? 1) ? 'checked' : ''; ?>>
-                                    <label for="register_enabled" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                        <?php echo $lang['enable_registration'] ?? 'Enable User Registration'; ?>
-                                    </label>
-                                </div>
-                                <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['registration_help'] ?? 'When disabled, new users cannot register'; ?>
-                                </p>
-                            </div>
-                            <div class="mb-4">
-                                <div class="flex items-center">
-                                    <input id="email_verification" name="email_verification" type="checkbox" 
-                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
-                                        <?php echo ($settings['email_verification'] ?? 1) ? 'checked' : ''; ?>>
-                                    <label for="email_verification" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                        <?php echo $lang['require_email_verification'] ?? 'Require Email Verification'; ?>
-                                    </label>
-                                </div>
-                                <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['verification_help'] ?? 'Users must verify their email before logging in'; ?>
-                                </p>
-                            </div>
-                            <div class="mb-4">
-                                <div class="flex items-center">
-                                    <input id="allow_guest_download" name="allow_guest_download" type="checkbox" 
-                                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>" 
-                                        <?php echo ($settings['allow_guest_download'] ?? 0) ? 'checked' : ''; ?>>
-                                    <label for="allow_guest_download" class="ml-2 text-sm font-medium <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                        <?php echo $lang['allow_guest_download'] ?? 'Allow Guest Downloads'; ?>
-                                    </label>
-                                </div>
-                                <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['guest_download_help'] ?? 'When enabled, non-registered users can download images'; ?>
-                                </p>
-                            </div>
                             <div class="mb-4 col-span-1 md:col-span-2">
                                 <label for="google_analytics" class="block mb-2 text-sm font-medium <?php echo $darkMode ? 'text-white' : 'text-gray-700'; ?>">
-                                    <?php echo $lang['google_analytics'] ?? 'Google Analytics Code'; ?>
+                                    Google Analytics Code
                                 </label>
                                 <textarea id="google_analytics" name="google_analytics" rows="4" 
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-mono rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-mono rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>" 
                                     placeholder="<!-- Google Analytics code here -->"><?php echo htmlspecialchars($settings['google_analytics'] ?? ''); ?></textarea>
                                 <p class="mt-1 text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <?php echo $lang['analytics_help'] ?? 'Paste your Google Analytics tracking code here'; ?>
+                                    Paste your Google Analytics tracking code here
                                 </p>
                             </div>
-                        </div>
-                        <div class="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200 <?php echo $darkMode ? 'bg-yellow-900 border-yellow-700 text-yellow-200' : ''; ?>">
-                            <div class="flex items-center mb-2">
-                                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-                                <h3 class="text-sm font-medium <?php echo $darkMode ? 'text-yellow-200' : 'text-yellow-700'; ?>">
-                                    <?php echo $lang['advanced_settings_warning'] ?? 'Advanced Settings Warning'; ?>
-                                </h3>
-                            </div>
-                            <p class="text-xs <?php echo $darkMode ? 'text-yellow-300' : 'text-yellow-600'; ?>">
-                                <?php echo $lang['settings_warning_text'] ?? 'Changes to these settings may affect site performance and user experience. Please test thoroughly after making changes.'; ?>
-                            </p>
                         </div>
                         <div class="mt-4 bg-gray-100 rounded-lg p-4 <?php echo $darkMode ? 'bg-gray-700' : ''; ?>">
                             <h4 class="text-sm font-medium mb-2 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">
-                                <i class="fas fa-history mr-2"></i> <?php echo $lang['last_updated'] ?? 'Last Updated'; ?>
+                                <i class="fas fa-history mr-2"></i> Last Updated
                             </h4>
                             <p class="text-xs <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
                                 <?php 
-                                if (!empty($settings['last_updated'])) {
-                                    echo date('F j, Y H:i:s', strtotime($settings['last_updated']));
-                                    if (!empty($settings['last_updated_by'])) {
+                                if (!empty($settings['updated_at'])) {
+                                    echo date('Y-m-d H:i:s', strtotime($settings['updated_at']));
+                                    if (!empty($settings['updated_by'])) {
                                         // Get the username of the last updater
                                         $userQuery = $pdo->prepare("SELECT username FROM users WHERE id = :user_id");
-                                        $userQuery->execute(['user_id' => $settings['last_updated_by']]);
+                                        $userQuery->execute(['user_id' => $settings['updated_by']]);
                                         $username = $userQuery->fetchColumn();
                                         if ($username) {
-                                            echo ' ' . $lang['by'] ?? 'by' . ' ' . htmlspecialchars($username);
+                                            echo ' by ' . htmlspecialchars($username);
                                         }
                                     }
                                 } else {
-                                    echo $lang['not_updated_yet'] ?? 'Not updated yet';
+                                    echo 'Not updated yet';
                                 }
                                 ?>
                             </p>
@@ -534,7 +616,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Submit Button -->
                 <div class="mt-6 flex items-center justify-end">
                     <button type="submit" class="py-2 px-4 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white w-auto transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg">
-                        <i class="fas fa-save mr-2"></i> <?php echo $lang['save_settings'] ?? 'Save Settings'; ?>
+                        <i class="fas fa-save mr-2"></i> Save Settings
                     </button>
                 </div>
             </form>
@@ -544,6 +626,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Show first tab by default
+        document.getElementById('general').classList.remove('hidden');
+        document.getElementById('general-tab').classList.add('text-blue-600', 'border-blue-600');
+        document.getElementById('general-tab').classList.remove('border-transparent');
+        document.getElementById('general-tab').setAttribute('aria-selected', 'true');
+        
         // Tab switching functionality
         const tabs = document.querySelectorAll('[role="tab"]');
         const tabContents = document.querySelectorAll('[role="tabpanel"]');
@@ -552,8 +640,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             tab.addEventListener('click', () => {
                 // Deactivate all tabs
                 tabs.forEach(t => {
-                    t.classList.remove('text-blue-600', 'border-blue-600', '<?php echo $darkMode ? "text-blue-300 border-blue-500" : ""; ?>');
-                    t.classList.add('text-gray-500', 'border-transparent', '<?php echo $darkMode ? "text-gray-400" : ""; ?>');
+                    t.classList.remove('text-blue-600', 'border-blue-600');
+                    t.classList.add('text-gray-500', 'border-transparent');
                     t.setAttribute('aria-selected', 'false');
                 });
                 
@@ -563,19 +651,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 });
                 
                 // Activate clicked tab
-                tab.classList.remove('text-gray-500', 'border-transparent', '<?php echo $darkMode ? "text-gray-400" : ""; ?>');
-                tab.classList.add('text-blue-600', 'border-blue-600', '<?php echo $darkMode ? "text-blue-300 border-blue-500" : ""; ?>');
+                tab.classList.remove('text-gray-500', 'border-transparent');
+                tab.classList.add('text-blue-600', 'border-blue-600');
                 tab.setAttribute('aria-selected', 'true');
                 
                 // Show corresponding tab content
-                const targetId = tab.getAttribute('data-tabs-target');
-                const target = document.querySelector(targetId);
+                const targetId = tab.getAttribute('data-tabs-target').substring(1); // Remove the #
+                const target = document.getElementById(targetId);
                 target.classList.remove('hidden');
             });
         });
-        
-        // Set default active tab
-        document.getElementById('general-tab').click();
         
         // Preview uploaded images
         const logoInput = document.getElementById('site_logo');
@@ -603,13 +688,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         
                         const label = document.createElement('p');
                         label.className = 'text-sm mb-1 <?php echo $darkMode ? "text-gray-300" : "text-gray-700"; ?>';
-                        label.textContent = type === 'logo' ? '<?php echo $lang['new_logo'] ?? 'New Logo Preview'; ?>' : '<?php echo $lang['new_favicon'] ?? 'New Favicon Preview'; ?>';
+                        label.textContent = type === 'logo' ? 'New Logo Preview' : 'New Favicon Preview';
                         
                         const img = document.createElement('img');
                         img.id = `${type}-preview`;
                         img.className = type === 'logo' ? 'h-10 border rounded p-1' : 'h-8 border rounded p-1';
                         img.className += ' <?php echo $darkMode ? "border-gray-600" : "border-gray-200"; ?>';
-                        img.alt = `New ${type} preview`;
+                        img.alt = type === 'logo' ? 'New logo preview' : 'New favicon preview';
                         
                         previewContainer.appendChild(label);
                         previewContainer.appendChild(img);

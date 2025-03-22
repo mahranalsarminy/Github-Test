@@ -68,6 +68,8 @@ $adminUrl = $siteUrl . '/admin';
     
     <!-- Custom Admin CSS -->
     <link href="<?php echo $siteUrl; ?>/theme/admin/css/admin.css" rel="stylesheet">
+    <link href="<?php echo $siteUrl; ?>/theme/admin/css/admin-layout.css" rel="stylesheet">
+
     
     <?php if ($isRTL): ?>
     <!-- RTL Support -->
@@ -309,17 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             </a>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Current Date and Time Info -->
-        <div class="px-3 py-1 bg-gray-100 text-xs text-gray-600 <?php echo $darkMode ? 'bg-gray-700 text-gray-400' : ''; ?>">
-            <div class="flex justify-between items-center">
-                <div>
-                    <?php echo date('l, F j, Y', strtotime($currentDateTime)); ?>
-                </div>
-                <div>
-                    <?php echo $currentDateTime; ?> (UTC)
                 </div>
             </div>
         </div>
