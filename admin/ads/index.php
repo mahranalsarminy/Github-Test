@@ -1012,20 +1012,20 @@ try {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Tab switching functionality
-    const tabLinks = document.querySelectorAll('#adsTabs a');
+    const tabButtons = document.querySelectorAll('#adsTabs button');
     const tabContents = document.querySelectorAll('.tab-content');
     
     // Set up tab click event
-    tabLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
             e.preventDefault();
             
-            const tabId = this.getAttribute('data-tab');
+            const targetId = this.getAttribute('data-target');
             
             // Deactivate all tabs
-            tabLinks.forEach(tab => {
+            tabButtons.forEach(tab => {
                 tab.classList.remove('text-blue-600', 'border-blue-600', 'active');
-                tab.classList.add('border-transparent');
+                tab.classList.add('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300');
             });
             
             // Hide all tab contents
@@ -1035,10 +1035,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Activate current tab
             this.classList.add('text-blue-600', 'border-blue-600', 'active');
-            this.classList.remove('border-transparent');
+            this.classList.remove('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300');
             
             // Show current tab content
-            document.getElementById(tabId + '-tab').classList.remove('hidden');
+            document.getElementById(targetId).classList.remove('hidden');
         });
     });
     
@@ -1047,35 +1047,218 @@ document.addEventListener('DOMContentLoaded', function() {
     if (createFirstAdBtn) {
         createFirstAdBtn.addEventListener('click', function() {
             // Find and click the Create Ad tab
-            const createAdTab = document.querySelector('[data-tab="create"]');
-            if (createAdTab) {
-                createAdTab.click();
+            document.getElementById('create-tab').click();
+        });
+    }
+    
+    // View Code Modal functionality
+    const viewCodeModal = document.getElementById('viewCodeModal');
+    const viewCodeBtns = document.querySelectorAll('.view-code-btn');
+    
+    if (viewCodeBtns.length > 0) {
+        viewCodeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const adId = this.getAttribute('data-id');
+                
+                // Fetch ad data via AJAX
+                fetch(`index.php?action=get_ad&id=${adId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const ad = data.ad;
+                            document.getElementById('viewCodeAdName').textContent = ad.name;
+                            document.getElementById('viewCodePHP').textContent = `<?php display_ad(${adId}); // Display "${ad.name}" ?>`;
+                            document.getElementById('viewCodeHTML').textContent = `<div class="ad-container" data-ad-id="${adId}"></div>`;
+                            document.getElementById('viewCodeRaw').textContent = ad.ad_code;
+                            
+                            // Show the modal
+                            viewCodeModal.classList.remove('hidden');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to fetch ad data');
+                    });
+            });
+        });
+    }
+    
+    // Edit Ad functionality
+    const editAdModal = document.getElementById('editAdModal');
+    const editAdBtns = document.querySelectorAll('.edit-ad-btn');
+    
+    if (editAdBtns.length > 0) {
+        editAdBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const adId = this.getAttribute('data-id');
+                
+                // Fetch ad data via AJAX
+                fetch(`index.php?action=get_ad&id=${adId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const ad = data.ad;
+                            
+                            // Fill in the form
+                            document.getElementById('edit_id').value = ad.id;
+                            document.getElementById('edit_name').value = ad.name;
+                            document.getElementById('edit_type').value = ad.type;
+                            document.getElementById('edit_size').value = ad.size;
+                            document.getElementById('edit_position').value = ad.position || '';
+                            document.getElementById('edit_ad_code').value = ad.ad_code;
+                            
+                            // Handle dates
+                            if (ad.start_date) {
+                                // Convert to datetime-local format (YYYY-MM-DDThh:mm)
+                                document.getElementById('edit_start_date').value = ad.start_date.substr(0, 16);
+                            } else {
+                                document.getElementById('edit_start_date').value = '';
+                            }
+                            
+                            if (ad.end_date) {
+                                document.getElementById('edit_end_date').value = ad.end_date.substr(0, 16);
+                            } else {
+                                document.getElementById('edit_end_date').value = '';
+                            }
+                            
+                            // Handle status checkbox
+                            document.getElementById('edit_status').checked = ad.status == 1;
+                            
+                            // Show the modal
+                            editAdModal.classList.remove('hidden');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to fetch ad data');
+                    });
+            });
+        });
+    }
+    
+    // Close modal buttons
+    document.querySelectorAll('.fixed button[type="button"]').forEach(button => {
+        if (button.classList.contains('absolute') || button.textContent.trim() === 'Close' || button.textContent.trim() === 'Cancel') {
+            button.addEventListener('click', function() {
+                // Find the parent modal
+                const modal = this.closest('.fixed');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        }
+    });
+    
+    // Template Modals
+    const templateModal = document.getElementById('templateModal');
+    const templateCards = document.querySelectorAll('.cursor-pointer');
+    
+    templateCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const title = this.querySelector('h3').textContent.trim();
+            document.getElementById('templateTitle').textContent = title + ' Template';
+            
+            // Copy preview content
+            const preview = this.querySelector('.ad-placeholder').cloneNode(true);
+            const previewContainer = document.querySelector('.template-preview');
+            previewContainer.innerHTML = '';
+            previewContainer.appendChild(preview);
+            
+            // Set template code based on type
+            let templateCode = '';
+            if (title.includes('Responsive')) {
+                templateCode = `<!-- Responsive Ad -->
+<div class="ad-container responsive-ad">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-XXXXXXXX"
+        data-ad-slot="XXXXXXXX"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>`;
+            } else if (title.includes('Header')) {
+                templateCode = `<!-- Header Banner -->
+<div class="ad-container header-banner">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:inline-block;width:728px;height:90px"
+        data-ad-client="ca-pub-XXXXXXXX"
+        data-ad-slot="XXXXXXXX"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>`;
+            } else if (title.includes('Sidebar')) {
+                templateCode = `<!-- Sidebar Ad -->
+<div class="ad-container sidebar-ad">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:inline-block;width:300px;height:250px"
+        data-ad-client="ca-pub-XXXXXXXX"
+        data-ad-slot="XXXXXXXX"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>`;
+            }
+            
+            document.getElementById('templateCode').textContent = templateCode;
+            templateModal.classList.remove('hidden');
+        });
+    });
+    
+    // Copy code functionality
+    const copyCodeBtn = document.getElementById('copyCodeBtn');
+    if (copyCodeBtn) {
+        copyCodeBtn.addEventListener('click', function() {
+            const code = document.getElementById('templateCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy mr-1"></i> Copy';
+                }, 2000);
+            });
+        });
+    }
+    
+    // Existing ad selection
+    const selectExistingAd = document.getElementById('selectExistingAd');
+    if (selectExistingAd) {
+        selectExistingAd.addEventListener('change', function() {
+            const adId = this.value;
+            const container = document.getElementById('existingAdCodeContainer');
+            
+            if (adId) {
+                const code = `<?php display_ad(${adId}); // Display selected ad ?>`;
+                document.getElementById('existingAdCode').textContent = code;
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
             }
         });
     }
     
-    // View Code Modal
-    const codeModal = document.getElementById('codeModal');
-    const viewCodeBtns = document.querySelectorAll('.view-code');
-    const closeCodeModal = document.getElementById('closeCodeModal');
-    
-    viewCodeBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const adId = this.getAttribute('data-id');
-            const adName = this.getAttribute('data-name');
-            const adCode = this.getAttribute('data-code');
-            
-            document.getElementById('codeModalTitle').textContent = 'Ad Code: ' + adName;
-            document.getElementById('phpImplementation').textContent = `<?php display_ad(${adId}); // Display "${adName}" ?>`;
-            document.getElementById('rawAdCode').textContent = adCode;
-            
-            codeModal.classList.remove('hidden');
+    // Copy existing ad code functionality
+    const copyExistingCodeBtn = document.getElementById('copyExistingCodeBtn');
+    if (copyExistingCodeBtn) {
+        copyExistingCodeBtn.addEventListener('click', function() {
+            const code = document.getElementById('existingAdCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy mr-1"></i> Copy Code';
+                }, 2000);
+            });
         });
-    });
-    
-    closeCodeModal.addEventListener('click', function() {
-        codeModal.classList.add('hidden');
-    });
+    }
 });
 </script>
 
