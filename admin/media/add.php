@@ -20,11 +20,6 @@ $successMessage = '';
 $errorMessage = '';
 $newMediaId = null;
 
-// Current UTC date/time
-$currentDateTime = '2025-03-22 21:55:27';
-// Current user
-$currentUser = 'mahranalsarminy';
-
 // Get categories for dropdown
 $stmt = $pdo->query("SELECT id, name, parent_id FROM categories WHERE is_active = 1 ORDER BY name");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -45,6 +40,21 @@ $resolutions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->query("SELECT id, is_active FROM watermark_settings WHERE id = 1");
 $watermarkSettings = $stmt->fetch(PDO::FETCH_ASSOC);
 $watermarkEnabled = $watermarkSettings ? $watermarkSettings['is_active'] : 0;
+
+// Function to create slugs from titles
+function createSlug($string) {
+    // Replace non-alphanumeric characters with hyphens
+    $slug = preg_replace('/[^A-Za-z0-9-]+/', '-', $string);
+    // Convert to lowercase
+    $slug = strtolower($slug);
+    // Remove leading/trailing hyphens
+    $slug = trim($slug, '-');
+    // If empty, use a default
+    if (empty($slug)) {
+        $slug = 'media-' . time();
+    }
+    return $slug;
+}
 
 // Function to create nested category dropdown
 function buildCategoryOptions($categories, $parent = null, $indent = '') {
@@ -441,6 +451,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $selectedCategories = $_POST['additional_categories'] ?? [];
         $resolution_id = (int)($_POST['resolution_id'] ?? 0);
         
+        // Generate slug from title
+        $slug = createSlug($title);
+        
         // Add primary category to selected categories if not already there
         if ($categoryId && !in_array($categoryId, $selectedCategories)) {
             array_unshift($selectedCategories, $categoryId);
@@ -607,12 +620,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 title, description, category_id, file_name, file_path, file_type, file_size, 
                 thumbnail_url, status, featured, width, height, background_color, orientation, 
                 owner, license, publish_date, paid_content, created_by, ai_enhanced, resolution_id,
-                created_at
+                slug, created_at
             ) VALUES (
                 :title, :description, :category_id, :file_name, :file_path, :file_type, :file_size, 
                 :thumbnail_url, :status, :featured, :width, :height, :background_color, :orientation, 
                 :owner, :license, :publish_date, :paid_content, :created_by, :ai_enhanced, :resolution_id,
-                NOW()
+                :slug, NOW()
             )
         ");
         
@@ -637,7 +650,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':paid_content' => $paidContent,
             ':created_by' => $_SESSION['user_id'] ?? 1,
             ':ai_enhanced' => $aiEnhanced,
-            ':resolution_id' => $resolution_id
+            ':resolution_id' => $resolution_id,
+            ':slug' => $slug
         ]);
         
         $newMediaId = $pdo->lastInsertId();
@@ -714,23 +728,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         }
                         
-                        // Insert collection item into database
-                        // This could be in a separate table or using a parent_id in the media table
-                        // For this example, we'll create separate media entries with a parent reference
-                        
                         $collectionTitle = $title . ' - Item ' . $i;
+                        $collectionSlug = $slug . '-item-' . $i;
                         
                         $stmt = $pdo->prepare("
                             INSERT INTO media (
                                 title, description, category_id, file_name, file_path, file_type, file_size,
                                 thumbnail_url, status, featured, width, height, background_color, orientation,
                                 owner, license, publish_date, paid_content, created_by, ai_enhanced, resolution_id,
-                                parent_id, created_at
+                                parent_id, slug, created_at
                             ) VALUES (
                                 :title, :description, :category_id, :file_name, :file_path, :file_type, :file_size,
                                 :thumbnail_url, :status, :featured, :width, :height, :background_color, :orientation,
                                 :owner, :license, :publish_date, :paid_content, :created_by, :ai_enhanced, :resolution_id,
-                                :parent_id, NOW()
+                                :parent_id, :slug, NOW()
                             )
                         ");
                         
@@ -756,7 +767,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ':created_by' => $_SESSION['user_id'] ?? 1,
                             ':ai_enhanced' => $aiEnhanced,
                             ':resolution_id' => $resolution_id,
-                            ':parent_id' => $newMediaId
+                            ':parent_id' => $newMediaId,
+                            ':slug' => $collectionSlug
                         ]);
                         
                         $collItemId = $pdo->lastInsertId();
