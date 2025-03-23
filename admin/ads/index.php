@@ -1014,6 +1014,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tab switching functionality
     const tabButtons = document.querySelectorAll('#adsTabs button');
     const tabContents = document.querySelectorAll('.tab-content');
+    console.log('Tab Buttons:', tabButtons);
+console.log('Tab Contents:', tabContents);
+
+tabButtons.forEach(button => {
+    console.log('Button Target:', button.getAttribute('data-target'));
+});
     
     // Set up tab click event
     tabButtons.forEach(button => {

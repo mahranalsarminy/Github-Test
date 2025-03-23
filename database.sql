@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- مضيف: localhost:3306
--- وقت الجيل: 22 مارس 2025 الساعة 06:49
+-- وقت الجيل: 23 مارس 2025 الساعة 07:51
 -- إصدار الخادم: 8.0.41
 -- نسخة PHP: 8.3.19
 
@@ -211,7 +211,44 @@ INSERT INTO `activities` (`id`, `user_id`, `description`, `created_at`) VALUES
 (148, 1, 'Site settings updated', '2025-03-22 03:36:23'),
 (149, 1, 'Site settings updated', '2025-03-22 03:36:49'),
 (150, 1, 'Site settings updated', '2025-03-22 03:36:54'),
-(151, 1, 'Successfully logged in', '2025-03-22 05:45:19');
+(151, 1, 'Successfully logged in', '2025-03-22 05:45:19'),
+(152, 1, 'Successfully logged in', '2025-03-22 06:08:11'),
+(153, 1, 'Successfully logged in', '2025-03-22 12:15:28'),
+(154, NULL, 'Viewed media list', '2025-03-22 12:20:13'),
+(155, NULL, 'Viewed media list', '2025-03-22 12:27:48'),
+(156, NULL, 'Viewed media list', '2025-03-22 12:27:58'),
+(157, NULL, 'Viewed media list', '2025-03-22 12:28:30'),
+(158, NULL, 'Viewed media list', '2025-03-22 12:28:35'),
+(159, NULL, 'Viewed media list', '2025-03-22 12:51:29'),
+(160, NULL, 'Viewed media list', '2025-03-22 12:51:31'),
+(161, NULL, 'Viewed media list', '2025-03-22 13:41:42'),
+(162, NULL, 'Viewed media list', '2025-03-22 13:41:47'),
+(163, NULL, 'Viewed media list', '2025-03-22 13:41:52'),
+(164, 1, 'Successfully logged in', '2025-03-22 19:44:45'),
+(165, NULL, 'Viewed media list', '2025-03-22 19:45:02'),
+(166, NULL, 'Viewed media list', '2025-03-22 19:47:08'),
+(167, NULL, 'Viewed media list', '2025-03-22 19:48:07'),
+(168, NULL, 'Viewed media list', '2025-03-22 19:48:12'),
+(169, NULL, 'Viewed media list', '2025-03-22 19:56:59'),
+(170, NULL, 'Viewed media list', '2025-03-22 20:00:39'),
+(171, 1, 'Successfully logged in', '2025-03-22 21:56:21'),
+(172, NULL, 'Viewed media list', '2025-03-22 21:56:35'),
+(173, NULL, 'Viewed media list', '2025-03-22 21:57:40'),
+(174, 1, 'Successfully logged in', '2025-03-23 01:38:44'),
+(175, NULL, 'Viewed media list', '2025-03-23 01:39:36'),
+(176, NULL, 'Viewed media list', '2025-03-23 02:09:16'),
+(177, NULL, 'Viewed media list', '2025-03-23 02:11:20'),
+(178, NULL, 'Viewed media list', '2025-03-23 02:12:24'),
+(179, NULL, 'Viewed media list', '2025-03-23 02:12:27'),
+(180, NULL, 'Viewed media list', '2025-03-23 02:12:40'),
+(181, NULL, 'Viewed media list', '2025-03-23 02:13:00'),
+(182, NULL, 'Viewed media list', '2025-03-23 03:24:00'),
+(183, 1, 'Successfully logged in', '2025-03-23 03:24:04'),
+(184, NULL, 'Viewed media list', '2025-03-23 03:24:09'),
+(185, NULL, 'Viewed media list', '2025-03-23 03:24:41'),
+(186, NULL, 'Viewed media list', '2025-03-23 03:25:21'),
+(187, NULL, 'Viewed media list', '2025-03-23 03:25:55'),
+(188, NULL, 'Viewed media list', '2025-03-23 03:27:51');
 
 -- --------------------------------------------------------
 
@@ -402,7 +439,7 @@ CREATE TABLE `contact_settings` (
 --
 
 INSERT INTO `contact_settings` (`id`, `contact_email`, `email_subject_prefix`, `recaptcha_site_key`, `recaptcha_secret_key`, `enable_auto_reply`, `auto_reply_template_id`, `enable_attachments`, `max_file_size`, `allowed_file_types`, `required_fields`, `created_at`, `updated_at`) VALUES
-(1, 'hhhhhhhhhh@gmail.com', 'WallPix.Top', 'qwdqwdqwdqwdqwdqwdqwdqwdqwd-wqwdqwdqwdqw', 'wqwdqwdqwdqwwqwdqwdqwdqwwqwdqwdqwdqwwqwdqwdqwdqw', 1, 1, 0, 5, 'pdf,doc,docx,jpg,jpeg,png', '[\"name\",\"email\",\"subject\",\"message\"]', '2025-03-14 01:06:51', '2025-03-14 01:45:45');
+(1, 'admin@gmail.com', 'WallPix.Top', '6LeH8ascsacsacsaei98BpJATJIpmOrSs3', '6LeH8ascsacsacsaei98BpJATJIpmOrSs3', 1, 1, 0, 5, 'pdf,doc,docx,jpg,jpeg,png', '[\"name\",\"email\",\"subject\",\"message\"]', '2025-03-14 01:06:51', '2025-03-14 01:45:45');
 
 -- --------------------------------------------------------
 
@@ -543,7 +580,13 @@ INSERT INTO `login_attempts` (`id`, `email`, `status`, `ip_address`, `is_admin`,
 (10, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 05:47:49', NULL),
 (11, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 19:41:42', NULL),
 (12, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 02:57:50', NULL),
-(13, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 05:45:19', NULL);
+(13, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 05:45:19', NULL),
+(14, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 06:08:11', NULL),
+(15, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 12:15:28', NULL),
+(16, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 19:44:45', NULL),
+(17, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 21:56:21', NULL),
+(18, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-23 01:38:44', NULL),
+(19, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-23 03:24:04', NULL);
 
 -- --------------------------------------------------------
 
@@ -608,6 +651,51 @@ CREATE TRIGGER `after_media_insert` AFTER INSERT ON `media` FOR EACH ROW BEGIN
 END
 $$
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `media_batches`
+--
+
+CREATE TABLE `media_batches` (
+  `id` int NOT NULL,
+  `batch_name` varchar(255) NOT NULL,
+  `user_id` int NOT NULL,
+  `status` enum('pending','processing','completed','failed') DEFAULT 'pending',
+  `total_files` int DEFAULT '0',
+  `processed_files` int DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `media_batch_items`
+--
+
+CREATE TABLE `media_batch_items` (
+  `id` int NOT NULL,
+  `batch_id` int NOT NULL,
+  `file_name` varchar(255) NOT NULL,
+  `status` enum('pending','processed','failed') DEFAULT 'pending',
+  `media_id` int DEFAULT NULL,
+  `error_message` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `media_categories`
+--
+
+CREATE TABLE `media_categories` (
+  `media_id` int NOT NULL,
+  `category_id` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -697,6 +785,30 @@ INSERT INTO `media_downloads` (`id`, `media_id`, `user_id`, `downloaded_at`, `se
 -- --------------------------------------------------------
 
 --
+-- بنية الجدول `media_licenses`
+--
+
+CREATE TABLE `media_licenses` (
+  `id` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `media_licenses`
+--
+
+INSERT INTO `media_licenses` (`id`, `name`, `description`, `created_at`) VALUES
+(1, 'Free to Use', 'Content is free to use without any restrictions', '2025-03-22 12:19:31'),
+(2, 'Attribution Required', 'Content can be used freely with proper attribution', '2025-03-22 12:19:31'),
+(3, 'Editorial Use Only', 'Content can only be used for editorial purposes', '2025-03-22 12:19:31'),
+(4, 'Personal Use Only', 'Content is restricted to personal use only', '2025-03-22 12:19:31'),
+(5, 'Premium', 'Content is available for premium users only', '2025-03-22 12:19:31');
+
+-- --------------------------------------------------------
+
+--
 -- بنية الجدول `media_tags`
 --
 
@@ -782,7 +894,16 @@ INSERT INTO `media_views` (`id`, `media_id`, `user_id`, `viewed_at`, `session_id
 (43, 29, NULL, '2025-03-21 13:21:33', '814ab00366e01e932f5eb3d9c77708a5'),
 (44, 29, 1, '2025-03-22 03:02:14', 'ddc29cecf5032c596ff79f139194d1a7'),
 (45, 23, 1, '2025-03-22 03:02:17', 'ddc29cecf5032c596ff79f139194d1a7'),
-(46, 24, 1, '2025-03-22 03:07:03', 'ddc29cecf5032c596ff79f139194d1a7');
+(46, 24, 1, '2025-03-22 03:07:03', 'ddc29cecf5032c596ff79f139194d1a7'),
+(47, 12, NULL, '2025-03-22 10:43:01', '1ea1ebc1cf1794cd71f66eb1b00d5b00'),
+(48, 21, NULL, '2025-03-22 12:27:30', 'db4edbd9cd8fec1a9334270c80aa43dd'),
+(49, 22, NULL, '2025-03-22 13:21:18', 'c7e411e8cc2b74b1f6551dd7c35fd60b'),
+(50, 21, NULL, '2025-03-23 01:53:07', 'f433c776816b6e55255769c62f6a3f26'),
+(51, 29, NULL, '2025-03-23 01:53:13', '33ee0f47f6a034eadda19a6778663c78'),
+(52, 29, NULL, '2025-03-23 05:26:19', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(53, 25, NULL, '2025-03-23 06:03:13', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(54, 22, NULL, '2025-03-23 06:28:19', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(55, 24, NULL, '2025-03-23 06:34:09', '9fedf0e9633b26d0d1fb5a68cfb2d924');
 
 --
 -- القوادح `media_views`
@@ -843,7 +964,7 @@ CREATE TABLE `menu_items` (
 --
 
 INSERT INTO `menu_items` (`id`, `menu_id`, `name`, `url`, `sort_order`) VALUES
-(1, 2, 'Home', 'https://localeomm.com/', 1),
+(1, 2, 'Home', 'https://mahrannnn.se/', 1),
 (2, 2, 'Mahran', 'https://www.facebook.com/', 2);
 
 -- --------------------------------------------------------
@@ -976,7 +1097,8 @@ INSERT INTO `resolutions` (`id`, `resolution`, `created_at`) VALUES
 (3, '3840x2160', '2025-02-20 03:34:11'),
 (4, '800x600', '2025-02-20 03:34:11'),
 (5, '2560x1440', '2025-02-20 03:34:11'),
-(7, '4800x2800', '2025-03-22 03:02:57');
+(7, '4800x2800', '2025-03-22 03:02:57'),
+(8, '8800x4800', '2025-03-23 02:11:15');
 
 -- --------------------------------------------------------
 
@@ -1062,7 +1184,7 @@ CREATE TABLE `site_settings` (
 --
 
 INSERT INTO `site_settings` (`id`, `site_name`, `site_title`, `site_description`, `site_keywords`, `site_url`, `site_email`, `google_analytics`, `latest_items_count`, `featured_wallpapers_count`, `featured_media_count`, `facebook_url`, `twitter_url`, `instagram_url`, `youtube_url`, `created_at`, `updated_at`, `created_by`, `updated_by`, `news_ticker_enabled`, `footer_content`, `site_logo`, `site_favicon`, `footer_text`, `header_menu_id`, `footer_menu_id`, `contact_email`, `dark_mode`, `maintenance_mode`, `language`, `enable_header`, `enable_footer`, `enable_navbar`, `enable_search_box`, `enable_categories`) VALUES
-(1, 'Wallpix', 'Mahran ALSarminy', 'Welcome to', 'website,portal,media', 'https://localeomm.com', 'admin@example.com', '', 10, 10, 10, 'https://www.facebook.com/unifaktoura/', 'https://twitter.com/unifaktoura', 'https://Instagram.com/unifaktoura', 'https://YouTube.com/unifaktoura', '2025-03-14 04:46:34', '2025-03-22 03:36:54', 'mahranalsarminy', '1', 1, 'All rights reserved 2025 © WallPix Media and Wallpaper Platform', 'logo-wallpix.png', '', 'hhhhhhhhhhhhhhhhhhhhh', 2, 2, '', 0, 0, 'en', 1, 1, 1, 1, 1);
+(1, 'Wallpix', 'Mahran ALSarminy', 'Welcome to', 'website,portal,media', 'https://mahrannnn.se', 'admin@example.com', '', 10, 10, 10, 'https://www.facebook.com/unifaktoura/', 'https://twitter.com/unifaktoura', 'https://Instagram.com/unifaktoura', 'https://YouTube.com/unifaktoura', '2025-03-14 04:46:34', '2025-03-22 03:36:54', 'mahranalsarminy', '1', 1, 'All rights reserved 2025 © WallPix Media and Wallpaper Platform', 'logo-wallpix.png', '', 'hhhhhhhhhhhhhhhhhhhhh', 2, 2, '', 0, 0, 'en', 1, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -1157,7 +1279,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `profile_picture`, `role`, `created_at`, `bio`, `last_login`, `updated_at`, `active`, `last_ip`) VALUES
-(1, 'Admin', 'admin@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'uploads/profile_pictures/1_1742489124_logo-wallpix.png', 'admin', '2025-02-20 01:31:31', '', '2025-03-22 05:45:19', '2025-03-18 09:10:39', 1, '83.253.108.100'),
+(1, 'Admin', 'admin@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'uploads/profile_pictures/1_1742489124_logo-wallpix.png', 'admin', '2025-02-20 01:31:31', '', '2025-03-23 03:24:04', '2025-03-18 09:10:39', 1, '83.253.108.100'),
 (2, '', 'subscriber@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', NULL, 'subscriber', '2025-02-20 01:31:31', NULL, '2025-03-17 06:12:00', '2025-03-17 06:12:00', 1, NULL),
 (3, '', 'freeuser@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', NULL, 'free_user', '2025-02-20 01:31:31', NULL, '2025-03-17 06:12:00', '2025-03-17 06:12:00', 1, NULL),
 (5, 'Test', 'ms.mamym@icloud.com', '$2y$10$iA7GWcnRIJsz0YcLwF26de4W9zQyaYOjkBFp8JkWFfaPAq9fwbofW', 'uploads/profile_pictures/5_1742493554_dc259757-534d-4ba5-aa80-e6bc4c644e71.jpeg', 'free_user', '2025-03-20 17:58:05', 'Mahran', '2025-03-20 18:40:37', NULL, 1, '194.11.199.107');
@@ -1185,6 +1307,38 @@ CREATE TABLE `user_subscriptions` (
 INSERT INTO `user_subscriptions` (`id`, `user_id`, `subscription_plan`, `start_date`, `end_date`, `status`, `created_at`) VALUES
 (1, 2, 'regular', '2023-10-01', '2023-11-01', 'active', '2025-02-20 01:31:31'),
 (2, 3, 'premium', '2023-10-01', '2023-11-01', 'active', '2025-02-20 01:31:31');
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `watermark_settings`
+--
+
+CREATE TABLE `watermark_settings` (
+  `id` int NOT NULL,
+  `type` enum('text','image') NOT NULL DEFAULT 'text',
+  `text_content` varchar(255) DEFAULT NULL,
+  `text_font` varchar(100) DEFAULT 'Arial',
+  `text_size` int DEFAULT '24',
+  `text_color` varchar(20) DEFAULT '#FFFFFF',
+  `text_opacity` decimal(3,2) DEFAULT '0.70',
+  `image_path` varchar(255) DEFAULT NULL,
+  `image_opacity` decimal(3,2) DEFAULT '0.70',
+  `position` enum('top-left','top-right','bottom-left','bottom-right','center','full') NOT NULL DEFAULT 'bottom-right',
+  `padding` int DEFAULT '10',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `apply_to_new` tinyint(1) NOT NULL DEFAULT '1',
+  `apply_to_downloads` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `watermark_settings`
+--
+
+INSERT INTO `watermark_settings` (`id`, `type`, `text_content`, `text_font`, `text_size`, `text_color`, `text_opacity`, `image_path`, `image_opacity`, `position`, `padding`, `is_active`, `apply_to_new`, `apply_to_downloads`, `created_at`, `updated_at`) VALUES
+(1, 'text', 'WallPix.Top', 'Arial', 24, '#FFFFFF', 0.70, NULL, 0.70, 'bottom-right', 10, 1, 1, 1, '2025-03-22 12:21:56', '2025-03-22 12:21:56');
 
 --
 -- Indexes for dumped tables
@@ -1311,6 +1465,28 @@ ALTER TABLE `media`
   ADD KEY `category_id` (`category_id`);
 
 --
+-- فهارس للجدول `media_batches`
+--
+ALTER TABLE `media_batches`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- فهارس للجدول `media_batch_items`
+--
+ALTER TABLE `media_batch_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `batch_id` (`batch_id`),
+  ADD KEY `media_id` (`media_id`);
+
+--
+-- فهارس للجدول `media_categories`
+--
+ALTER TABLE `media_categories`
+  ADD PRIMARY KEY (`media_id`,`category_id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
 -- فهارس للجدول `media_colors`
 --
 ALTER TABLE `media_colors`
@@ -1333,6 +1509,12 @@ ALTER TABLE `media_downloads`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_media_downloads` (`media_id`),
   ADD KEY `idx_user_downloads` (`user_id`);
+
+--
+-- فهارس للجدول `media_licenses`
+--
+ALTER TABLE `media_licenses`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- فهارس للجدول `media_tags`
@@ -1459,6 +1641,12 @@ ALTER TABLE `user_subscriptions`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- فهارس للجدول `watermark_settings`
+--
+ALTER TABLE `watermark_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -1472,7 +1660,7 @@ ALTER TABLE `about_content`
 -- AUTO_INCREMENT for table `activities`
 --
 ALTER TABLE `activities`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=152;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
 
 --
 -- AUTO_INCREMENT for table `ads`
@@ -1556,13 +1744,25 @@ ALTER TABLE `features`
 -- AUTO_INCREMENT for table `login_attempts`
 --
 ALTER TABLE `login_attempts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `media`
 --
 ALTER TABLE `media`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+--
+-- AUTO_INCREMENT for table `media_batches`
+--
+ALTER TABLE `media_batches`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `media_batch_items`
+--
+ALTER TABLE `media_batch_items`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `media_colors`
@@ -1583,10 +1783,16 @@ ALTER TABLE `media_downloads`
   MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
+-- AUTO_INCREMENT for table `media_licenses`
+--
+ALTER TABLE `media_licenses`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `media_views`
 --
 ALTER TABLE `media_views`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `menus`
@@ -1634,7 +1840,7 @@ ALTER TABLE `privacy_content`
 -- AUTO_INCREMENT for table `resolutions`
 --
 ALTER TABLE `resolutions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `search_box_settings`
@@ -1685,6 +1891,12 @@ ALTER TABLE `user_subscriptions`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `watermark_settings`
+--
+ALTER TABLE `watermark_settings`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- القيود المفروضة على الجداول الملقاة
 --
 
@@ -1713,6 +1925,20 @@ ALTER TABLE `downloads`
 ALTER TABLE `favorites`
   ADD CONSTRAINT `fk_favorites_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_favorites_wallpaper` FOREIGN KEY (`wallpaper_id`) REFERENCES `media` (`id`) ON DELETE CASCADE;
+
+--
+-- قيود الجداول `media_batch_items`
+--
+ALTER TABLE `media_batch_items`
+  ADD CONSTRAINT `media_batch_items_ibfk_1` FOREIGN KEY (`batch_id`) REFERENCES `media_batches` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `media_batch_items_ibfk_2` FOREIGN KEY (`media_id`) REFERENCES `media` (`id`) ON DELETE SET NULL;
+
+--
+-- قيود الجداول `media_categories`
+--
+ALTER TABLE `media_categories`
+  ADD CONSTRAINT `media_categories_ibfk_1` FOREIGN KEY (`media_id`) REFERENCES `media` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `media_categories_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
 
 --
 -- قيود الجداول `media_colors`

@@ -122,15 +122,6 @@ require_admin();
                     </li>
                 </ul>
                 
-                                    <!-- ADS -->
-                    <li>
-                        <a href="<?php echo $adminUrl; ?>/ads/index.php" class="flex items-center p-2 text-base rounded-lg <?php echo isMenuActive('ads') ? ($darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : ($darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'); ?>">
-                            <i class="fas fa-chart-bar w-6 h-6 text-gray-500 transition duration-75 <?php echo $darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'group-hover:text-gray-900'; ?>"></i>
-                            <span class="ml-3"><?php echo $lang['ads'] ?? 'Ads'; ?></span>
-                        </a>
-                    </li>
-                </ul>
-                
                 <!-- System Menu -->
                 <ul class="pt-4 mt-4 space-y-2">
                     <li>
@@ -153,7 +144,18 @@ require_admin();
                             <span class="ml-3"><?php echo $lang['systemwebapp'] ?? 'System CMS'; ?></span>
                         </a>
                     </li>
-                    
+                                    <!-- Watermark -->
+                    <a href="<?php echo $adminUrl; ?>/settings/watermark.php" class="flex items-center p-2 text-base rounded-lg <?php echo isMenuActive('watermark') ? ($darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : ($darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'); ?>">
+                            <i class="fas fa-stamp  w-6 h-6 text-gray-500 transition duration-75 <?php echo $darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'group-hover:text-gray-900'; ?>"></i>
+                            <span class="ml-3"><?php echo $lang['watermark'] ?? 'Watermark'; ?></span>
+                        </a>                
+                 
+                       <!-- ADS -->
+                   
+                        <a href="<?php echo $adminUrl; ?>/ads/index.php" class="flex items-center p-2 text-base rounded-lg <?php echo isMenuActive('ads') ? ($darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : ($darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'); ?>">
+                            <i class="fa-solid fa-audio-description w-6 h-6 text-gray-500 transition duration-75 <?php echo $darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'group-hover:text-gray-900'; ?>"></i>
+                            <span class="ml-3"><?php echo $lang['ads'] ?? 'Ads'; ?></span>
+                        </a>
                     <li>
                         <a href="<?php echo $siteUrl; ?>" target="_blank" class="flex items-center p-2 text-base rounded-lg <?php echo $darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'; ?>">
                             <i class="fas fa-external-link-alt w-6 h-6 text-gray-500 transition duration-75 <?php echo $darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'group-hover:text-gray-900'; ?>"></i>
