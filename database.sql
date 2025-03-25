@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- مضيف: localhost:3306
--- وقت الجيل: 23 مارس 2025 الساعة 07:51
+-- وقت الجيل: 25 مارس 2025 الساعة 04:25
 -- إصدار الخادم: 8.0.41
 -- نسخة PHP: 8.3.19
 
@@ -248,7 +248,161 @@ INSERT INTO `activities` (`id`, `user_id`, `description`, `created_at`) VALUES
 (185, NULL, 'Viewed media list', '2025-03-23 03:24:41'),
 (186, NULL, 'Viewed media list', '2025-03-23 03:25:21'),
 (187, NULL, 'Viewed media list', '2025-03-23 03:25:55'),
-(188, NULL, 'Viewed media list', '2025-03-23 03:27:51');
+(188, NULL, 'Viewed media list', '2025-03-23 03:27:51'),
+(189, NULL, 'Viewed media list', '2025-03-23 19:33:14'),
+(190, NULL, 'Viewed media list', '2025-03-23 19:52:15'),
+(191, NULL, 'Viewed media list', '2025-03-23 19:57:05'),
+(192, NULL, 'Viewed media list', '2025-03-23 19:59:16'),
+(193, NULL, 'Viewed media list', '2025-03-23 20:00:14'),
+(194, NULL, 'Viewed media list', '2025-03-23 20:00:48'),
+(195, NULL, 'Viewed media list', '2025-03-23 20:07:13'),
+(196, 1, 'Successfully logged in', '2025-03-24 05:48:10'),
+(197, NULL, 'Viewed media list', '2025-03-24 05:48:14'),
+(198, 1, 'Added new media item #32: mahran123', '2025-03-24 05:54:09'),
+(199, NULL, 'Viewed media list', '2025-03-24 05:54:09'),
+(200, NULL, 'Viewed media list', '2025-03-24 05:58:15'),
+(201, NULL, 'Viewed media list', '2025-03-24 05:58:30'),
+(202, NULL, 'Viewed media list', '2025-03-24 06:03:18'),
+(203, NULL, 'Viewed media list', '2025-03-24 06:17:31'),
+(204, 1, 'Added new media item #35: mahran12345qqq', '2025-03-24 06:17:59'),
+(205, NULL, 'Viewed media list', '2025-03-24 06:17:59'),
+(206, NULL, 'Viewed media list', '2025-03-24 06:18:10'),
+(207, NULL, 'Viewed media list', '2025-03-24 06:54:26'),
+(208, 1, 'Added new tag: عربي (ID: 27)', '2025-03-24 06:58:29'),
+(209, 1, 'Added new media item #37: cccccccccccccccc', '2025-03-24 06:58:29'),
+(210, NULL, 'Viewed media list', '2025-03-24 06:58:29'),
+(211, NULL, 'Viewed media list', '2025-03-24 07:00:13'),
+(212, NULL, 'Viewed media list', '2025-03-24 07:04:00'),
+(213, NULL, 'Viewed media list', '2025-03-24 07:06:29'),
+(214, NULL, 'Toggled active status for media #37', '2025-03-24 07:06:35'),
+(215, NULL, 'Viewed media list', '2025-03-24 07:06:35'),
+(216, NULL, 'Viewed media list', '2025-03-24 07:06:35'),
+(217, NULL, 'Toggled active status for media #37', '2025-03-24 07:06:39'),
+(218, NULL, 'Viewed media list', '2025-03-24 07:06:39'),
+(219, NULL, 'Viewed media list', '2025-03-24 07:06:39'),
+(220, 1, 'Added new ad: Spring Sale Banner 2025', '2025-03-24 06:38:57'),
+(221, 1, 'Updated ad: Product Recommendation', '2025-03-24 06:40:15'),
+(222, 2, 'Added new ad: Tech Gadget Affiliate', '2025-03-24 07:12:33'),
+(223, 1, 'Deleted ad: Outdated Holiday Promotion', '2025-03-24 08:27:44'),
+(224, 3, 'Updated ad placement for: Subscription Offer', '2025-03-24 10:05:19'),
+(225, 1, 'Site settings updated', '2025-03-24 08:02:27'),
+(226, 1, 'Site settings updated', '2025-03-24 08:03:11'),
+(227, 1, 'Site settings updated', '2025-03-24 08:46:28'),
+(228, 1, 'Site settings updated', '2025-03-24 09:10:24'),
+(229, 1, 'Site settings updated', '2025-03-24 09:10:57'),
+(230, 1, 'Site settings updated', '2025-03-24 09:32:35'),
+(231, 1, 'Site settings updated', '2025-03-24 09:37:21'),
+(232, 1, 'Site settings updated', '2025-03-24 09:38:30'),
+(233, 1, 'Site settings updated', '2025-03-24 09:45:09'),
+(234, 1, 'Site settings updated', '2025-03-24 09:51:33'),
+(235, 1, 'Site settings updated', '2025-03-24 09:52:33'),
+(236, 1, 'Site settings updated', '2025-03-24 10:34:17'),
+(237, 1, 'Site settings updated', '2025-03-24 10:38:39'),
+(238, 1, 'Viewed message #7 from Max Lammertink', '2025-03-24 11:15:02'),
+(239, 1, 'Viewed message #5 from Johnmes', '2025-03-24 11:26:13'),
+(240, 1, 'Viewed message #3 from تجربة عربي', '2025-03-24 11:26:59'),
+(241, 1, 'Viewed message #1 from wallpix.top', '2025-03-24 11:53:41'),
+(242, 1, 'Replied to message #1 from wallpix.top', '2025-03-24 11:53:51'),
+(243, 1, 'Marked message #5 as spam', '2025-03-24 11:55:46'),
+(244, NULL, 'Viewed media list', '2025-03-24 12:18:18'),
+(245, NULL, 'Viewed media list', '2025-03-24 12:18:39'),
+(246, NULL, 'Viewed media list', '2025-03-24 12:18:51'),
+(247, NULL, 'Viewed media list', '2025-03-24 12:21:16'),
+(248, NULL, 'Viewed media list', '2025-03-24 12:21:25'),
+(249, NULL, 'Viewed media list', '2025-03-24 12:21:29'),
+(250, NULL, 'Viewed media list', '2025-03-24 12:21:31'),
+(251, NULL, 'Viewed media list', '2025-03-24 12:21:35'),
+(252, NULL, 'Viewed media list', '2025-03-24 12:21:39'),
+(253, NULL, 'Viewed media list', '2025-03-24 12:21:44'),
+(254, NULL, 'Viewed media list', '2025-03-24 12:21:48'),
+(255, NULL, 'Viewed media list', '2025-03-24 12:21:52'),
+(256, NULL, 'Viewed media list', '2025-03-24 12:21:56'),
+(257, NULL, 'Viewed media list', '2025-03-24 12:21:59'),
+(258, NULL, 'Viewed media list', '2025-03-24 12:22:02'),
+(259, NULL, 'Viewed media list', '2025-03-24 12:22:04'),
+(260, NULL, 'Viewed media list', '2025-03-24 12:22:07'),
+(261, NULL, 'Viewed media list', '2025-03-24 12:46:32'),
+(262, NULL, 'Viewed media list', '2025-03-24 12:53:03'),
+(263, 1, 'Category \"Mahran\" was deactivated', '2025-03-24 12:53:49'),
+(264, 1, 'Category \"Mahran\" was activated', '2025-03-24 12:53:58'),
+(265, 1, 'Updated category #7: Mahran', '2025-03-24 12:54:52'),
+(266, NULL, 'Updated paypal payment gateway settings', '2025-03-24 13:18:25'),
+(267, NULL, 'Updated stripe payment gateway settings', '2025-03-24 13:18:27'),
+(268, NULL, 'Viewed media list', '2025-03-24 19:54:36'),
+(269, 1, 'Successfully logged in', '2025-03-24 19:54:39'),
+(270, NULL, 'Viewed media list', '2025-03-24 19:54:52'),
+(271, 1, 'Added new tag: paid (ID: 28)', '2025-03-24 19:56:48'),
+(272, 1, 'Added new media item #38: paid 1', '2025-03-24 19:56:48'),
+(273, NULL, 'Viewed media list', '2025-03-24 19:56:48'),
+(274, NULL, 'Viewed media list', '2025-03-24 20:18:51'),
+(275, 1, 'Site settings updated', '2025-03-24 20:33:42'),
+(276, 1, 'Site settings updated', '2025-03-24 20:34:08'),
+(277, 1, 'Site settings updated', '2025-03-24 20:34:19'),
+(278, NULL, 'Viewed media list', '2025-03-24 20:38:55'),
+(279, 1, 'Added new tag: 3 (ID: 29)', '2025-03-24 20:40:01'),
+(280, 1, 'Added new media item #39: 1', '2025-03-24 20:40:01'),
+(281, NULL, 'Viewed media list', '2025-03-24 20:40:01'),
+(282, NULL, 'Toggled active status for media #39', '2025-03-24 20:41:02'),
+(283, NULL, 'Viewed media list', '2025-03-24 20:41:02'),
+(284, NULL, 'Viewed media list', '2025-03-24 20:41:02'),
+(285, NULL, 'Toggled active status for media #39', '2025-03-24 20:41:20'),
+(286, NULL, 'Viewed media list', '2025-03-24 20:41:20'),
+(287, NULL, 'Viewed media list', '2025-03-24 20:41:20'),
+(288, NULL, 'Toggled featured status for media #39', '2025-03-24 20:41:25'),
+(289, NULL, 'Viewed media list', '2025-03-24 20:41:25'),
+(290, NULL, 'Viewed media list', '2025-03-24 20:41:25'),
+(291, NULL, 'Toggled featured status for media #39', '2025-03-24 20:41:33'),
+(292, NULL, 'Viewed media list', '2025-03-24 20:41:33'),
+(293, NULL, 'Viewed media list', '2025-03-24 20:41:33'),
+(294, NULL, 'Viewed media list', '2025-03-24 20:41:42'),
+(295, NULL, 'Viewed media list', '2025-03-24 20:41:50'),
+(296, 1, 'Site settings updated', '2025-03-24 20:54:28'),
+(297, 1, 'Successfully logged in', '2025-03-25 01:35:34'),
+(298, NULL, 'Viewed media list', '2025-03-25 02:09:39'),
+(299, 1, 'Marked message #3 as spam', '2025-03-25 02:13:33'),
+(300, 1, 'Viewed message #9 from Marya', '2025-03-25 02:27:26'),
+(301, 1, 'Replied to message #9 from Marya', '2025-03-25 02:27:33');
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `add_ons`
+--
+
+CREATE TABLE `add_ons` (
+  `id` int NOT NULL,
+  `name` varchar(255) NOT NULL COMMENT 'Name of the add-on',
+  `slug` varchar(255) NOT NULL COMMENT 'Unique identifier for the add-on',
+  `description` text COMMENT 'Description of the add-on and its functionality',
+  `version` varchar(50) NOT NULL COMMENT 'Current version number',
+  `file_path` varchar(255) NOT NULL COMMENT 'Path to the compressed file',
+  `status` enum('active','inactive','error') DEFAULT 'inactive' COMMENT 'Current status of the add-on',
+  `install_date` timestamp NULL DEFAULT NULL COMMENT 'When the add-on was installed',
+  `last_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last time the add-on was updated',
+  `author` varchar(100) DEFAULT NULL COMMENT 'Creator or publisher name',
+  `author_url` varchar(255) DEFAULT NULL COMMENT 'Link to author website or profile',
+  `requirements` text COMMENT 'System requirements or dependencies',
+  `type` varchar(50) DEFAULT 'extension' COMMENT 'Type like theme, plugin, extension, etc.',
+  `is_core` tinyint(1) DEFAULT '0' COMMENT 'Whether this is a core add-on',
+  `created_by` int DEFAULT NULL COMMENT 'User ID who added this add-on',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `add_on_updates`
+--
+
+CREATE TABLE `add_on_updates` (
+  `id` int NOT NULL,
+  `add_on_id` int NOT NULL COMMENT 'References the add_ons table',
+  `version` varchar(50) NOT NULL COMMENT 'Version number of this update',
+  `update_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'When the update was applied',
+  `change_log` text COMMENT 'Description of changes in this version',
+  `status` enum('pending','completed','failed') DEFAULT 'pending' COMMENT 'Status of the update process',
+  `updated_by` int DEFAULT NULL COMMENT 'User ID who performed the update'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -272,6 +426,17 @@ CREATE TABLE `ads` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- إرجاع أو استيراد بيانات الجدول `ads`
+--
+
+INSERT INTO `ads` (`id`, `name`, `ad_code`, `position`, `size`, `type`, `status`, `start_date`, `end_date`, `impressions`, `clicks`, `created_at`, `updated_at`) VALUES
+(1, 'Spring Sale Banner 2025', '<script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456\" crossorigin=\"anonymous\"></script>\r\n<!-- Spring Sale Banner -->\r\n<ins class=\"adsbygoogle\"\r\n     style=\"display:block\"\r\n     data-ad-client=\"ca-pub-1234567890123456\"\r\n     data-ad-slot=\"9876543210\"\r\n     data-ad-format=\"auto\"\r\n     data-full-width-responsive=\"true\"></ins>\r\n<script>\r\n     (adsbygoogle = window.adsbygoogle || []).push({});\r\n</script>', 'header', 'responsive', 'adsense', 1, '2025-03-20 00:00:00', '2025-04-15 23:59:59', 0, 0, '2025-03-24 06:38:57', '2025-03-24 07:40:12'),
+(2, 'Product Recommendation', '<script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456\" crossorigin=\"anonymous\"></script>\r\n<!-- Sidebar Rectangle -->\r\n<ins class=\"adsbygoogle\"\r\n     style=\"display:inline-block;width:300px;height:250px\"\r\n     data-ad-client=\"ca-pub-1234567890123456\"\r\n     data-ad-slot=\"5678901234\"></ins>\r\n<script>\r\n     (adsbygoogle = window.adsbygoogle || []).push({});\r\n</script>', 'sidebar_top', '300x250', 'adsense', 1, NULL, NULL, 0, 0, '2025-03-24 06:38:57', '2025-03-24 07:40:12'),
+(3, 'Tech Gadget Affiliate', '<div style=\"width: 728px; height: 90px; overflow: hidden; position: relative;\">\r\n    <a href=\"https://example-affiliate.com/refer/12345\" target=\"_blank\">\r\n        <img src=\"https://yourdomain.com/assets/images/ads/tech-gadget-banner.jpg\" alt=\"Latest Tech Gadgets\" \r\n             style=\"width: 100%; height: auto; display: block;\">\r\n    </a>\r\n</div>', 'before_content', '728x90', 'custom', 0, NULL, NULL, 0, 0, '2025-03-24 06:38:57', '2025-03-24 07:40:12'),
+(4, 'Subscription Offer', '<script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456\" crossorigin=\"anonymous\"></script>\r\n<!-- In-Content Ad -->\r\n<ins class=\"adsbygoogle\"\r\n     style=\"display:block; text-align:center;\"\r\n     data-ad-layout=\"in-article\"\r\n     data-ad-format=\"fluid\"\r\n     data-ad-client=\"ca-pub-1234567890123456\"\r\n     data-ad-slot=\"1234567890\"></ins>\r\n<script>\r\n     (adsbygoogle = window.adsbygoogle || []).push({});\r\n</script>', 'middle_content', 'responsive', 'adsense', 1, NULL, NULL, 450, 32, '2025-03-10 14:22:41', '2025-03-24 07:40:12'),
+(5, 'Mobile App Promotion', '<script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456\" crossorigin=\"anonymous\"></script>\r\n<!-- Mobile Banner -->\r\n<ins class=\"adsbygoogle\"\r\n     style=\"display:inline-block;width:320px;height:50px\"\r\n     data-ad-client=\"ca-pub-1234567890123456\"\r\n     data-ad-slot=\"6789012345\"></ins>\r\n<script>\r\n     (adsbygoogle = window.adsbygoogle || []).push({});\r\n</script>', 'footer', '320x50', 'adsense', 1, NULL, NULL, 0, 0, '2025-03-24 06:38:57', '2025-03-24 07:40:12');
+
 -- --------------------------------------------------------
 
 --
@@ -287,6 +452,16 @@ CREATE TABLE `ad_placements` (
   `is_active` tinyint(1) DEFAULT '1',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `ad_placements`
+--
+
+INSERT INTO `ad_placements` (`id`, `page`, `ad_id`, `position`, `priority`, `is_active`, `created_at`) VALUES
+(1, 'home', 1, 'header', 10, 1, '2025-03-24 06:38:57'),
+(2, 'article', 2, 'sidebar_top', 5, 1, '2025-03-24 06:38:57'),
+(3, 'category', 4, 'middle_content', 3, 1, '2025-03-24 06:38:57'),
+(4, 'global', 5, 'footer', 1, 1, '2025-03-24 06:38:57');
 
 -- --------------------------------------------------------
 
@@ -326,7 +501,7 @@ INSERT INTO `categories` (`id`, `name`, `parent_id`, `icon_url`, `bg_color`, `di
 (4, 'Animals', NULL, 'https://img.icons8.com/color/48/medium-icons.png', '#17a2b8', 4, 'وصف الفئة الحيوانية', 1, 0, 'https://example.com/images/animals.jpg', 'animals', 'Description of Animals', 4, 'admin', 'mahranalsarminy', 1, '2025-03-14 06:19:49', '2025-03-15 23:27:03'),
 (5, 'Travel', NULL, 'https://img.icons8.com/color/48/stack-of-photos--v1.png', '#6c757d', 5, 'وصف الفئة السفرية', 1, 0, 'https://example.com/images/travel.jpg', 'travel', 'Description of Travel', 5, 'admin', 'mahranalsarminy', 1, '2025-03-14 06:19:49', '2025-03-15 23:27:03'),
 (6, 'Islamic', NULL, 'https://cdn1.iconfinder.com/data/icons/festivals-and-holidays-1/512/47_Kaaba_Religion_Islam_Hajj_Islamic_Architecture_And_City-48.png', '#4511d4', 0, NULL, 1, 0, NULL, 'islamic', 'Islamic', 0, 'mahranalsarminy', 'mahranalsarminy', 1, '2025-03-19 03:30:24', '2025-03-14 06:19:49'),
-(7, 'Mahran', NULL, '/uploads/categories/icons/icon_67dcd8e1e6de9.png', '#300344', 0, '', 1, 1, '/uploads/categories/images/image_67dcd8e1e6ee3.png', 'mahran', 'Mahran test 2', 0, 'Admin', NULL, 1, '2025-03-21 03:11:29', '2025-03-21 03:11:29');
+(7, 'Mahran', NULL, '/uploads/categories/icons/icon_67e1561c623ab.png', '#300344', 0, '', 1, 1, '/uploads/categories/images/image_67dcd8e1e6ee3.png', 'mahran', 'Mahran test 2', 0, 'Admin', 'Admin', 1, '2025-03-24 12:54:52', '2025-03-21 03:11:29');
 
 -- --------------------------------------------------------
 
@@ -350,7 +525,9 @@ INSERT INTO `colors` (`id`, `color_name`, `hex_code`, `created_at`) VALUES
 (2, 'Blue', '#0000FF', '2025-02-20 03:34:24'),
 (3, 'Green', '#00FF00', '2025-02-20 03:34:24'),
 (4, 'Yellow', '#FFFF00', '2025-02-20 03:34:24'),
-(5, 'Black', '#000000', '2025-02-20 03:34:24');
+(5, 'Black', '#000000', '2025-02-20 03:34:24'),
+(6, 'prppp', '#9C0AD1', '2025-03-24 12:46:29'),
+(7, 'gggggg', '#71F00A', '2025-03-25 02:09:35');
 
 -- --------------------------------------------------------
 
@@ -365,6 +542,16 @@ CREATE TABLE `contact_attempts` (
   `last_attempt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `contact_attempts`
+--
+
+INSERT INTO `contact_attempts` (`id`, `ip_address`, `attempt_count`, `last_attempt`, `created_at`) VALUES
+(1, '185.7.214.130', 1, '2025-03-23 23:51:54', '2025-03-23 23:51:54'),
+(2, '92.255.85.164', 2, '2025-03-24 13:04:42', '2025-03-24 05:27:59'),
+(3, '5.180.61.60', 1, '2025-03-24 07:41:27', '2025-03-24 07:41:27'),
+(4, '31.208.251.109', 1, '2025-03-25 02:27:14', '2025-03-25 02:27:14');
 
 -- --------------------------------------------------------
 
@@ -409,8 +596,13 @@ CREATE TABLE `contact_messages` (
 --
 
 INSERT INTO `contact_messages` (`id`, `name`, `email`, `subject`, `message`, `status`, `priority`, `ip_address`, `user_agent`, `reply_message`, `reply_date`, `admin_notes`, `created_at`, `updated_at`) VALUES
-(1, 'wallpix.top', 'info@wallpix.top', 'hhhhhhhh', 'yyyyyyyyyyyyyyyyy', 'new', 'medium', '83.253.108.100', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0', NULL, NULL, NULL, '2025-03-13 20:51:53', '2025-03-13 20:51:53'),
-(3, 'تجربة عربي', 'hhh@hhh.com', 'موضوع حب', 'احب الصور كثيرا', 'new', 'medium', '83.253.108.100', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0.1 Mobile/15E148 Safari/604.1', NULL, NULL, NULL, '2025-03-13 21:55:05', '2025-03-13 21:55:05');
+(1, 'wallpix.top', 'info@wallpix.top', 'hhhhhhhh', 'yyyyyyyyyyyyyyyyy', 'replied', 'medium', '83.253.108.100', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0', 'Dear wallpix.top,\r\n\r\nThank you for contacting us. This is an automatic confirmation that we have received your message regarding \"hhhhhhhh\".\r\n\r\nWe will review your inquiry and get back to you as soon as possible. Our typical response time is within 24-48 hours during business days.\r\n\r\nFor your reference, here\'s a copy of your message:\r\n{message}\r\n\r\nBest regards,\r\n[Company Name] Support Team', '2025-03-24 11:53:51', NULL, '2025-03-13 20:51:53', '2025-03-24 11:53:51'),
+(3, 'تجربة عربي', 'hhh@hhh.com', 'موضوع حب', 'احب الصور كثيرا', 'spam', 'medium', '83.253.108.100', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0.1 Mobile/15E148 Safari/604.1', NULL, NULL, NULL, '2025-03-13 21:55:05', '2025-03-25 02:13:33'),
+(5, 'Johnmes', 'zekisuquc419@gmail.com', 'Hi, i am wrote about your   price for reseller', 'Γεια σου, ήθελα να μάθω την τιμή σας.', 'spam', 'medium', '185.7.214.130', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36', NULL, NULL, NULL, '2025-03-23 23:51:54', '2025-03-24 11:55:46'),
+(6, 'Tedmes', 'aferinohis056@gmail.com', 'Hello  i writing about   the price for reseller', 'Hi, roeddwn i eisiau gwybod eich pris.', 'new', 'medium', '92.255.85.164', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Avast/131.0.0.0', NULL, NULL, NULL, '2025-03-24 05:27:59', '2025-03-24 05:27:59'),
+(7, 'Max Lammertink', 'max@talosgrowth.nl', 'Your LinkedIn company page', 'Hey!\r\n\r\nComing across your LinkedIn company page on linkedin.com/company/mahrannnn I was surprised about how good your content is and why you don\'t have more followers on the page. Your page should at least grow with 250 - 500 followers per month right? If not, you might currently not be reaching the right audience.\r\n\r\nWith Talos Growth we grow your company page on LinkedIn by liking posts from other companies and individuals that are interested in your business on behalf of your company page.\r\n\r\nThis way, you\'re generating exposure and genuine followers, who are interested in your business. Of course, you define the keywords, location, and other parameters yourself.\r\n\r\nFollowers eventually turn into customers, clients, or even employees. \r\n\r\nWould you like to use our two-week free trial to experience Talos Growth? You can directly signup at https://talosgrowth.com. Since I really see some potential for your page, you can use your personal code ‘mahrannnn-10’ to get a 10% discount for the first 3 months. \r\n\r\nPlease let me know if you’ve questions or check out https://talosgrowth.com.\r\n\r\nMax', 'read', 'medium', '5.180.61.60', 'Mozilla/5.0 (Linux x86_64; rv:114.0) Gecko/20100101 Firefox/114.0', NULL, NULL, NULL, '2025-03-24 07:41:27', '2025-03-24 11:15:02'),
+(8, 'Tedmes', 'aferinohis056@gmail.com', 'Hi, i am wrote about     price for reseller', 'Dia duit, theastaigh uaim do phraghas a fháil.', 'new', 'medium', '92.255.85.164', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36', NULL, NULL, NULL, '2025-03-24 13:04:42', '2025-03-24 13:04:42'),
+(9, 'Marya', 'marimahran@gmail.com', 'Problemet', 'Gjort det', 'replied', 'medium', '31.208.251.109', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3.1 Mobile/15E148 Safari/604.1', 'Dear Marya,\r\n\r\nThank you for your positive feedback regarding \"Problemet\". We\'re delighted to hear about your experience with our [product/service].\r\n\r\nYour satisfaction is important to us, and we appreciate you taking the time to share your thoughts.\r\n\r\nBest regards,\r\n[Your Name]\r\nCustomer Relations Team', '2025-03-25 02:27:33', NULL, '2025-03-25 02:27:14', '2025-03-25 02:27:33');
 
 -- --------------------------------------------------------
 
@@ -439,7 +631,7 @@ CREATE TABLE `contact_settings` (
 --
 
 INSERT INTO `contact_settings` (`id`, `contact_email`, `email_subject_prefix`, `recaptcha_site_key`, `recaptcha_secret_key`, `enable_auto_reply`, `auto_reply_template_id`, `enable_attachments`, `max_file_size`, `allowed_file_types`, `required_fields`, `created_at`, `updated_at`) VALUES
-(1, 'admin@gmail.com', 'WallPix.Top', '6LeH8ascsacsacsaei98BpJATJIpmOrSs3', '6LeH8ascsacsacsaei98BpJATJIpmOrSs3', 1, 1, 0, 5, 'pdf,doc,docx,jpg,jpeg,png', '[\"name\",\"email\",\"subject\",\"message\"]', '2025-03-14 01:06:51', '2025-03-14 01:45:45');
+(1, 'play.earn.net@gmail.com', 'WallPix.Top', 'ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 1, 1, 0, 5, 'pdf,doc,docx,jpg,jpeg,png', '[\"name\",\"email\",\"subject\",\"message\"]', '2025-03-14 01:06:51', '2025-03-14 01:45:45');
 
 -- --------------------------------------------------------
 
@@ -568,25 +760,29 @@ CREATE TABLE `login_attempts` (
 --
 
 INSERT INTO `login_attempts` (`id`, `email`, `status`, `ip_address`, `is_admin`, `attempt_details`, `created_at`, `lock_time`) VALUES
-(1, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 06:03:03', NULL),
-(2, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:42:06', NULL),
-(3, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:44:04', NULL),
-(4, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:44:27', NULL),
-(5, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:45:08', NULL),
-(6, 'ms.mamym@icloud.com', 'successful', '83.253.108.100', 0, NULL, '2025-03-20 17:58:38', NULL),
-(7, 'ms.mamym@icloud.com', 'successful', '194.11.199.107', 0, NULL, '2025-03-20 18:40:37', NULL),
-(8, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 22:12:17', NULL),
-(9, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 02:51:46', NULL),
-(10, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 05:47:49', NULL),
-(11, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 19:41:42', NULL),
-(12, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 02:57:50', NULL),
-(13, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 05:45:19', NULL),
-(14, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 06:08:11', NULL),
-(15, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 12:15:28', NULL),
-(16, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 19:44:45', NULL),
-(17, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 21:56:21', NULL),
-(18, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-23 01:38:44', NULL),
-(19, 'admin@example.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-23 03:24:04', NULL);
+(1, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 06:03:03', NULL),
+(2, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:42:06', NULL),
+(3, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:44:04', NULL),
+(4, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:44:27', NULL),
+(5, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 16:45:08', NULL),
+(6, 'ggggg@gmail.com', 'successful', '83.253.108.100', 0, NULL, '2025-03-20 17:58:38', NULL),
+(7, 'ggggg@gmail.com', 'successful', '194.11.199.107', 0, NULL, '2025-03-20 18:40:37', NULL),
+(8, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-20 22:12:17', NULL),
+(9, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 02:51:46', NULL),
+(10, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 05:47:49', NULL),
+(11, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-21 19:41:42', NULL),
+(12, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 02:57:50', NULL),
+(13, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 05:45:19', NULL),
+(14, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 06:08:11', NULL),
+(15, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 12:15:28', NULL),
+(16, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 19:44:45', NULL),
+(17, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-22 21:56:21', NULL),
+(18, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-23 01:38:44', NULL),
+(19, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-23 03:24:04', NULL),
+(20, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-24 05:48:10', NULL),
+(21, 'ggggg@gmail.com', 'successful', '194.11.199.70', 0, NULL, '2025-03-24 14:06:11', NULL),
+(22, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-24 19:54:39', NULL),
+(23, 'ggggghhhh@gmail.com', 'successful', '83.253.108.100', 1, NULL, '2025-03-25 01:35:34', NULL);
 
 -- --------------------------------------------------------
 
@@ -623,7 +819,7 @@ CREATE TABLE `media` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `ai_enhanced` tinyint(1) DEFAULT '0',
   `ai_tags` json DEFAULT NULL,
-  `ai_description` text COLLATE utf8mb4_unicode_ci,
+  `ai_description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `content_quality_score` decimal(3,2) DEFAULT '0.00',
   `engagement_score` decimal(3,2) DEFAULT '0.00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -639,7 +835,12 @@ INSERT INTO `media` (`id`, `title`, `description`, `category_id`, `file_name`, `
 (23, 'Islamic wallpaper 2', 'Islamic wallpaper 2', 3, NULL, '', '', NULL, NULL, 1, 1, NULL, NULL, NULL, '#ffffff', 0, 'portrait', 'Mahran-Owner', 'Mahran-License', '2025-03-16', 0, NULL, NULL, 'https://i.pinimg.com/736x/ed/4f/66/ed4f666d97d7314ed2215ef3c13c6944.jpg', NULL, '2025-03-16 05:52:24', 0, NULL, NULL, 0.01, 0.00),
 (24, 'Islamic wallpaper 2', 'Islamic wallpaper 2', 3, NULL, '', '', NULL, NULL, 1, 1, NULL, NULL, NULL, '#ffffff', 0, 'portrait', 'Mahran-Owner', 'Mahran-License', '2025-03-16', 0, NULL, NULL, 'https://i.pinimg.com/736x/74/fb/3f/74fb3ff0bc2ed7144e9ada38e5362560.jpg', NULL, '2025-03-16 05:52:24', 0, NULL, NULL, 0.00, 0.00),
 (25, 'Islamic wallpaper 5', 'Islamic wallpaper 5', 3, '1742104740__dc6e93c2-e760-40ec-8d34-ef5f210b2562.jpeg', 'uploads/media/2025/03/1742104740__dc6e93c2-e760-40ec-8d34-ef5f210b2562.jpeg', 'image/jpeg', '124917', NULL, 1, 1, NULL, NULL, NULL, '#ffffff', 0, 'portrait', 'Mahran-Owner', 'Mahran-License', '2025-03-16', 0, '', NULL, NULL, NULL, '2025-03-16 05:59:00', 0, NULL, NULL, 0.01, 0.00),
-(29, 'test2', 'ssssssssssss', 7, '67dcdd1149237_login-page.jpg', '/uploads/media/2025/03/67dcdd1149237_login-page.jpg', '', NULL, '/uploads/thumbnails/2025/03/thumb_67dcdd1149237_login-page.jpg', 1, 1, '1920', '1080', NULL, NULL, 0, 'landscape', NULL, NULL, NULL, 0, NULL, NULL, '', 1, '2025-03-21 03:29:21', 0, NULL, NULL, 0.01, 0.00);
+(29, 'test2', 'ssssssssssss', 7, '67dcdd1149237_login-page.jpg', '/uploads/media/2025/03/67dcdd1149237_login-page.jpg', '', NULL, '/uploads/thumbnails/2025/03/thumb_67dcdd1149237_login-page.jpg', 1, 1, '1920', '1080', NULL, NULL, 0, 'landscape', NULL, NULL, NULL, 0, NULL, NULL, '', 1, '2025-03-21 03:29:21', 0, NULL, NULL, 0.01, 0.00),
+(32, 'mahran123', 'dddddddddddd', 7, '1742795649__0e87af24-f0ff-49a9-9926-a2c3c3740179.jpeg', '/uploads/media/2025/03/1742795649__0e87af24-f0ff-49a9-9926-a2c3c3740179.jpeg', 'image/jpeg', '206.7 KB', '/uploads/thumbnails/2025/03/thumb_1742795649__0e87af24-f0ff-49a9-9926-a2c3c3740179.jpeg', 1, 1, '1024', '1024', 'large', '#ffffff', 0, 'portrait', 'Mahran-Owner', 'Editorial Use Only', NULL, 0, 'Wallpix.Top', '_0e87af24-f0ff-49a9-9926-a2c3c3740179.jpeg', '', 1, '2025-03-24 05:54:09', 1, NULL, 'nnnnnnnnnnnnnnnnnnnn', 0.01, 0.00),
+(35, 'mahran12345qqq', 'wwwwwwwwwww', 7, '67e0f9176a52f__37b5c5c8-d01a-494e-82ea-4efce2545565.jpeg', '/uploads/media/2025/03/67e0f9176a52f__37b5c5c8-d01a-494e-82ea-4efce2545565.jpeg', 'image/jpeg', '186.14 KB', '/uploads/thumbnails/2025/03/thumb_67e0f9176a52f__37b5c5c8-d01a-494e-82ea-4efce2545565.jpeg', 1, 1, '750', '1334', 'large', '#ffffff', 0, 'portrait', 'Mahran-Owner', '', NULL, 0, 'Wallpix.Top', '_37b5c5c8-d01a-494e-82ea-4efce2545565.jpeg', NULL, 1, '2025-03-24 06:17:59', 0, NULL, 'sssssssssss', 0.01, 0.00),
+(37, 'cccccccccccccccc', 'assssssssss', 7, '67e102957007a__ecf53819-128d-499c-bddf-700b9c6444d2.jpeg', '/uploads/media/2025/03/67e102957007a__ecf53819-128d-499c-bddf-700b9c6444d2.jpeg', 'image/jpeg', '183.83 KB', '/uploads/thumbnails/2025/03/thumb_67e102957007a__ecf53819-128d-499c-bddf-700b9c6444d2.jpeg', 1, 1, '1440', '2560', 'large', '#ff0000', 0, 'portrait', 'Mahran-Owner', 'Free to Use', NULL, 0, 'Wallpix.Top', '_ecf53819-128d-499c-bddf-700b9c6444d2.jpeg', NULL, 1, '2025-03-24 06:58:29', 0, NULL, 'ششششششششش', 0.01, 0.00),
+(38, 'paid 1', 'paid 2', 7, '67e1b9005f44f__86dfd24d-b20e-4996-b544-1d7f0f8af977.jpeg', '/uploads/media/2025/03/67e1b9005f44f__86dfd24d-b20e-4996-b544-1d7f0f8af977.jpeg', 'image/jpeg', '237.8 KB', '/uploads/thumbnails/2025/03/thumb_67e1b9005f44f__86dfd24d-b20e-4996-b544-1d7f0f8af977.jpeg', 1, 0, '3840', '2160', 'large', '#ffffff', 0, 'portrait', 'Mahran-Owner', 'Editorial Use Only', NULL, 1, 'Wallpix.Top', '_86dfd24d-b20e-4996-b544-1d7f0f8af977.jpeg', NULL, 1, '2025-03-24 19:56:48', 1, NULL, 'tesssssssssst paid', 0.01, 0.00),
+(39, '1', '2', 7, '67e1c3217acc6__5aa4208d-1638-481d-8f12-21c3fcb97ec0.jpeg', '/uploads/media/2025/03/67e1c3217acc6__5aa4208d-1638-481d-8f12-21c3fcb97ec0.jpeg', 'image/jpeg', '204.17 KB', '/uploads/thumbnails/2025/03/thumb_67e1c3217acc6__5aa4208d-1638-481d-8f12-21c3fcb97ec0.jpeg', 1, 1, '1080', '1920', 'xl', '#16195a', 0, 'portrait', 'Mahran-Owner', 'Premium', NULL, 1, 'Wallpix.Top', '_5aa4208d-1638-481d-8f12-21c3fcb97ec0.jpeg', NULL, 1, '2025-03-24 20:40:01', 1, NULL, '4', 0.01, 0.00);
 
 --
 -- القوادح `media`
@@ -688,18 +889,6 @@ CREATE TABLE `media_batch_items` (
 -- --------------------------------------------------------
 
 --
--- بنية الجدول `media_categories`
---
-
-CREATE TABLE `media_categories` (
-  `media_id` int NOT NULL,
-  `category_id` int NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
 -- بنية الجدول `media_colors`
 --
 
@@ -707,8 +896,8 @@ CREATE TABLE `media_colors` (
   `id` int NOT NULL,
   `media_id` int NOT NULL,
   `color_id` int DEFAULT NULL,
-  `primary_color` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '#FFFFFF',
-  `secondary_color` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT '#000000',
+  `primary_color` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '#FFFFFF',
+  `secondary_color` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '#000000',
   `is_dark` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
@@ -719,7 +908,18 @@ CREATE TABLE `media_colors` (
 --
 
 INSERT INTO `media_colors` (`id`, `media_id`, `color_id`, `primary_color`, `secondary_color`, `is_dark`, `created_at`, `updated_at`) VALUES
-(3, 29, NULL, '#14d7a6', '#ee1b1b', 0, '2025-03-21 04:29:21', '2025-03-17 23:21:04');
+(3, 29, NULL, '#14d7a6', '#ee1b1b', 0, '2025-03-21 04:29:21', '2025-03-17 23:21:04'),
+(8, 32, NULL, '#FFFFFF', '#000000', 0, '2025-03-24 06:54:09', NULL),
+(9, 32, 5, '#000000', '#000000', 0, '2025-03-24 06:54:09', NULL),
+(12, 35, NULL, '#FFFFFF', '#000000', 0, '2025-03-24 07:17:59', NULL),
+(14, 37, NULL, '#FFFFFF', '#000000', 0, '2025-03-24 07:58:29', NULL),
+(15, 37, 5, '#000000', '#000000', 0, '2025-03-24 07:58:29', NULL),
+(16, 38, NULL, '#FFFFFF', '#000000', 0, '2025-03-24 20:56:48', NULL),
+(17, 38, 2, '#0000FF', '#000000', 0, '2025-03-24 20:56:48', NULL),
+(18, 38, 1, '#FF0000', '#000000', 0, '2025-03-24 20:56:48', NULL),
+(19, 38, 4, '#FFFF00', '#000000', 0, '2025-03-24 20:56:48', NULL),
+(20, 39, NULL, '#FFFFFF', '#000000', 0, '2025-03-24 21:40:01', NULL),
+(21, 39, 4, '#FFFF00', '#000000', 0, '2025-03-24 21:40:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -729,8 +929,8 @@ INSERT INTO `media_colors` (`id`, `media_id`, `color_id`, `primary_color`, `seco
 
 CREATE TABLE `media_color_types` (
   `id` int NOT NULL,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -780,7 +980,16 @@ INSERT INTO `media_downloads` (`id`, `media_id`, `user_id`, `downloaded_at`, `se
 (12, 23, NULL, '2025-03-20 17:55:47', '51eed21ee9308fb47aeb0cef97f1d45b'),
 (13, 25, NULL, '2025-03-20 17:55:55', '51eed21ee9308fb47aeb0cef97f1d45b'),
 (14, 29, 1, '2025-03-21 03:55:26', 'ddc29cecf5032c596ff79f139194d1a7'),
-(15, 23, 1, '2025-03-22 03:04:59', 'ddc29cecf5032c596ff79f139194d1a7');
+(15, 23, 1, '2025-03-22 03:04:59', 'ddc29cecf5032c596ff79f139194d1a7'),
+(16, 37, 1, '2025-03-24 07:07:04', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(17, 23, 1, '2025-03-24 07:07:32', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(18, 24, 1, '2025-03-24 08:04:30', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(19, 37, NULL, '2025-03-24 13:37:27', '87bd693de70bb61fcb9c36be927fd4c3'),
+(20, 32, NULL, '2025-03-24 13:37:51', '87bd693de70bb61fcb9c36be927fd4c3'),
+(21, 35, NULL, '2025-03-24 13:38:08', '87bd693de70bb61fcb9c36be927fd4c3'),
+(22, 29, NULL, '2025-03-24 13:38:51', '87bd693de70bb61fcb9c36be927fd4c3'),
+(23, 25, NULL, '2025-03-24 19:54:28', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(24, 32, NULL, '2025-03-25 02:24:41', '19bbd81b74caf23fb273be3161630c16');
 
 -- --------------------------------------------------------
 
@@ -828,7 +1037,12 @@ INSERT INTO `media_tags` (`media_id`, `tag_id`, `created_by`) VALUES
 (23, 18, NULL),
 (24, 18, NULL),
 (25, 19, NULL),
-(29, 24, NULL);
+(29, 24, NULL),
+(32, 24, 1),
+(37, 20, 1),
+(37, 27, 1),
+(38, 28, 1),
+(39, 29, 1);
 
 -- --------------------------------------------------------
 
@@ -903,7 +1117,46 @@ INSERT INTO `media_views` (`id`, `media_id`, `user_id`, `viewed_at`, `session_id
 (52, 29, NULL, '2025-03-23 05:26:19', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
 (53, 25, NULL, '2025-03-23 06:03:13', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
 (54, 22, NULL, '2025-03-23 06:28:19', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
-(55, 24, NULL, '2025-03-23 06:34:09', '9fedf0e9633b26d0d1fb5a68cfb2d924');
+(55, 24, NULL, '2025-03-23 06:34:09', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(56, 29, 1, '2025-03-23 19:57:07', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(57, 32, 1, '2025-03-24 05:54:12', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(58, 35, 1, '2025-03-24 06:18:03', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(59, 23, NULL, '2025-03-24 06:43:16', 'b3c006c8f7240a808bc6990adbd14c7f'),
+(60, 37, 1, '2025-03-24 06:58:32', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(61, 25, 1, '2025-03-24 07:07:24', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(62, 23, 1, '2025-03-24 07:07:27', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(63, 24, NULL, '2025-03-24 07:52:53', '888f944eac544fda5f69f078490ed4bd'),
+(64, 24, 1, '2025-03-24 08:04:23', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(65, 22, 1, '2025-03-24 08:18:45', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(66, 21, 1, '2025-03-24 09:10:36', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(67, 37, NULL, '2025-03-24 13:37:01', '87bd693de70bb61fcb9c36be927fd4c3'),
+(68, 32, NULL, '2025-03-24 13:37:38', '87bd693de70bb61fcb9c36be927fd4c3'),
+(69, 35, NULL, '2025-03-24 13:38:03', '87bd693de70bb61fcb9c36be927fd4c3'),
+(70, 29, NULL, '2025-03-24 13:38:45', '87bd693de70bb61fcb9c36be927fd4c3'),
+(71, 37, 5, '2025-03-24 14:08:17', '061700fe67bed6ad2d7daee925f1882a'),
+(72, 25, NULL, '2025-03-24 19:12:58', '19258abdb3fddcc97e2ebfa3b5aa24f2'),
+(73, 35, NULL, '2025-03-24 19:43:46', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(74, 25, NULL, '2025-03-24 19:51:10', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(75, 38, 1, '2025-03-24 19:56:54', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(76, 37, 1, '2025-03-24 20:11:50', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(77, 32, 1, '2025-03-24 20:37:33', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(78, 39, 1, '2025-03-24 20:40:08', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(79, 39, NULL, '2025-03-24 20:55:28', '6f1c79aafbcab4d20ef64b970d2b7b15'),
+(80, 37, NULL, '2025-03-24 20:55:36', '6f1c79aafbcab4d20ef64b970d2b7b15'),
+(81, 35, NULL, '2025-03-24 20:55:43', '6f1c79aafbcab4d20ef64b970d2b7b15'),
+(82, 29, NULL, '2025-03-24 20:57:49', 'c78e3bd1b66ef98a1e097a4fdbc35862'),
+(83, 32, NULL, '2025-03-24 21:15:52', 'd8f3d4b94c5d9639c0fab05ac953a2fb'),
+(84, 25, 1, '2025-03-25 01:48:30', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(85, 37, 1, '2025-03-25 01:53:52', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(86, 39, 1, '2025-03-25 02:00:41', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(87, 39, NULL, '2025-03-25 02:04:25', '952c53e5b57a066473f91dc62273be13'),
+(88, 37, NULL, '2025-03-25 02:04:28', 'e0242d05e0faa3af2569e4e0a5344315'),
+(89, 35, NULL, '2025-03-25 02:04:30', '3e6108b3b657a638ae68c2ccec989a48'),
+(90, 32, NULL, '2025-03-25 02:04:32', 'b2c2f9f67aa69af9928172e0bc96f847'),
+(91, 38, NULL, '2025-03-25 02:04:34', '521920020e1ec0ea3fd60d642c82ac9f'),
+(92, 38, 1, '2025-03-25 02:21:37', '9fedf0e9633b26d0d1fb5a68cfb2d924'),
+(93, 39, NULL, '2025-03-25 02:24:30', '19bbd81b74caf23fb273be3161630c16'),
+(94, 32, NULL, '2025-03-25 02:24:37', '19bbd81b74caf23fb273be3161630c16');
 
 --
 -- القوادح `media_views`
@@ -1050,8 +1303,8 @@ CREATE TABLE `payment_gateways` (
 --
 
 INSERT INTO `payment_gateways` (`id`, `name`, `display_name`, `description`, `is_active`, `test_mode`, `logo_url`, `config`, `created_at`, `updated_at`, `updated_by`) VALUES
-(1, 'paypal', 'PayPal', 'Accept payments via PayPal', 0, 1, '/assets/images/paypal-logo.png', '{\"live\": {\"client_id\": \"\", \"webhook_id\": \"\", \"client_secret\": \"\", \"webhook_secret\": \"\"}, \"test\": {\"client_id\": \"\", \"webhook_id\": \"\", \"client_secret\": \"\", \"webhook_secret\": \"\"}}', '2025-03-20 07:09:15', '2025-03-20 07:09:15', NULL),
-(2, 'stripe', 'Stripe', 'Accept credit card payments via Stripe', 0, 1, '/assets/images/stripe-logo.png', '{\"live\": {\"secret_key\": \"\", \"webhook_secret\": \"\", \"publishable_key\": \"\"}, \"test\": {\"secret_key\": \"\", \"webhook_secret\": \"\", \"publishable_key\": \"\"}}', '2025-03-20 07:09:15', '2025-03-20 07:09:15', NULL);
+(1, 'paypal', 'PayPal', 'Accept payments via PayPal', 0, 1, '/assets/images/paypal-logo.png', '{\"live\": {\"client_id\": \"\", \"webhook_id\": \"\", \"client_secret\": \"\", \"webhook_secret\": \"\"}, \"test\": {\"client_id\": \"ggggghhhh@gmail.com\", \"webhook_id\": \"\", \"client_secret\": \"Kaka198500\", \"webhook_secret\": \"\"}}', '2025-03-20 07:09:15', '2025-03-24 13:18:25', NULL),
+(2, 'stripe', 'Stripe', 'Accept credit card payments via Stripe', 0, 1, '/assets/images/stripe-logo.png', '{\"live\": {\"secret_key\": \"\", \"webhook_secret\": \"\", \"publishable_key\": \"\"}, \"test\": {\"secret_key\": \"Kaka198500\", \"webhook_secret\": \"\", \"publishable_key\": \"ggggghhhh@gmail.com\"}}', '2025-03-20 07:09:15', '2025-03-24 13:18:27', NULL);
 
 -- --------------------------------------------------------
 
@@ -1138,6 +1391,83 @@ CREATE TABLE `search_suggestions` (
 -- --------------------------------------------------------
 
 --
+-- بنية الجدول `seo_analysis`
+--
+
+CREATE TABLE `seo_analysis` (
+  `id` int NOT NULL,
+  `content_id` int NOT NULL,
+  `content_type` varchar(50) NOT NULL,
+  `title_score` int DEFAULT '0',
+  `description_score` int DEFAULT '0',
+  `keyword_score` int DEFAULT '0',
+  `content_score` int DEFAULT '0',
+  `total_score` int DEFAULT '0',
+  `recommendations` text,
+  `analyzed_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `seo_settings`
+--
+
+CREATE TABLE `seo_settings` (
+  `id` int NOT NULL,
+  `setting_name` varchar(100) NOT NULL,
+  `setting_value` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `seo_settings`
+--
+
+INSERT INTO `seo_settings` (`id`, `setting_name`, `setting_value`, `created_at`, `updated_at`) VALUES
+(1, 'sitemap_index', 'sitemap.xml', '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(2, 'sitemap_last_generated', '2025-03-25 03:12:45', '2025-03-24 10:50:18', '2025-03-25 02:12:45'),
+(3, 'robots_txt_content', 'User-agent: *\nDisallow: /admin/\nDisallow: /theme/admin/\nSitemap: https://mahrannnn.se/sitemap.xml', '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(4, 'meta_title_format', '{title} | {site_name}', '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(5, 'meta_description_format', '{excerpt}', '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(6, 'enable_ai_seo', '1', '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(7, 'ai_seo_last_run', NULL, '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(8, 'canonical_url_format', '{permalink}', '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(9, 'enable_schema_markup', '1', '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(10, 'enable_social_meta', '1', '2025-03-24 10:50:18', '2025-03-24 10:50:18');
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `sitemaps`
+--
+
+CREATE TABLE `sitemaps` (
+  `id` int NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `filename` varchar(100) NOT NULL,
+  `url_count` int DEFAULT '0',
+  `file_size` int DEFAULT '0',
+  `last_generated` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `sitemaps`
+--
+
+INSERT INTO `sitemaps` (`id`, `type`, `filename`, `url_count`, `file_size`, `last_generated`, `created_at`, `updated_at`) VALUES
+(1, 'content', 'sitemap-content.xml', 0, 0, NULL, '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(2, 'category', 'sitemap-categories.xml', 7, 1279, '2025-03-24 11:06:02', '2025-03-24 10:50:18', '2025-03-24 11:06:02'),
+(3, 'tag', 'sitemap-tags.xml', 11, 1892, '2025-03-24 11:54:49', '2025-03-24 10:50:18', '2025-03-24 11:54:49'),
+(4, 'author', 'sitemap-authors.xml', 0, 0, NULL, '2025-03-24 10:50:18', '2025-03-24 10:50:18'),
+(5, 'image', 'sitemap-images.xml', 0, 0, NULL, '2025-03-24 10:50:18', '2025-03-24 10:50:18');
+
+-- --------------------------------------------------------
+
+--
 -- بنية الجدول `site_settings`
 --
 
@@ -1184,7 +1514,7 @@ CREATE TABLE `site_settings` (
 --
 
 INSERT INTO `site_settings` (`id`, `site_name`, `site_title`, `site_description`, `site_keywords`, `site_url`, `site_email`, `google_analytics`, `latest_items_count`, `featured_wallpapers_count`, `featured_media_count`, `facebook_url`, `twitter_url`, `instagram_url`, `youtube_url`, `created_at`, `updated_at`, `created_by`, `updated_by`, `news_ticker_enabled`, `footer_content`, `site_logo`, `site_favicon`, `footer_text`, `header_menu_id`, `footer_menu_id`, `contact_email`, `dark_mode`, `maintenance_mode`, `language`, `enable_header`, `enable_footer`, `enable_navbar`, `enable_search_box`, `enable_categories`) VALUES
-(1, 'Wallpix', 'Mahran ALSarminy', 'Welcome to', 'website,portal,media', 'https://mahrannnn.se', 'admin@example.com', '', 10, 10, 10, 'https://www.facebook.com/unifaktoura/', 'https://twitter.com/unifaktoura', 'https://Instagram.com/unifaktoura', 'https://YouTube.com/unifaktoura', '2025-03-14 04:46:34', '2025-03-22 03:36:54', 'mahranalsarminy', '1', 1, 'All rights reserved 2025 © WallPix Media and Wallpaper Platform', 'logo-wallpix.png', '', 'hhhhhhhhhhhhhhhhhhhhh', 2, 2, '', 0, 0, 'en', 1, 1, 1, 1, 1);
+(1, 'Wallpix', 'High-Quality Mobile Wallpapers | HD Phone Backgrounds - Free Download', 'Discover a vast collection of high-quality images and wallpapers for mobile and desktop devices. Explore diverse categories like nature, technology, animals, travel, and more. Download stunning, free, high-resolution wallpapers that enhance your device\'s aesthetics and personalize your experience. Enjoy a user-friendly interface and an extensive selection designed to meet all your visual needs.', 'high-quality images, free wallpapers, mobile wallpapers, desktop backgrounds, nature wallpapers, technology images, animal wallpapers, travel backgrounds, HD wallpapers, stunning wallpapers, free downloads, high-resolution images, aesthetic wallpapers, custom wallpapers, personal wallpapers', 'https://mahrannnn.se', 'ggggghhhh@gmail.com', 'ممممممممممممممممممم', 5, 6, 6, 'https://www.facebook.com/unifaktoura/', 'https://twitter.com/unifaktoura', 'https://Instagram.com/unifaktoura', 'https://YouTube.com/unifaktoura', '2025-03-14 04:46:34', '2025-03-24 20:54:28', 'mahranalsarminy', '1', 1, 'WallPix Media and Wallpaper Platform', 'logo-wallpix.png', '', 'WallPix All rights reserved.', 2, 2, 'info@wallpix.top', 0, 0, 'en', 1, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -1229,7 +1559,10 @@ INSERT INTO `tags` (`id`, `name`, `slug`, `updated_by`, `created_by`, `created_a
 (18, 'muslim', 'muslim', NULL, NULL, '2025-03-16 05:52:24'),
 (19, 'islamic', 'islamic', NULL, NULL, '2025-03-16 05:59:00'),
 (20, 'mahran', 'mahran', NULL, 1, '2025-03-20 01:52:17'),
-(24, 'test2', 'test2', NULL, NULL, '2025-03-21 03:29:21');
+(24, 'test2', 'test2', NULL, NULL, '2025-03-21 03:29:21'),
+(27, 'عربي', 'tag-67e102958244a', NULL, NULL, '2025-03-24 06:58:29'),
+(28, 'paid', 'paid', NULL, NULL, '2025-03-24 19:56:48'),
+(29, '3', '3', NULL, NULL, '2025-03-24 20:40:01');
 
 -- --------------------------------------------------------
 
@@ -1279,10 +1612,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `profile_picture`, `role`, `created_at`, `bio`, `last_login`, `updated_at`, `active`, `last_ip`) VALUES
-(1, 'Admin', 'admin@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'uploads/profile_pictures/1_1742489124_logo-wallpix.png', 'admin', '2025-02-20 01:31:31', '', '2025-03-23 03:24:04', '2025-03-18 09:10:39', 1, '83.253.108.100'),
-(2, '', 'subscriber@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', NULL, 'subscriber', '2025-02-20 01:31:31', NULL, '2025-03-17 06:12:00', '2025-03-17 06:12:00', 1, NULL),
-(3, '', 'freeuser@example.com', '$ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', NULL, 'free_user', '2025-02-20 01:31:31', NULL, '2025-03-17 06:12:00', '2025-03-17 06:12:00', 1, NULL),
-(5, 'Test', 'ms.mamym@icloud.com', '$2y$10$iA7GWcnRIJsz0YcLwF26de4W9zQyaYOjkBFp8JkWFfaPAq9fwbofW', 'uploads/profile_pictures/5_1742493554_dc259757-534d-4ba5-aa80-e6bc4c644e71.jpeg', 'free_user', '2025-03-20 17:58:05', 'Mahran', '2025-03-20 18:40:37', NULL, 1, '194.11.199.107');
+(1, 'Admin', 'ggggghhhh@gmail.com', 'ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'uploads/profile_pictures/1_1742489124_logo-wallpix.png', 'admin', '2025-02-20 01:31:31', '', '2025-03-25 01:35:34', '2025-03-18 09:10:39', 1, '83.253.108.100'),
+(2, '', 'subscriber@example.com', 'ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', NULL, 'subscriber', '2025-02-20 01:31:31', NULL, '2025-03-17 06:12:00', '2025-03-17 06:12:00', 1, NULL),
+(3, '', 'freeuser@example.com', 'ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', NULL, 'free_user', '2025-02-20 01:31:31', NULL, '2025-03-17 06:12:00', '2025-03-17 06:12:00', 1, NULL),
+(5, 'Test', 'ggggg@gmail.com', 'ecfdscsdcdscdsvvczqJTQei98BpJATJIpmOrSs3', 'uploads/profile_pictures/5_1742493554_dc259757-534d-4ba5-aa80-e6bc4c644e71.jpeg', 'free_user', '2025-03-20 17:58:05', 'Mahran', '2025-03-24 14:06:11', NULL, 1, '194.11.199.70');
 
 -- --------------------------------------------------------
 
@@ -1356,6 +1689,20 @@ ALTER TABLE `about_content`
 ALTER TABLE `activities`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
+
+--
+-- فهارس للجدول `add_ons`
+--
+ALTER TABLE `add_ons`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `slug` (`slug`);
+
+--
+-- فهارس للجدول `add_on_updates`
+--
+ALTER TABLE `add_on_updates`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `add_on_id` (`add_on_id`);
 
 --
 -- فهارس للجدول `ads`
@@ -1480,18 +1827,10 @@ ALTER TABLE `media_batch_items`
   ADD KEY `media_id` (`media_id`);
 
 --
--- فهارس للجدول `media_categories`
---
-ALTER TABLE `media_categories`
-  ADD PRIMARY KEY (`media_id`,`category_id`),
-  ADD KEY `category_id` (`category_id`);
-
---
 -- فهارس للجدول `media_colors`
 --
 ALTER TABLE `media_colors`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_media_colors` (`media_id`),
   ADD KEY `fk_media_colors_media` (`media_id`),
   ADD KEY `fk_media_colors_color` (`color_id`);
 
@@ -1598,6 +1937,27 @@ ALTER TABLE `search_suggestions`
   ADD UNIQUE KEY `unique_keyword` (`keyword`);
 
 --
+-- فهارس للجدول `seo_analysis`
+--
+ALTER TABLE `seo_analysis`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `content_idx` (`content_id`,`content_type`);
+
+--
+-- فهارس للجدول `seo_settings`
+--
+ALTER TABLE `seo_settings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `setting_name_idx` (`setting_name`);
+
+--
+-- فهارس للجدول `sitemaps`
+--
+ALTER TABLE `sitemaps`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `type_idx` (`type`);
+
+--
 -- فهارس للجدول `site_settings`
 --
 ALTER TABLE `site_settings`
@@ -1660,19 +2020,31 @@ ALTER TABLE `about_content`
 -- AUTO_INCREMENT for table `activities`
 --
 ALTER TABLE `activities`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=302;
+
+--
+-- AUTO_INCREMENT for table `add_ons`
+--
+ALTER TABLE `add_ons`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `add_on_updates`
+--
+ALTER TABLE `add_on_updates`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `ads`
 --
 ALTER TABLE `ads`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `ad_placements`
 --
 ALTER TABLE `ad_placements`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -1684,13 +2056,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `colors`
 --
 ALTER TABLE `colors`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `contact_attempts`
 --
 ALTER TABLE `contact_attempts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `contact_blacklist`
@@ -1702,7 +2074,7 @@ ALTER TABLE `contact_blacklist`
 -- AUTO_INCREMENT for table `contact_messages`
 --
 ALTER TABLE `contact_messages`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `contact_settings`
@@ -1744,13 +2116,13 @@ ALTER TABLE `features`
 -- AUTO_INCREMENT for table `login_attempts`
 --
 ALTER TABLE `login_attempts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `media`
 --
 ALTER TABLE `media`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `media_batches`
@@ -1768,7 +2140,7 @@ ALTER TABLE `media_batch_items`
 -- AUTO_INCREMENT for table `media_colors`
 --
 ALTER TABLE `media_colors`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `media_color_types`
@@ -1780,7 +2152,7 @@ ALTER TABLE `media_color_types`
 -- AUTO_INCREMENT for table `media_downloads`
 --
 ALTER TABLE `media_downloads`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `media_licenses`
@@ -1792,7 +2164,7 @@ ALTER TABLE `media_licenses`
 -- AUTO_INCREMENT for table `media_views`
 --
 ALTER TABLE `media_views`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT for table `menus`
@@ -1855,6 +2227,24 @@ ALTER TABLE `search_suggestions`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `seo_analysis`
+--
+ALTER TABLE `seo_analysis`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `seo_settings`
+--
+ALTER TABLE `seo_settings`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `sitemaps`
+--
+ALTER TABLE `sitemaps`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `site_settings`
 --
 ALTER TABLE `site_settings`
@@ -1870,7 +2260,7 @@ ALTER TABLE `subscriptions`
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `terms_content`
@@ -1907,6 +2297,12 @@ ALTER TABLE `activities`
   ADD CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
+-- قيود الجداول `add_on_updates`
+--
+ALTER TABLE `add_on_updates`
+  ADD CONSTRAINT `fk_addon_updates` FOREIGN KEY (`add_on_id`) REFERENCES `add_ons` (`id`) ON DELETE CASCADE;
+
+--
 -- قيود الجداول `ad_placements`
 --
 ALTER TABLE `ad_placements`
@@ -1932,13 +2328,6 @@ ALTER TABLE `favorites`
 ALTER TABLE `media_batch_items`
   ADD CONSTRAINT `media_batch_items_ibfk_1` FOREIGN KEY (`batch_id`) REFERENCES `media_batches` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `media_batch_items_ibfk_2` FOREIGN KEY (`media_id`) REFERENCES `media` (`id`) ON DELETE SET NULL;
-
---
--- قيود الجداول `media_categories`
---
-ALTER TABLE `media_categories`
-  ADD CONSTRAINT `media_categories_ibfk_1` FOREIGN KEY (`media_id`) REFERENCES `media` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `media_categories_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
 
 --
 -- قيود الجداول `media_colors`

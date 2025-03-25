@@ -1,1904 +1,1775 @@
 <?php
 /**
- * Add New Media Page
+ * Media Add Page
  *
  * @package WallPix
  * @version 1.0.0
  */
+// تمكين تسجيل الأخطاء (للتطوير فقط)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Define the project root directory
+define('ROOT_DIR', dirname(dirname(__DIR__)));
+
+// Include necessary files
+require_once ROOT_DIR . '/includes/init.php';
+
+// Verify admin login
+require_admin();
+
+// Current user and datetime
+$current_user = $_SESSION['user_name'] ?? 'mahranalsarminy';
+$current_datetime = '2025-03-24 06:30:06'; // Using the provided UTC timestamp
 
 // Set page title
 $pageTitle = 'Add New Media';
 
-// Include header
-require_once '../../theme/admin/header.php';
-
-// Include sidebar
-require_once '../../theme/admin/slidbar.php';
-
-// Process form submission
-$successMessage = '';
-$errorMessage = '';
-$newMediaId = null;
-
 // Get categories for dropdown
-$stmt = $pdo->query("SELECT id, name, parent_id FROM categories WHERE is_active = 1 ORDER BY name");
+$stmt = $pdo->query("SELECT id, name FROM categories WHERE is_active = 1 ORDER BY sort_order ASC, name ASC");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get tags for dropdown
-$stmt = $pdo->query("SELECT id, name FROM tags ORDER BY name");
-$tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 // Get colors for dropdown
-$stmt = $pdo->query("SELECT id, color_name, hex_code FROM colors ORDER BY color_name");
+$stmt = $pdo->query("SELECT id, color_name, hex_code FROM colors ORDER BY color_name ASC");
 $colors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get resolutions for dropdown
-$stmt = $pdo->query("SELECT id, resolution FROM resolutions ORDER BY resolution");
-$resolutions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Get all tags for autocomplete suggestions
+$stmt = $pdo->query("SELECT name FROM tags ORDER BY name ASC");
+$all_tags = $stmt->fetchAll(PDO::FETCH_COLUMN);
+$tags_json = json_encode($all_tags);
 
-// Get watermark settings
-$stmt = $pdo->query("SELECT id, is_active FROM watermark_settings WHERE id = 1");
-$watermarkSettings = $stmt->fetch(PDO::FETCH_ASSOC);
-$watermarkEnabled = $watermarkSettings ? $watermarkSettings['is_active'] : 0;
+// Get licenses for dropdown
+$stmt = $pdo->query("SELECT id, name FROM media_licenses ORDER BY name ASC");
+$licenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Function to create slugs from titles
-function createSlug($string) {
-    // Replace non-alphanumeric characters with hyphens
-    $slug = preg_replace('/[^A-Za-z0-9-]+/', '-', $string);
-    // Convert to lowercase
-    $slug = strtolower($slug);
-    // Remove leading/trailing hyphens
-    $slug = trim($slug, '-');
-    // If empty, use a default
-    if (empty($slug)) {
-        $slug = 'media-' . time();
-    }
-    return $slug;
-}
+// Get predefined resolutions
+$resolutions = [
+    'HD' => '1280x720',
+    'Full HD' => '1920x1080',
+    'QHD' => '2560x1440',
+    '4K UHD' => '3840x2160',
+    '8K UHD' => '7680x4320',
+    'Mobile HD' => '750x1334',
+    'Mobile Full HD' => '1080x1920',
+    'Mobile QHD' => '1440x2560',
+    'Mobile 4K' => '2160x3840',
+    'Square Small' => '600x600',
+    'Square Medium' => '1080x1080',
+    'Square Large' => '2000x2000'
+];
 
-// Function to create nested category dropdown
-function buildCategoryOptions($categories, $parent = null, $indent = '') {
-    $html = '';
-    foreach ($categories as $category) {
-        if (($parent === null && $category['parent_id'] === null) || $category['parent_id'] === $parent) {
-            $html .= '<option value="' . $category['id'] . '">' . $indent . htmlspecialchars($category['name']) . '</option>';
-            
-            // Find children
-            $html .= buildCategoryOptions($categories, $category['id'], $indent . '&nbsp;&nbsp;&nbsp;');
-        }
-    }
-    return $html;
-}
+// Supported file formats
+$supported_types = [
+    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+    'video/mp4', 'video/webm', 'video/ogg'
+];
+$supported_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'mp4', 'webm', 'ogg'];
 
-// Function to generate a thumbnail from an uploaded image
-function generateThumbnail($sourcePath, $targetPath, $width = 300, $height = 200) {
-    list($sourceWidth, $sourceHeight, $sourceType) = getimagesize($sourcePath);
+// Helper function to create thumbnail
+function create_thumbnail($source_path, $thumb_path, $max_size = 300) {
+    // Get image type
+    $image_info = getimagesize($source_path);
+    $image_type = $image_info[2];
     
-    // Calculate new dimensions maintaining aspect ratio
-    $ratio = min($width / $sourceWidth, $height / $sourceHeight);
-    $newWidth = (int)($sourceWidth * $ratio);
-    $newHeight = (int)($sourceHeight * $ratio);
-    
-    // Create new image based on file type
-    switch ($sourceType) {
-        case IMAGETYPE_JPEG:
-            $sourceImage = imagecreatefromjpeg($sourcePath);
-            break;
-        case IMAGETYPE_PNG:
-            $sourceImage = imagecreatefrompng($sourcePath);
-            break;
-        case IMAGETYPE_GIF:
-            $sourceImage = imagecreatefromgif($sourcePath);
-            break;
-        case IMAGETYPE_WEBP:
-            $sourceImage = imagecreatefromwebp($sourcePath);
-            break;
-        default:
-            return false;
+    // Create source image based on file type
+    if ($image_type == IMAGETYPE_JPEG) {
+        $source_image = imagecreatefromjpeg($source_path);
+    } elseif ($image_type == IMAGETYPE_PNG) {
+        $source_image = imagecreatefrompng($source_path);
+    } elseif ($image_type == IMAGETYPE_GIF) {
+        $source_image = imagecreatefromgif($source_path);
+    } elseif ($image_type == IMAGETYPE_WEBP && function_exists('imagecreatefromwebp')) {
+        $source_image = imagecreatefromwebp($source_path);
+    } else {
+        return false;
     }
     
-    // Create new true color image
-    $targetImage = imagecreatetruecolor($newWidth, $newHeight);
+    // Get dimensions
+    $source_width = imagesx($source_image);
+    $source_height = imagesy($source_image);
     
-    // Preserve transparency for PNG images
-    if ($sourceType == IMAGETYPE_PNG) {
-        imagealphablending($targetImage, false);
-        imagesavealpha($targetImage, true);
-        $transparent = imagecolorallocatealpha($targetImage, 255, 255, 255, 127);
-        imagefilledrectangle($targetImage, 0, 0, $newWidth, $newHeight, $transparent);
+    // Calculate thumbnail dimensions
+    if ($source_width > $source_height) {
+        $thumb_width = $max_size;
+        $thumb_height = intval($source_height * ($max_size / $source_width));
+    } else {
+        $thumb_height = $max_size;
+        $thumb_width = intval($source_width * ($max_size / $source_height));
     }
     
-    // Resize the image
-    imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $sourceWidth, $sourceHeight);
+    // Create thumbnail
+    $thumb_image = imagecreatetruecolor($thumb_width, $thumb_height);
     
-    // Save the thumbnail
-    switch ($sourceType) {
-        case IMAGETYPE_JPEG:
-            imagejpeg($targetImage, $targetPath, 90);
-            break;
-        case IMAGETYPE_PNG:
-            imagepng($targetImage, $targetPath, 9);
-            break;
-        case IMAGETYPE_GIF:
-            imagegif($targetImage, $targetPath);
-            break;
-        case IMAGETYPE_WEBP:
-            imagewebp($targetImage, $targetPath, 80);
-            break;
+    // Preserve transparency for PNG and GIF
+    if ($image_type == IMAGETYPE_PNG || $image_type == IMAGETYPE_GIF) {
+        imagealphablending($thumb_image, false);
+        imagesavealpha($thumb_image, true);
+        $transparent = imagecolorallocatealpha($thumb_image, 255, 255, 255, 127);
+        imagefilledrectangle($thumb_image, 0, 0, $thumb_width, $thumb_height, $transparent);
+    }
+    
+    // Resize
+    imagecopyresampled(
+        $thumb_image, $source_image,
+        0, 0, 0, 0,
+        $thumb_width, $thumb_height, $source_width, $source_height
+    );
+    
+    // Save thumbnail
+    if ($image_type == IMAGETYPE_JPEG) {
+        imagejpeg($thumb_image, $thumb_path, 90);
+    } elseif ($image_type == IMAGETYPE_PNG) {
+        imagepng($thumb_image, $thumb_path, 9);
+    } elseif ($image_type == IMAGETYPE_GIF) {
+        imagegif($thumb_image, $thumb_path);
+    } elseif ($image_type == IMAGETYPE_WEBP && function_exists('imagewebp')) {
+        imagewebp($thumb_image, $thumb_path, 80);
     }
     
     // Free memory
-    imagedestroy($sourceImage);
-    imagedestroy($targetImage);
+    imagedestroy($source_image);
+    imagedestroy($thumb_image);
     
     return true;
 }
 
-// Function to extract dominant colors from an image
-function extractDominantColors($imagePath) {
-    // Default values in case extraction fails
-    $primaryColor = '#FFFFFF';
-    $secondaryColor = '#000000';
-    $isDark = 0;
-    
-    try {
-        list($width, $height, $type) = getimagesize($imagePath);
-        
-        // Create image resource
-        switch ($type) {
-            case IMAGETYPE_JPEG:
-                $image = imagecreatefromjpeg($imagePath);
-                break;
-            case IMAGETYPE_PNG:
-                $image = imagecreatefrompng($imagePath);
-                break;
-            case IMAGETYPE_GIF:
-                $image = imagecreatefromgif($imagePath);
-                break;
-            case IMAGETYPE_WEBP:
-                $image = imagecreatefromwebp($imagePath);
-                break;
-            default:
-                return ['primary' => $primaryColor, 'secondary' => $secondaryColor, 'is_dark' => $isDark];
-        }
-        
-        // Resize for faster processing
-        $newWidth = 100;
-        $newHeight = 100;
-        $resized = imagecreatetruecolor($newWidth, $newHeight);
-        imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-        
-        // Get colors
-        $colorCount = [];
-        for ($x = 0; $x < $newWidth; $x++) {
-            for ($y = 0; $y < $newHeight; $y++) {
-                $rgb = imagecolorat($resized, $x, $y);
-                $r = ($rgb >> 16) & 0xFF;
-                $g = ($rgb >> 8) & 0xFF;
-                $b = $rgb & 0xFF;
-                
-                // Skip very light or dark pixels
-                if (($r + $g + $b) < 50 || ($r + $g + $b) > 700) {
-                    continue;
-                }
-                
-                // Convert to hex and count
-                $hex = sprintf("#%02x%02x%02x", $r, $g, $b);
-                if (!isset($colorCount[$hex])) {
-                    $colorCount[$hex] = 1;
-                } else {
-                    $colorCount[$hex]++;
-                }
-            }
-        }
-        
-        // Sort colors by count
-        arsort($colorCount);
-        
-        // Get primary and secondary colors
-        $colors = array_keys($colorCount);
-        $primaryColor = isset($colors[0]) ? $colors[0] : $primaryColor;
-        $secondaryColor = isset($colors[1]) ? $colors[1] : (isset($colors[0]) ? $colors[0] : $secondaryColor);
-        
-        // Calculate brightness of primary color
-        $r = hexdec(substr($primaryColor, 1, 2));
-        $g = hexdec(substr($primaryColor, 3, 2));
-        $b = hexdec(substr($primaryColor, 5, 2));
-        $brightness = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
-        $isDark = ($brightness < 128) ? 1 : 0;
-        
-        // Free memory
-        imagedestroy($image);
-        imagedestroy($resized);
-        
-        return ['primary' => $primaryColor, 'secondary' => $secondaryColor, 'is_dark' => $isDark];
-    } catch (Exception $e) {
-        return ['primary' => $primaryColor, 'secondary' => $secondaryColor, 'is_dark' => $isDark];
+// Helper function to format file size
+function format_file_size($size) {
+    $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    $i = 0;
+    while ($size >= 1024 && $i < count($units) - 1) {
+        $size /= 1024;
+        $i++;
     }
+    return round($size, 2) . ' ' . $units[$i];
 }
 
-// Apply watermark to image
-function applyWatermark($imagePath, $watermarkSettings) {
-    // This would be implemented based on your watermark settings
-    // Basic implementation here - full version would need to be expanded
-    try {
-        list($width, $height, $type) = getimagesize($imagePath);
-        
-        // Create image resource
-        switch ($type) {
-            case IMAGETYPE_JPEG:
-                $image = imagecreatefromjpeg($imagePath);
-                break;
-            case IMAGETYPE_PNG:
-                $image = imagecreatefrompng($imagePath);
-                break;
-            case IMAGETYPE_GIF:
-                $image = imagecreatefromgif($imagePath);
-                break;
-            case IMAGETYPE_WEBP:
-                $image = imagecreatefromwebp($imagePath);
-                break;
-            default:
-                return false;
-        }
-        
-        // If text watermark
-        if ($watermarkSettings['type'] === 'text') {
-            $text = $watermarkSettings['text_content'];
-            $font = __DIR__ . '/../../assets/fonts/arial.ttf'; // Adjust path to your font
-            $fontSize = $watermarkSettings['text_size'];
-            
-            // Convert hex color to rgb
-            $color = $watermarkSettings['text_color'];
-            $r = hexdec(substr($color, 1, 2));
-            $g = hexdec(substr($color, 3, 2));
-            $b = hexdec(substr($color, 5, 2));
-            
-            // Create color with opacity
-            $textColor = imagecolorallocatealpha($image, $r, $g, $b, (1 - $watermarkSettings['text_opacity']) * 127);
-            
-            // Calculate position based on settings
-            switch ($watermarkSettings['position']) {
-                case 'top-left':
-                    $x = $watermarkSettings['padding'];
-                    $y = $fontSize + $watermarkSettings['padding'];
-                    break;
-                case 'top-right':
-                    $box = imagettfbbox($fontSize, 0, $font, $text);
-                    $textWidth = $box[2] - $box[0];
-                    $x = $width - $textWidth - $watermarkSettings['padding'];
-                    $y = $fontSize + $watermarkSettings['padding'];
-                    break;
-                case 'bottom-left':
-                    $x = $watermarkSettings['padding'];
-                    $y = $height - $watermarkSettings['padding'];
-                    break;
-                case 'bottom-right':
-                    $box = imagettfbbox($fontSize, 0, $font, $text);
-                    $textWidth = $box[2] - $box[0];
-                    $x = $width - $textWidth - $watermarkSettings['padding'];
-                    $y = $height - $watermarkSettings['padding'];
-                    break;
-                case 'center':
-                    $box = imagettfbbox($fontSize, 0, $font, $text);
-                    $textWidth = $box[2] - $box[0];
-                    $x = ($width - $textWidth) / 2;
-                    $y = ($height + $fontSize) / 2;
-                    break;
-                case 'full':
-                    // For full, we would add multiple watermarks in a pattern
-                    // Basic implementation would add one
-                    $x = $width / 2;
-                    $y = $height / 2;
-                    break;
-            }
-            
-            // Add text watermark
-            imagettftext($image, $fontSize, 0, $x, $y, $textColor, $font, $text);
-        }
-        // If image watermark
-        else if ($watermarkSettings['type'] === 'image' && !empty($watermarkSettings['image_path'])) {
-            $watermarkPath = __DIR__ . '/../..' . $watermarkSettings['image_path'];
-            
-            if (file_exists($watermarkPath)) {
-                // Get watermark image info
-                $watermarkInfo = getimagesize($watermarkPath);
-                $watermarkType = $watermarkInfo[2];
-                
-                // Create watermark image resource
-                switch ($watermarkType) {
-                    case IMAGETYPE_JPEG:
-                        $watermark = imagecreatefromjpeg($watermarkPath);
-                        break;
-                    case IMAGETYPE_PNG:
-                        $watermark = imagecreatefrompng($watermarkPath);
-                        break;
-                    case IMAGETYPE_GIF:
-                        $watermark = imagecreatefromgif($watermarkPath);
-                        break;
-                    case IMAGETYPE_WEBP:
-                        $watermark = imagecreatefromwebp($watermarkPath);
-                        break;
-                    default:
-                        return false;
-                }
-                
-                // Set opacity
-                imagealphablending($watermark, false);
-                imagesavealpha($watermark, true);
-                
-                // Get watermark dimensions
-                $watermarkWidth = imagesx($watermark);
-                $watermarkHeight = imagesy($watermark);
-                
-                // Calculate position based on settings
-                switch ($watermarkSettings['position']) {
-                    case 'top-left':
-                        $x = $watermarkSettings['padding'];
-                        $y = $watermarkSettings['padding'];
-                        break;
-                    case 'top-right':
-                        $x = $width - $watermarkWidth - $watermarkSettings['padding'];
-                        $y = $watermarkSettings['padding'];
-                        break;
-                    case 'bottom-left':
-                        $x = $watermarkSettings['padding'];
-                        $y = $height - $watermarkHeight - $watermarkSettings['padding'];
-                        break;
-                    case 'bottom-right':
-                        $x = $width - $watermarkWidth - $watermarkSettings['padding'];
-                        $y = $height - $watermarkHeight - $watermarkSettings['padding'];
-                        break;
-                    case 'center':
-                        $x = ($width - $watermarkWidth) / 2;
-                        $y = ($height - $watermarkHeight) / 2;
-                        break;
-                    case 'full':
-                        // For full, add multiple watermarks in a pattern
-                        // Basic implementation would add one
-                        $x = $width / 2 - $watermarkWidth / 2;
-                        $y = $height / 2 - $watermarkHeight / 2;
-                        break;
-                }
-                
-                // Add image watermark with opacity
-                imagecopymerge($image, $watermark, $x, $y, 0, 0, $watermarkWidth, $watermarkHeight, $watermarkSettings['image_opacity'] * 100);
-                
-                // Free memory
-                imagedestroy($watermark);
-            }
-        }
-        
-        // Save the watermarked image
-        switch ($type) {
-            case IMAGETYPE_JPEG:
-                imagejpeg($image, $imagePath, 90);
-                break;
-            case IMAGETYPE_PNG:
-                imagepng($image, $imagePath, 9);
-                break;
-            case IMAGETYPE_GIF:
-                imagegif($image, $imagePath);
-                break;
-            case IMAGETYPE_WEBP:
-                imagewebp($image, $imagePath, 80);
-                break;
-        }
-        
-        // Free memory
-        imagedestroy($image);
-        
-        return true;
-    } catch (Exception $e) {
-        return false;
+// Helper function to create a slug from text
+function create_slug($text) {
+    // Convert to lowercase
+    $slug = strtolower($text);
+    // Replace non-alphanumeric characters with hyphens
+    $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+    // Remove leading/trailing hyphens
+    $slug = trim($slug, '-');
+    // If empty, provide a default
+    if (empty($slug)) {
+        $slug = 'tag-' . uniqid();
     }
+    return $slug;
 }
-
-// Function to add a new tag if it doesn't exist
-function addNewTag($pdo, $tagName) {
-    // Check if tag already exists
-    $stmt = $pdo->prepare("SELECT id FROM tags WHERE name = :name");
-    $stmt->execute([':name' => $tagName]);
-    $existingTag = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if ($existingTag) {
-        return $existingTag['id'];
-    }
-    
-    // Create the new tag
-    $stmt = $pdo->prepare("
-        INSERT INTO tags (name, created_at) 
-        VALUES (:name, NOW())
-    ");
-    $stmt->execute([':name' => $tagName]);
-    
-    // Log the activity
-    $userId = $_SESSION['user_id'] ?? 1; // Default to admin if not set
-    $newTagId = $pdo->lastInsertId();
-    $stmt = $pdo->prepare("
-        INSERT INTO activities (user_id, description, created_at)
-        VALUES (:user_id, :description, NOW())
-    ");
-    $stmt->execute([
-        ':user_id' => $userId,
-        ':description' => "Added new tag: {$tagName} (ID: {$newTagId})"
-    ]);
-    
-    return $newTagId;
-}
-
 // Process form submission
+$errors = [];
+$success = false;
+$batch_results = [];
+$batch_mode = false;
+$uploadMode = isset($_POST['upload_mode']) ? $_POST['upload_mode'] : 'single';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        // Start transaction
-        $pdo->beginTransaction();
-        
-        // Get form data
-        $title = trim($_POST['title'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $categoryId = (int)($_POST['category_id'] ?? 0);
-        $backgroundColorHex = $_POST['background_color'] ?? '#FFFFFF';
-        $featured = isset($_POST['featured']) ? 1 : 0;
-        $orientation = $_POST['orientation'] ?? 'portrait';
-        $owner = trim($_POST['owner'] ?? '');
-        $license = trim($_POST['license'] ?? '');
-        $publishDate = $_POST['publish_date'] ?? date('Y-m-d');
-        $paidContent = isset($_POST['paid_content']) ? 1 : 0;
-        $status = isset($_POST['status']) ? 1 : 0;
-        $aiEnhanced = isset($_POST['ai_enhanced']) ? 1 : 0;
-        $uploadType = $_POST['upload_type'] ?? 'file';
-        $applyWatermark = isset($_POST['apply_watermark']) ? 1 : 0;
-        $selectedCategories = $_POST['additional_categories'] ?? [];
-        $resolution_id = (int)($_POST['resolution_id'] ?? 0);
-        
-        // Generate slug from title
-        $slug = createSlug($title);
-        
-        // Add primary category to selected categories if not already there
-        if ($categoryId && !in_array($categoryId, $selectedCategories)) {
-            array_unshift($selectedCategories, $categoryId);
-        }
-        
-        // Validate required fields
-        if (empty($title)) {
-            throw new Exception('Title is required.');
-        }
-        
-        $filePath = '';
-        $fileName = '';
-        $fileType = '';
-        $fileSize = '';
-        $thumbnailUrl = '';
+    // Check if we're in batch mode
+    $batch_mode = ($uploadMode === 'batch');
+    
+    // Common values for all uploads
+    $category_id = intval($_POST['category_id'] ?? 0);
+    $orientation = $_POST['orientation'] ?? 'portrait';
+    $background_color = $_POST['background_color'] ?? '#FFFFFF';
+    $resolution = $_POST['resolution'] ?? '';
+    $custom_width = intval($_POST['custom_width'] ?? 0);
+    $custom_height = intval($_POST['custom_height'] ?? 0);
+    $owner = trim($_POST['owner'] ?? '');
+    $license = trim($_POST['license'] ?? '');
+    $featured = isset($_POST['featured']) ? 1 : 0;
+    $status = isset($_POST['status']) ? 1 : 0;
+    $paid_content = isset($_POST['paid_content']) ? 1 : 0;
+    $watermark_text = trim($_POST['watermark_text'] ?? '');
+    $ai_enhanced = isset($_POST['ai_enhanced']) ? 1 : 0;
+    $tag_input = trim($_POST['tag_input'] ?? '');
+    $selected_colors = $_POST['colors'] ?? [];
+    $size_type = $_POST['size_type'] ?? '';
+    
+    // Set width and height based on resolution
+    if ($resolution === 'custom' && ($custom_width > 0 && $custom_height > 0)) {
+        $width = $custom_width;
+        $height = $custom_height;
+    } elseif (!empty($resolution) && isset($resolutions[$resolution])) {
+        list($width, $height) = explode('x', $resolutions[$resolution]);
+    } else {
         $width = '';
         $height = '';
-        
-        // Handle file upload
-        if ($uploadType === 'file' && isset($_FILES['media_file']) && $_FILES['media_file']['error'] === 0) {
-            $uploadDir = __DIR__ . '/../../uploads/media/' . date('Y/m') . '/';
-            $thumbnailDir = __DIR__ . '/../../uploads/thumbnails/' . date('Y/m') . '/';
-            
-            // Create directories if they don't exist
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
+    }
+    
+    // Process tags (comma-separated)
+    $tags = [];
+    if (!empty($tag_input)) {
+        $tag_names = array_map('trim', explode(',', $tag_input));
+        foreach ($tag_names as $tag_name) {
+            if (!empty($tag_name)) {
+                $tags[] = $tag_name;
             }
-            if (!is_dir($thumbnailDir)) {
-                mkdir($thumbnailDir, 0755, true);
-            }
+        }
+    }
+    
+    // Validate required fields
+    if (empty($category_id)) {
+        $errors[] = 'Category is required';
+    }
+    
+    if (empty($errors)) {
+        try {
+            // Start transaction
+            $pdo->beginTransaction();
             
-            // Get file info
-            $originalFileName = $_FILES['media_file']['name'];
-            $fileSize = $_FILES['media_file']['size'];
-            $fileTmpName = $_FILES['media_file']['tmp_name'];
-            $fileType = $_FILES['media_file']['type'];
-            
-            // Generate unique filename
-            $uniqid = uniqid();
-            $fileName = $uniqid . '_' . basename($originalFileName);
-            $filePath = '/uploads/media/' . date('Y/m') . '/' . $fileName;
-            $fullFilePath = $uploadDir . $fileName;
-            
-            // Move the uploaded file
-            if (move_uploaded_file($fileTmpName, $fullFilePath)) {
-                // Generate thumbnail for images
-                if (strpos($fileType, 'image/') === 0) {
-                    $thumbnailName = 'thumb_' . $fileName;
-                    $thumbnailPath = $thumbnailDir . $thumbnailName;
-                    $thumbnailUrl = '/uploads/thumbnails/' . date('Y/m') . '/' . $thumbnailName;
+            if ($batch_mode) {
+                // Batch upload mode processing
+                if (!empty($_FILES['batch_files']['name'][0])) {
+                    // Create batch record
+                    $batch_name = "Batch Upload - " . date('Y-m-d H:i:s');
+                    $batch_stmt = $pdo->prepare("INSERT INTO media_batches (batch_name, user_id, status, total_files, created_at) VALUES (?, ?, 'processing', ?, NOW())");
+                    $batch_stmt->execute([$batch_name, $_SESSION['user_id'] ?? 1, count($_FILES['batch_files']['name'])]);
+                    $batch_id = $pdo->lastInsertId();
                     
-                    if (generateThumbnail($fullFilePath, $thumbnailPath)) {
-                        // Get image dimensions
-                        list($width, $height) = getimagesize($fullFilePath);
-                        
-                        // Apply watermark if enabled and requested
-                        if ($watermarkEnabled && $applyWatermark) {
-                            $stmt = $pdo->query("SELECT * FROM watermark_settings WHERE id = 1");
-                            $watermarkSettings = $stmt->fetch(PDO::FETCH_ASSOC);
+                    // Process each file in the batch
+                    for ($i = 0; $i < count($_FILES['batch_files']['name']); $i++) {
+                        if ($_FILES['batch_files']['error'][$i] === UPLOAD_ERR_OK) {
+                            $file_name = uniqid() . '_' . basename($_FILES['batch_files']['name'][$i]);
+                            $file_type = $_FILES['batch_files']['type'][$i];
+                            $file_tmp = $_FILES['batch_files']['tmp_name'][$i];
+                            $file_error = $_FILES['batch_files']['error'][$i];
+                            $file_size = $_FILES['batch_files']['size'][$i];
                             
-                            if ($watermarkSettings && $watermarkSettings['apply_to_new']) {
-                                applyWatermark($fullFilePath, $watermarkSettings);
+                            // Extract title from filename (without extension)
+                            $file_title = pathinfo($_FILES['batch_files']['name'][$i], PATHINFO_FILENAME);
+                            $file_title = str_replace(['_', '-'], ' ', $file_title);
+                            $file_title = ucfirst($file_title);
+                            
+                            // Create a record in media_batch_items
+                            $batch_item_stmt = $pdo->prepare("INSERT INTO media_batch_items (batch_id, file_name, status, created_at) VALUES (?, ?, 'pending', NOW())");
+                            $batch_item_stmt->execute([$batch_id, $_FILES['batch_files']['name'][$i]]);
+                            $batch_item_id = $pdo->lastInsertId();
+                            
+                            // Check if it's a supported file type
+                            $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                            
+                            if (!in_array($file_type, $supported_types) && !in_array($file_extension, $supported_extensions)) {
+                                $update_item_stmt = $pdo->prepare("UPDATE media_batch_items SET status = 'failed', error_message = ? WHERE id = ?");
+                                $update_item_stmt->execute(["Unsupported file type: {$file_type}", $batch_item_id]);
+                                $batch_results[] = ["file" => $_FILES['batch_files']['name'][$i], "status" => "failed", "message" => "Unsupported file type"];
+                                continue;
                             }
-                        }
-                        
-                        // Extract dominant colors
-                        $dominantColors = extractDominantColors($fullFilePath);
-                    }
-                } else {
-                    // For non-image files, use a generic thumbnail based on file type
-                    $thumbnailUrl = '/assets/images/file-thumbnails/' . getFileTypeIcon($fileType);
-                }
-            } else {
-                throw new Exception('Failed to upload file.');
-            }
-        } else if ($uploadType === 'collection') {
-            // For collection upload, we'll create a main record and handle attached files
-            // Process collection files
-            $collectionFiles = $_FILES['collection_files'] ?? [];
-            
-            // Validate at least one file is uploaded
-            if (empty($collectionFiles['name'][0])) {
-                throw new Exception('Please upload at least one file in the collection.');
-            }
-            
-            // We'll use the first file as the main media
-            $fileTmpName = $collectionFiles['tmp_name'][0];
-            $originalFileName = $collectionFiles['name'][0];
-            $fileSize = $collectionFiles['size'][0];
-            $fileType = $collectionFiles['type'][0];
-            
-            $uploadDir = __DIR__ . '/../../uploads/media/' . date('Y/m') . '/';
-            $thumbnailDir = __DIR__ . '/../../uploads/thumbnails/' . date('Y/m') . '/';
-            
-            // Create directories if they don't exist
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            if (!is_dir($thumbnailDir)) {
-                mkdir($thumbnailDir, 0755, true);
-            }
-            
-            // Generate unique filename for the main file
-            $uniqid = uniqid();
-            $fileName = $uniqid . '_' . basename($originalFileName);
-            $filePath = '/uploads/media/' . date('Y/m') . '/' . $fileName;
-            $fullFilePath = $uploadDir . $fileName;
-            
-            // Move the main file
-            if (move_uploaded_file($fileTmpName, $fullFilePath)) {
-                // Generate thumbnail for images
-                if (strpos($fileType, 'image/') === 0) {
-                    $thumbnailName = 'thumb_' . $fileName;
-                    $thumbnailPath = $thumbnailDir . $thumbnailName;
-                    $thumbnailUrl = '/uploads/thumbnails/' . date('Y/m') . '/' . $thumbnailName;
-                    
-                    if (generateThumbnail($fullFilePath, $thumbnailPath)) {
-                        // Get image dimensions
-                        list($width, $height) = getimagesize($fullFilePath);
-                        
-                        // Apply watermark if enabled and requested
-                        if ($watermarkEnabled && $applyWatermark) {
-                            $stmt = $pdo->query("SELECT * FROM watermark_settings WHERE id = 1");
-                            $watermarkSettings = $stmt->fetch(PDO::FETCH_ASSOC);
                             
-                            if ($watermarkSettings && $watermarkSettings['apply_to_new']) {
-                                applyWatermark($fullFilePath, $watermarkSettings);
+                            // Upload directory
+                            $upload_dir = '../../uploads/media/' . date('Y/m/');
+                            if (!is_dir($upload_dir)) {
+                                mkdir($upload_dir, 0755, true);
                             }
-                        }
-                        
-                        // Extract dominant colors
-                        $dominantColors = extractDominantColors($fullFilePath);
-                    }
-                }
-            } else {
-                throw new Exception('Failed to upload main file in collection.');
-            }
-            
-            // Store collection data to process after main media insertion
-            $collectionData = [
-                'files' => $collectionFiles,
-                'count' => count($collectionFiles['name'])
-            ];
-        } else {
-            throw new Exception('Please upload a file or collection.');
-        }
-        
-        // Handle input tags - convert to array of IDs (existing + new)
-        $tagIds = [];
-        if (!empty($_POST['tag_input'])) {
-            $tagNames = explode(',', $_POST['tag_input']);
-            foreach ($tagNames as $tagName) {
-                $tagName = trim($tagName);
-                if (!empty($tagName)) {
-                    // Check if tag exists or add new
-                    $tagIds[] = addNewTag($pdo, $tagName);
-                }
-            }
-        }
-        
-        // Insert into media table
-        $stmt = $pdo->prepare("
-            INSERT INTO media (
-                title, description, category_id, file_name, file_path, file_type, file_size, 
-                thumbnail_url, status, featured, width, height, background_color, orientation, 
-                owner, license, publish_date, paid_content, created_by, ai_enhanced, resolution_id,
-                slug, created_at
-            ) VALUES (
-                :title, :description, :category_id, :file_name, :file_path, :file_type, :file_size, 
-                :thumbnail_url, :status, :featured, :width, :height, :background_color, :orientation, 
-                :owner, :license, :publish_date, :paid_content, :created_by, :ai_enhanced, :resolution_id,
-                :slug, NOW()
-            )
-        ");
-        
-        $stmt->execute([
-            ':title' => $title,
-            ':description' => $description,
-            ':category_id' => $categoryId,
-            ':file_name' => $fileName,
-            ':file_path' => $filePath,
-            ':file_type' => $fileType,
-            ':file_size' => $fileSize,
-            ':thumbnail_url' => $thumbnailUrl,
-            ':status' => $status,
-            ':featured' => $featured,
-            ':width' => $width,
-            ':height' => $height,
-            ':background_color' => $backgroundColorHex,
-            ':orientation' => $orientation,
-            ':owner' => $owner,
-            ':license' => $license,
-            ':publish_date' => $publishDate,
-            ':paid_content' => $paidContent,
-            ':created_by' => $_SESSION['user_id'] ?? 1,
-            ':ai_enhanced' => $aiEnhanced,
-            ':resolution_id' => $resolution_id,
-            ':slug' => $slug
-        ]);
-        
-        $newMediaId = $pdo->lastInsertId();
-        
-        // Insert dominant colors if available
-        if (isset($dominantColors) && $newMediaId) {
-            $stmt = $pdo->prepare("
-                INSERT INTO media_colors (
-                    media_id, primary_color, secondary_color, is_dark, created_at
-                ) VALUES (
-                    :media_id, :primary_color, :secondary_color, :is_dark, NOW()
-                )
-            ");
-            
-            $stmt->execute([
-                ':media_id' => $newMediaId,
-                ':primary_color' => $dominantColors['primary'],
-                ':secondary_color' => $dominantColors['secondary'],
-                ':is_dark' => $dominantColors['is_dark']
-            ]);
-        }
-        
-        // Insert tags
-        if (!empty($tagIds)) {
-            $insertTagStmt = $pdo->prepare("
-                INSERT INTO media_tags (media_id, tag_id, created_by)
-                VALUES (:media_id, :tag_id, :created_by)
-            ");
-            
-            foreach ($tagIds as $tagId) {
-                $insertTagStmt->execute([
-                    ':media_id' => $newMediaId,
-                    ':tag_id' => (int)$tagId,
-                    ':created_by' => $_SESSION['user_id'] ?? null
-                ]);
-            }
-        }
-        
-        // Process additional collection files if present
-        if (isset($collectionData) && $collectionData['count'] > 1) {
-            // Skip the first file as it's already processed
-            for ($i = 1; $i < $collectionData['count']; $i++) {
-                if ($collectionData['error'][$i] === 0) {
-                    $collectionFileTmp = $collectionData['files']['tmp_name'][$i];
-                    $collectionFileName = $collectionData['files']['name'][$i];
-                    $collectionFileSize = $collectionData['files']['size'][$i];
-                    $collectionFileType = $collectionData['files']['type'][$i];
-                    
-                    // Generate unique filename for each collection file
-                    $collUniqid = uniqid();
-                    $collFileName = $collUniqid . '_' . basename($collectionFileName);
-                    $collFilePath = '/uploads/media/' . date('Y/m') . '/' . $collFileName;
-                    $collFullFilePath = $uploadDir . $collFileName;
-                    
-                    // Create collection item record
-                    if (move_uploaded_file($collectionFileTmp, $collFullFilePath)) {
-                        // Generate thumbnail if it's an image
-                        $collThumbnailUrl = '';
-                        $collWidth = '';
-                        $collHeight = '';
-                        
-                        if (strpos($collectionFileType, 'image/') === 0) {
-                            $collThumbnailName = 'thumb_' . $collFileName;
-                            $collThumbnailPath = $thumbnailDir . $collThumbnailName;
-                            $collThumbnailUrl = '/uploads/thumbnails/' . date('Y/m') . '/' . $collThumbnailName;
                             
-                            if (generateThumbnail($collFullFilePath, $collThumbnailPath)) {
-                                list($collWidth, $collHeight) = getimagesize($collFullFilePath);
+                            $file_path = $upload_dir . $file_name;
+                            $relative_path = '/uploads/media/' . date('Y/m/') . $file_name;
+                            
+                            // Move uploaded file
+                            if (move_uploaded_file($file_tmp, $file_path)) {
+                                $thumbnail_url = '';
                                 
-                                // Apply watermark if needed
-                                if ($watermarkEnabled && $applyWatermark) {
-                                    applyWatermark($collFullFilePath, $watermarkSettings);
+                                // Generate thumbnail if it's an image
+                                if (strpos($file_type, 'image/') === 0 || in_array($file_extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                                    // Get image dimensions if not manually set
+                                    $img_dimensions = getimagesize($file_path);
+                                    $actual_width = $img_dimensions[0];
+                                    $actual_height = $img_dimensions[1];
+                                    
+                                    // Use actual dimensions if no custom dimensions provided
+                                    if (empty($width) || empty($height)) {
+                                        $width = $actual_width;
+                                        $height = $actual_height;
+                                    }
+                                    
+                                    // Create thumbnail directory
+                                    $thumb_dir = '../../uploads/thumbnails/' . date('Y/m/');
+                                    if (!is_dir($thumb_dir)) {
+                                        mkdir($thumb_dir, 0755, true);
+                                    }
+                                    
+                                    $thumbnail_path = $thumb_dir . 'thumb_' . $file_name;
+                                    $thumbnail_relative_path = '/uploads/thumbnails/' . date('Y/m/') . 'thumb_' . $file_name;
+                                    
+                                    // Create thumbnail
+                                    create_thumbnail($file_path, $thumbnail_path, 300);
+                                    $thumbnail_url = $thumbnail_relative_path;
+                                    
+                                    // Detect orientation if not specified
+                                    if ($orientation === 'auto') {
+                                        $orientation = ($actual_width > $actual_height) ? 'landscape' : 'portrait';
+                                    }
+                                } 
+                                // For video files, generate a thumbnail using ffmpeg if available
+                                elseif (strpos($file_type, 'video/') === 0 || in_array($file_extension, ['mp4', 'webm', 'ogg'])) {
+                                    // Create thumbnail directory
+                                    $thumb_dir = '../../uploads/thumbnails/' . date('Y/m/');
+                                    if (!is_dir($thumb_dir)) {
+                                        mkdir($thumb_dir, 0755, true);
+                                    }
+                                    
+                                    $thumbnail_path = $thumb_dir . 'thumb_' . pathinfo($file_name, PATHINFO_FILENAME) . '.jpg';
+                                    $thumbnail_relative_path = '/uploads/thumbnails/' . date('Y/m/') . 'thumb_' . pathinfo($file_name, PATHINFO_FILENAME) . '.jpg';
+                                    
+                                    // Try to generate thumbnail with ffmpeg if available
+                                    if (function_exists('exec')) {
+                                        exec("ffmpeg -i {$file_path} -ss 00:00:01 -vframes 1 {$thumbnail_path} 2>&1", $output, $return_var);
+                                        if ($return_var === 0) {
+                                            $thumbnail_url = $thumbnail_relative_path;
+                                        } else {
+                                            $thumbnail_url = '/assets/images/video_placeholder.jpg'; // Default video thumbnail
+                                        }
+                                    } else {
+                                        $thumbnail_url = '/assets/images/video_placeholder.jpg'; // Default video thumbnail
+                                    }
                                 }
+                                
+                                // Get file size
+                                $formatted_file_size = format_file_size($file_size);
+                                
+                                // Insert into media table
+                                $stmt = $pdo->prepare("INSERT INTO media (
+                                    title, description, category_id, file_name, file_path, file_type, file_size,
+                                    thumbnail_url, status, featured, width, height, size_type, background_color,
+                                    orientation, owner, license, paid_content, watermark_text, original_filename,
+                                    created_by, ai_enhanced, created_at
+                                ) VALUES (
+                                    :title, :description, :category_id, :file_name, :file_path, :file_type, :file_size,
+                                    :thumbnail_url, :status, :featured, :width, :height, :size_type, :background_color,
+                                    :orientation, :owner, :license, :paid_content, :watermark_text, :original_filename,
+                                    :created_by, :ai_enhanced, NOW()
+                                )");
+                                
+                                $stmt->execute([
+                                    ':title' => $file_title,
+                                    ':description' => "Uploaded in batch {$batch_name}",
+                                    ':category_id' => $category_id,
+                                    ':file_name' => $file_name,
+                                    ':file_path' => $relative_path,
+                                    ':file_type' => $file_type,
+                                    ':file_size' => $formatted_file_size,
+                                    ':thumbnail_url' => $thumbnail_url,
+                                    ':status' => $status,
+                                    ':featured' => $featured,
+                                    ':width' => $width,
+                                    ':height' => $height,
+                                    ':size_type' => $size_type,
+                                    ':background_color' => $background_color,
+                                    ':orientation' => $orientation,
+                                    ':owner' => $owner,
+                                    ':license' => $license,
+                                    ':paid_content' => $paid_content,
+                                    ':watermark_text' => $watermark_text,
+                                    ':original_filename' => $_FILES['batch_files']['name'][$i],
+                                    ':created_by' => $_SESSION['user_id'] ?? 1,
+                                    ':ai_enhanced' => $ai_enhanced
+                                ]);
+                                
+                                $media_id = $pdo->lastInsertId();
+                                                                // Process and insert tags
+                                if (!empty($tags)) {
+                                    foreach ($tags as $tag_name) {
+                                        // Check if tag already exists
+                                        $check_stmt = $pdo->prepare("SELECT id FROM tags WHERE name = :name");
+                                        $check_stmt->execute([':name' => $tag_name]);
+                                        $tag_id = $check_stmt->fetchColumn();
+                                        
+                                        // If tag doesn't exist, create it with slug
+                                        if (!$tag_id) {
+                                            // Generate slug from tag name
+                                            $slug = create_slug($tag_name);
+                                            
+                                            // Make sure slug is unique
+                                            $slug_check = $pdo->prepare("SELECT COUNT(*) FROM tags WHERE slug = :slug");
+                                            $slug_check->execute([':slug' => $slug]);
+                                            $slug_exists = $slug_check->fetchColumn();
+                                            
+                                            // If slug exists, append a unique identifier
+                                            if ($slug_exists > 0) {
+                                                $slug .= '-' . uniqid();
+                                            }
+                                            
+                                            $tag_stmt = $pdo->prepare("INSERT INTO tags (name, slug, created_at) VALUES (:name, :slug, NOW())");
+                                            $tag_stmt->execute([
+                                                ':name' => $tag_name,
+                                                ':slug' => $slug
+                                            ]);
+                                            $tag_id = $pdo->lastInsertId();
+                                        }
+                                        
+                                        // Associate tag with media
+                                        $media_tag_stmt = $pdo->prepare("INSERT INTO media_tags (media_id, tag_id, created_by) VALUES (:media_id, :tag_id, :created_by)");
+                                        $media_tag_stmt->execute([
+                                            ':media_id' => $media_id,
+                                            ':tag_id' => $tag_id,
+                                            ':created_by' => $_SESSION['user_id'] ?? 1
+                                        ]);
+                                    }
+                                }
+                                
+                                // Insert colors
+                                if (!empty($selected_colors)) {
+                                    $color_stmt = $pdo->prepare("INSERT INTO media_colors (media_id, color_id, primary_color, created_at) VALUES (:media_id, :color_id, :primary_color, NOW())");
+                                    foreach ($selected_colors as $color_id) {
+                                        // Get the hex code for the color
+                                        $hex_stmt = $pdo->prepare("SELECT hex_code FROM colors WHERE id = :id");
+                                        $hex_stmt->execute([':id' => $color_id]);
+                                        $hex_code = $hex_stmt->fetchColumn();
+                                        
+                                        $color_stmt->execute([
+                                            ':media_id' => $media_id,
+                                            ':color_id' => $color_id,
+                                            ':primary_color' => $hex_code ?? '#FFFFFF'
+                                        ]);
+                                    }
+                                }
+                                
+                                // Update batch item status
+                                $update_item_stmt = $pdo->prepare("UPDATE media_batch_items SET status = 'processed', media_id = ? WHERE id = ?");
+                                $update_item_stmt->execute([$media_id, $batch_item_id]);
+                                
+                                $batch_results[] = ["file" => $_FILES['batch_files']['name'][$i], "status" => "success", "media_id" => $media_id];
+                            } else {
+                                $update_item_stmt = $pdo->prepare("UPDATE media_batch_items SET status = 'failed', error_message = ? WHERE id = ?");
+                                $update_item_stmt->execute(["Failed to upload file", $batch_item_id]);
+                                $batch_results[] = ["file" => $_FILES['batch_files']['name'][$i], "status" => "failed", "message" => "Failed to upload file"];
+                            }
+                        } else {
+                            $batch_results[] = ["file" => $_FILES['batch_files']['name'][$i], "status" => "failed", "message" => "Error code: " . $_FILES['batch_files']['error'][$i]];
+                        }
+                    }
+                    
+                    // Update batch status
+                    $processed_count = count(array_filter($batch_results, function($item) { return $item['status'] === 'success'; }));
+                    $update_batch_stmt = $pdo->prepare("UPDATE media_batches SET status = 'completed', processed_files = ? WHERE id = ?");
+                    $update_batch_stmt->execute([$processed_count, $batch_id]);
+                    
+                    // Log activity
+                    $activity_stmt = $pdo->prepare("INSERT INTO activities (user_id, description, created_at) VALUES (:user_id, :description, NOW())");
+                    $activity_stmt->execute([
+                        ':user_id' => $_SESSION['user_id'] ?? 1,
+                        ':description' => "Processed batch upload #{$batch_id}: {$processed_count} of " . count($_FILES['batch_files']['name']) . " files successful"
+                    ]);
+                    
+                    $success = true;
+                } else {
+                    $errors[] = 'Please select files to upload';
+                }
+            } else {
+                // Single upload mode
+                $title = trim($_POST['title'] ?? '');
+                $description = trim($_POST['description'] ?? '');
+                $ai_description = trim($_POST['ai_description'] ?? '');
+                
+                // Validate required fields
+                if (empty($title)) {
+                    $errors[] = 'Title is required';
+                    throw new Exception('Title is required');
+                }
+                
+                // Handle single file upload
+                if (!empty($_FILES['media_file']['name'])) {
+                    $file = $_FILES['media_file'];
+                    $file_name = uniqid() . '_' . basename($file['name']);
+                    $upload_dir = '../../uploads/media/' . date('Y/m/');
+                    
+                    // Create directory if it doesn't exist
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0755, true);
+                    }
+                    
+                    $file_path = $upload_dir . $file_name;
+                    $relative_path = '/uploads/media/' . date('Y/m/') . $file_name;
+                    
+                    // Get file type
+                    $file_type = $file['type'];
+                    
+                    // Check if it's a supported file type
+                    $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                    
+                    if (!in_array($file_type, $supported_types) && !in_array($file_extension, $supported_extensions)) {
+                        $errors[] = 'Unsupported file type. Please upload a supported image or video file.';
+                        throw new Exception('Unsupported file type');
+                    }
+                    
+                    // Move uploaded file
+                    if (move_uploaded_file($file['tmp_name'], $file_path)) {
+                        $thumbnail_url = '';
+                        
+                        // Generate thumbnail if it's an image
+                        if (strpos($file_type, 'image/') === 0 || in_array($file_extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                            // Get image dimensions if not manually set
+                            $img_dimensions = getimagesize($file_path);
+                            $actual_width = $img_dimensions[0];
+                            $actual_height = $img_dimensions[1];
+                            
+                            // Use actual dimensions if no custom dimensions provided
+                            if (empty($width) || empty($height)) {
+                                $width = $actual_width;
+                                $height = $actual_height;
+                            }
+                            
+                            // Create thumbnail directory
+                            $thumb_dir = '../../uploads/thumbnails/' . date('Y/m/');
+                            if (!is_dir($thumb_dir)) {
+                                mkdir($thumb_dir, 0755, true);
+                            }
+                            
+                            $thumbnail_path = $thumb_dir . 'thumb_' . $file_name;
+                            $thumbnail_relative_path = '/uploads/thumbnails/' . date('Y/m/') . 'thumb_' . $file_name;
+                            
+                            // Create thumbnail
+                            create_thumbnail($file_path, $thumbnail_path, 300);
+                            $thumbnail_url = $thumbnail_relative_path;
+                            
+                            // Detect orientation if not specified
+                            if ($orientation === 'auto') {
+                                $orientation = ($actual_width > $actual_height) ? 'landscape' : 'portrait';
+                            }
+                        } 
+                        // For video files, generate a thumbnail using ffmpeg if available
+                        elseif (strpos($file_type, 'video/') === 0 || in_array($file_extension, ['mp4', 'webm', 'ogg'])) {
+                            // Create thumbnail directory
+                            $thumb_dir = '../../uploads/thumbnails/' . date('Y/m/');
+                            if (!is_dir($thumb_dir)) {
+                                mkdir($thumb_dir, 0755, true);
+                            }
+                            
+                            $thumbnail_path = $thumb_dir . 'thumb_' . pathinfo($file_name, PATHINFO_FILENAME) . '.jpg';
+                            $thumbnail_relative_path = '/uploads/thumbnails/' . date('Y/m/') . 'thumb_' . pathinfo($file_name, PATHINFO_FILENAME) . '.jpg';
+                            
+                            // Try to generate thumbnail with ffmpeg if available
+                            if (function_exists('exec')) {
+                                exec("ffmpeg -i {$file_path} -ss 00:00:01 -vframes 1 {$thumbnail_path} 2>&1", $output, $return_var);
+                                if ($return_var === 0) {
+                                    $thumbnail_url = $thumbnail_relative_path;
+                                } else {
+                                    $thumbnail_url = '/assets/images/video_placeholder.jpg'; // Default video thumbnail
+                                }
+                            } else {
+                                $thumbnail_url = '/assets/images/video_placeholder.jpg'; // Default video thumbnail
                             }
                         }
                         
-                        $collectionTitle = $title . ' - Item ' . $i;
-                        $collectionSlug = $slug . '-item-' . $i;
+                        // Get file size
+                        $file_size = filesize($file_path);
+                        $formatted_file_size = format_file_size($file_size);
                         
-                        $stmt = $pdo->prepare("
-                            INSERT INTO media (
-                                title, description, category_id, file_name, file_path, file_type, file_size,
-                                thumbnail_url, status, featured, width, height, background_color, orientation,
-                                owner, license, publish_date, paid_content, created_by, ai_enhanced, resolution_id,
-                                parent_id, slug, created_at
-                            ) VALUES (
-                                :title, :description, :category_id, :file_name, :file_path, :file_type, :file_size,
-                                :thumbnail_url, :status, :featured, :width, :height, :background_color, :orientation,
-                                :owner, :license, :publish_date, :paid_content, :created_by, :ai_enhanced, :resolution_id,
-                                :parent_id, :slug, NOW()
-                            )
-                        ");
+                        // Insert into media table
+                        $stmt = $pdo->prepare("INSERT INTO media (
+                            title, description, category_id, file_name, file_path, file_type, file_size,
+                            thumbnail_url, status, featured, width, height, size_type, background_color,
+                            orientation, owner, license, paid_content, watermark_text, original_filename,
+                            created_by, ai_enhanced, ai_description, created_at
+                        ) VALUES (
+                            :title, :description, :category_id, :file_name, :file_path, :file_type, :file_size,
+                            :thumbnail_url, :status, :featured, :width, :height, :size_type, :background_color,
+                            :orientation, :owner, :license, :paid_content, :watermark_text, :original_filename,
+                            :created_by, :ai_enhanced, :ai_description, NOW()
+                        )");
                         
                         $stmt->execute([
-                            ':title' => $collectionTitle,
+                            ':title' => $title,
                             ':description' => $description,
-                            ':category_id' => $categoryId,
-                            ':file_name' => $collFileName,
-                            ':file_path' => $collFilePath,
-                            ':file_type' => $collectionFileType,
-                            ':file_size' => $collectionFileSize,
-                            ':thumbnail_url' => $collThumbnailUrl,
+                            ':category_id' => $category_id,
+                            ':file_name' => $file_name,
+                            ':file_path' => $relative_path,
+                            ':file_type' => $file_type,
+                            ':file_size' => $formatted_file_size,
+                            ':thumbnail_url' => $thumbnail_url,
                             ':status' => $status,
                             ':featured' => $featured,
-                            ':width' => $collWidth,
-                            ':height' => $collHeight,
-                            ':background_color' => $backgroundColorHex,
+                            ':width' => $width,
+                            ':height' => $height,
+                            ':size_type' => $size_type,
+                            ':background_color' => $background_color,
                             ':orientation' => $orientation,
                             ':owner' => $owner,
                             ':license' => $license,
-                            ':publish_date' => $publishDate,
-                            ':paid_content' => $paidContent,
+                            ':paid_content' => $paid_content,
+                            ':watermark_text' => $watermark_text,
+                            ':original_filename' => $file['name'],
                             ':created_by' => $_SESSION['user_id'] ?? 1,
-                            ':ai_enhanced' => $aiEnhanced,
-                            ':resolution_id' => $resolution_id,
-                            ':parent_id' => $newMediaId,
-                            ':slug' => $collectionSlug
+                            ':ai_enhanced' => $ai_enhanced,
+                            ':ai_description' => $ai_description
                         ]);
                         
-                        $collItemId = $pdo->lastInsertId();
-                        
-                        // Add the same tags to collection items
-                        if (!empty($tagIds)) {
-                            foreach ($tagIds as $tagId) {
-                                $insertTagStmt->execute([
-                                    ':media_id' => $collItemId,
-                                    ':tag_id' => (int)$tagId,
-                                    ':created_by' => $_SESSION['user_id'] ?? null
+                        $media_id = $pdo->lastInsertId();
+                                                // Process and insert tags
+                        if (!empty($tags)) {
+                            foreach ($tags as $tag_name) {
+                                // Check if tag already exists
+                                $check_stmt = $pdo->prepare("SELECT id FROM tags WHERE name = :name");
+                                $check_stmt->execute([':name' => $tag_name]);
+                                $tag_id = $check_stmt->fetchColumn();
+                                
+                                // If tag doesn't exist, create it with slug
+                                if (!$tag_id) {
+                                    // Generate slug from tag name
+                                    $slug = create_slug($tag_name);
+                                    
+                                    // Make sure slug is unique
+                                    $slug_check = $pdo->prepare("SELECT COUNT(*) FROM tags WHERE slug = :slug");
+                                    $slug_check->execute([':slug' => $slug]);
+                                    $slug_exists = $slug_check->fetchColumn();
+                                    
+                                    // If slug exists, append a unique identifier
+                                    if ($slug_exists > 0) {
+                                        $slug .= '-' . uniqid();
+                                    }
+                                    
+                                    $tag_stmt = $pdo->prepare("INSERT INTO tags (name, slug, created_at) VALUES (:name, :slug, NOW())");
+                                    $tag_stmt->execute([
+                                        ':name' => $tag_name,
+                                        ':slug' => $slug
+                                    ]);
+                                    $tag_id = $pdo->lastInsertId();
+                                    
+                                    // Log activity for new tag
+                                    $activity_stmt = $pdo->prepare("INSERT INTO activities (user_id, description, created_at) VALUES (:user_id, :description, NOW())");
+                                    $activity_stmt->execute([
+                                        ':user_id' => $_SESSION['user_id'] ?? 1,
+                                        ':description' => "Added new tag: {$tag_name} (ID: {$tag_id})"
+                                    ]);
+                                }
+                                
+                                // Associate tag with media
+                                $media_tag_stmt = $pdo->prepare("INSERT INTO media_tags (media_id, tag_id, created_by) VALUES (:media_id, :tag_id, :created_by)");
+                                $media_tag_stmt->execute([
+                                    ':media_id' => $media_id,
+                                    ':tag_id' => $tag_id,
+                                    ':created_by' => $_SESSION['user_id'] ?? 1
                                 ]);
                             }
                         }
+                        
+                        // Insert colors
+                        if (!empty($selected_colors)) {
+                            $color_stmt = $pdo->prepare("INSERT INTO media_colors (media_id, color_id, primary_color, created_at) VALUES (:media_id, :color_id, :primary_color, NOW())");
+                            foreach ($selected_colors as $color_id) {
+                                // Get the hex code for the color
+                                $hex_stmt = $pdo->prepare("SELECT hex_code FROM colors WHERE id = :id");
+                                $hex_stmt->execute([':id' => $color_id]);
+                                $hex_code = $hex_stmt->fetchColumn();
+                                
+                                $color_stmt->execute([
+                                    ':media_id' => $media_id,
+                                    ':color_id' => $color_id,
+                                    ':primary_color' => $hex_code ?? '#FFFFFF'
+                                ]);
+                            }
+                        }
+                        
+                        // Log activity
+                        $activity_stmt = $pdo->prepare("INSERT INTO activities (user_id, description, created_at) VALUES (:user_id, :description, NOW())");
+                        $activity_stmt->execute([
+                            ':user_id' => $_SESSION['user_id'] ?? 1,
+                            ':description' => "Added new media item #{$media_id}: {$title}"
+                        ]);
+                        
+                        $success = true;
+                    } else {
+                        $errors[] = 'Failed to upload file';
+                        throw new Exception('Failed to upload file');
                     }
+                } else {
+                    $errors[] = 'Please select a file to upload';
+                    throw new Exception('No file selected');
                 }
             }
+            
+            // Commit transaction
+            $pdo->commit();
+            
+            // Redirect to media list or clear form
+            if ($success && !$batch_mode) {
+                if (isset($_POST['save_and_add_another'])) {
+                    header("Location: add.php?success=1");
+                    exit;
+                } elseif (isset($_POST['save_and_return'])) {
+                    header("Location: index.php?success=added");
+                    exit;
+                }
+            }
+            
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $pdo->rollBack();
+            if (empty($errors)) {
+                $errors[] = "Error: " . $e->getMessage();
+            }
         }
-        
-        // Log the activity
-        $stmt = $pdo->prepare("
-            INSERT INTO activities (user_id, description, created_at)
-            VALUES (:user_id, :description, NOW())
-        ");
-        
-        $stmt->execute([
-            ':user_id' => $_SESSION['user_id'] ?? null,
-            ':description' => "Added new media item #{$newMediaId}: {$title}"
-        ]);
-        
-        // Commit transaction
-        $pdo->commit();
-        
-        $successMessage = "Media item '{$title}' has been added successfully.";
-    } catch (Exception $e) {
-        // Rollback transaction on error
-        $pdo->rollBack();
-        $errorMessage = 'Error: ' . $e->getMessage();
     }
 }
 
-// Helper function to get file type icon
-function getFileTypeIcon($mimeType) {
-    $icons = [
-        'image/' => 'image-icon.png',
-        'video/' => 'video-icon.png',
-        'audio/' => 'audio-icon.png',
-        'application/pdf' => 'pdf-icon.png',
-        'text/' => 'text-icon.png',
-        'application/zip' => 'archive-icon.png',
-        'application/x-rar' => 'archive-icon.png',
-    ];
-    
-    foreach ($icons as $type => $icon) {
-        if (strpos($mimeType, $type) === 0) {
-            return $icon;
-        }
-    }
-    
-    return 'file-icon.png'; // Default icon
-}
+// Include admin panel header
+include ROOT_DIR . '/theme/admin/header.php';
+// Include sidebar
+require_once '../../theme/admin/slidbar.php';
 ?>
 
-<!-- Main Content -->
-<div class="content-wrapper px-4 py-6 lg:px-8">
-    <div class="max-w-full mx-auto">
-        <!-- Page Header -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold <?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>">
-                <i class="fas fa-plus-circle mr-2"></i> Add New Media
-            </h1>
-            <a href="<?php echo $adminUrl; ?>/media/index.php" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i> Back to Media List
-            </a>
-        </div>
-        
-        <!-- Alert Messages -->
-        <?php if ($successMessage): ?>
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                <p><?php echo $successMessage; ?></p>
-                <?php if ($newMediaId): ?>
-                    <div class="mt-2">
-                        <a href="<?php echo $adminUrl; ?>/media/edit.php?id=<?php echo $newMediaId; ?>" class="text-blue-600 hover:underline">
-                            <i class="fas fa-edit mr-1"></i> Edit this media
-                        </a>
-                        <span class="mx-2">|</span>
-                        <a href="<?php echo $adminUrl; ?>/media/add.php" class="text-blue-600 hover:underline">
-                            <i class="fas fa-plus-circle mr-1"></i> Add another media
-                        </a>
-                    </div>
-                <?php endif; ?>
+ 
+    <!-- Main Content -->
+    <div class="content-wrapper min-h-screen bg-gray-100">
+        <div class="px-6 py-8">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+                <h1 class="text-3xl font-semibold text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">
+                    Add New Media
+                </h1>
+                <a href="index.php" class="btn bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Media List
+                </a>
             </div>
-        <?php endif; ?>
-        
-        <?php if ($errorMessage): ?>
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-                <p><?php echo $errorMessage; ?></p>
+            
+            <!-- User and datetime info -->
+            <div class="mb-6 flex flex-wrap justify-between text-sm text-gray-600 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                <div>
+                    <span class="font-medium">Current User:</span> <?php echo htmlspecialchars($current_user); ?>
+                </div>
+                <div>
+                    <span class="font-medium">Date:</span> <?php echo $current_datetime; ?>
+                </div>
             </div>
-        <?php endif; ?>
-        
-        <!-- Add Media Form -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden <?php echo $darkMode ? 'bg-gray-700' : ''; ?>">
-            <div class="p-6">
-                <form id="addMediaForm" action="" method="post" enctype="multipart/form-data" class="space-y-6">
-                    <!-- Tabs -->
-                    <div class="border-b border-gray-200 <?php echo $darkMode ? 'border-gray-600' : ''; ?>">
-                        <ul class="flex flex-wrap -mb-px">
-                            <li class="mr-2">
-                                <a href="#basic-info" class="tab-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:border-gray-300 <?php echo $darkMode ? 'text-gray-300 hover:border-gray-500' : 'text-gray-600 hover:text-gray-800'; ?> active" data-tab="basic-info">
-                                    <i class="fas fa-info-circle mr-2"></i> Basic Info
-                                </a>
-                            </li>
-                            <li class="mr-2">
-                                <a href="#media-upload" class="tab-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:border-gray-300 <?php echo $darkMode ? 'text-gray-300 hover:border-gray-500' : 'text-gray-600 hover:text-gray-800'; ?>" data-tab="media-upload">
-                                    <i class="fas fa-upload mr-2"></i> Media Upload
-                                </a>
-                            </li>
-                            <li class="mr-2">
-                                <a href="#categories-tags" class="tab-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:border-gray-300 <?php echo $darkMode ? 'text-gray-300 hover:border-gray-500' : 'text-gray-600 hover:text-gray-800'; ?>" data-tab="categories-tags">
-                                    <i class="fas fa-tags mr-2"></i> Categories & Tags
-                                </a>
-                            </li>
-                            <li class="mr-2">
-                                <a href="#advanced" class="tab-link inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:border-gray-300 <?php echo $darkMode ? 'text-gray-300 hover:border-gray-500' : 'text-gray-600 hover:text-gray-800'; ?>" data-tab="advanced">
-                                    <i class="fas fa-cogs mr-2"></i> Advanced
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Tab Content -->
-                    <div class="tab-content">
-                        <!-- Basic Info Tab -->
-                        <div id="basic-info" class="tab-pane active">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Title -->
-                                <div class="col-span-2">
-                                    <label for="title" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">Title <span class="text-red-500">*</span></label>
-                                    <input type="text" id="title" name="title" required 
-                                        class="w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>"
-                                        placeholder="Enter media title">
-                                </div>
-                                
-                                <!-- Description -->
-                                <div class="col-span-2">
-                                    <label for="description" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">Description</label>
-                                    <textarea id="description" name="description" rows="4" 
-                                        class="w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>"
-                                        placeholder="Enter media description"></textarea>
-                                </div>
-                                
-                                <!-- Status & Featured -->
-                                <div>
-                                    <label class="block font-medium mb-2 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">Status & Visibility</label>
-                                    <div class="space-y-2">
-                                        <div class="flex items-center">
-                                            <input type="checkbox" id="status" name="status" class="h-5 w-5 text-blue-600" checked>
-                                            <label for="status" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                                Active (visible to users)
-                                            </label>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <input type="checkbox" id="featured" name="featured" class="h-5 w-5 text-blue-600">
-                                            <label for="featured" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                                Featured (shown in featured sections)
-                                            </label>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <input type="checkbox" id="paid_content" name="paid_content" class="h-5 w-5 text-blue-600">
-                                            <label for="paid_content" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                                Premium Content (for paid users only)
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Publishing Date -->
-                                <div>
-                                    <label for="publish_date" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">Publish Date</label>
-                                    <input type="date" id="publish_date" name="publish_date" value="<?php echo date('Y-m-d'); ?>" 
-                                        class="w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>">
-                                </div>
-                            </div>
+            
+            <?php if (!empty($errors)): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <strong>Errors:</strong>
+                <ul class="list-disc pl-5">
+                    <?php foreach ($errors as $error): ?>
+                    <li><?php echo htmlspecialchars($error); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php endif; ?>
+            
+            <?php if ($success && !$batch_mode): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <strong>Success!</strong> Media added successfully.
+            </div>
+            <?php endif; ?>
+            
+            <?php if ($success && $batch_mode): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <strong>Batch Upload Completed!</strong> Processed <?php echo count($batch_results); ?> files.
+                <a href="#batch-results" class="underline">View results</a>
+            </div>
+            <?php endif; ?>
+            
+            <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <strong>Success!</strong> Media added successfully.
+            </div>
+            <?php endif; ?>
+            
+            <!-- Upload Mode Toggle -->
+            <div class="mb-6">
+                <div class="bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?> shadow-md rounded-lg overflow-hidden">
+                    <div class="px-6 py-4">
+                        <h2 class="text-lg font-bold text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?> mb-4">Select Upload Mode</h2>
+                        <div class="flex space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="upload_mode" value="single" class="form-radio" checked onclick="switchUploadMode('single')">
+                                <span class="ml-2 text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Single File Upload</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="upload_mode" value="batch" class="form-radio" onclick="switchUploadMode('batch')">
+                                <span class="ml-2 text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Batch Upload</span>
+                            </label>
                         </div>
-                        
-                        <!-- Media Upload Tab -->
-                        <div id="media-upload" class="tab-pane hidden">
-                            <!-- Upload Type Selection -->
-                            <div class="mb-6">
-                                <label class="block font-medium mb-2 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">Upload Method</label>
-                                <div class="flex space-x-4">
-                                    <div class="flex items-center">
-                                        <input type="radio" id="upload_file" name="upload_type" value="file" class="h-4 w-4 text-blue-600" checked onchange="toggleUploadMethod()">
-                                        <label for="upload_file" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                            Single File Upload
-                                        </label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <input type="radio" id="upload_collection" name="upload_type" value="collection" class="h-4 w-4 text-blue-600" onchange="toggleUploadMethod()">
-                                        <label for="upload_collection" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                            Collection (Multiple Files)
-                                        </label>
-                                    </div>
-                                </div>
+                    </div>
+                </div>
+            </div>
+                        <!-- Single File Upload Form -->
+            <form action="add.php" method="post" enctype="multipart/form-data" id="singleUploadForm" class="upload-form active">
+                <input type="hidden" name="upload_mode" value="single">
+                <div class="bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?> shadow-md rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Basic Information Section -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h2 class="text-xl font-bold mb-4 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Basic Information</h2>
                             </div>
                             
-                            <!-- Resolution Selection -->
-                            <div class="mb-6">
-                                <label for="resolution_id" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">
-                                    Resolution
-                                </label>
-                                <select id="resolution_id" name="resolution_id" 
-                                    class="w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>">
-                                    <option value="">-- Select Resolution --</option>
-                                    <?php foreach ($resolutions as $resolution): ?>
-                                        <option value="<?php echo $resolution['id']; ?>"><?php echo htmlspecialchars($resolution['resolution']); ?></option>
+                            <!-- Title -->
+                            <div class="mb-4">
+                                <label for="title" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Title *</label>
+                                <input type="text" id="title" name="title" required
+                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                       value="<?php echo htmlspecialchars($title ?? ''); ?>">
+                            </div>
+                            
+                            <!-- Category -->
+                            <div class="mb-4">
+                                <label for="category_id" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Category *</label>
+                                <select id="category_id" name="category_id" required
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="">Select Category</option>
+                                    <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo $category['id']; ?>" <?php echo (isset($category_id) && $category_id == $category['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <p class="mt-1 text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    Select the resolution for this media item
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label for="description" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Description</label>
+                                <textarea id="description" name="description" rows="4"
+                                          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"><?php echo htmlspecialchars($description ?? ''); ?></textarea>
+                            </div>
+                            
+                            <!-- Media Upload Section -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h2 class="text-xl font-bold mb-4 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Media Upload</h2>
+                            </div>
+                            
+                            <!-- File Upload Section -->
+                            <div id="file_upload_section" class="col-span-1 md:col-span-2 mb-4">
+                                <label for="media_file" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Upload Media File *</label>
+                                <input type="file" id="media_file" name="media_file" required
+                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                <p class="mt-1 text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                    Supported formats: JPG, JPEG, PNG, GIF, WEBP, SVG, MP4, WEBM, OGG. Maximum file size: 10MB
                                 </p>
-                            </div>
-                            
-                            <!-- Single File Upload Section -->
-                            <div id="file_upload_section">
-                                <div class="border-2 border-dashed rounded-md p-6 text-center <?php echo $darkMode ? 'border-gray-600' : 'border-gray-300'; ?> mb-4">
-                                    <div id="upload-preview" class="mb-4 hidden">
-                                        <img id="preview-image" src="#" alt="Preview" class="max-h-64 mx-auto mb-2">
-                                        <p id="file-name" class="text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>"></p>
-                                    </div>
-                                    
-                                    <div id="upload-prompt">
-                                        <i class="fas fa-cloud-upload-alt text-5xl mb-2 <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>"></i>
-                                        <p class="mb-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">Drag and drop your file here, or click to browse</p>
-                                        <p class="text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                            Supports images (JPG, PNG, GIF, WEBP, SVG), videos (MP4, WebM), audio files, and more
-                                        </p>
-                                    </div>
-                                    
-                                    <input type="file" id="media_file" name="media_file" 
-                                        class="hidden" 
-                                        accept="image/*,video/*,audio/*,.pdf,.zip,.rar">
-                                    
-                                    <button type="button" id="browse_button" 
-                                        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Browse Files
-                                    </button>
-                                </div>
-                                
-                                <!-- File Details -->
-                                <div id="file_details" class="hidden">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <!-- File Information -->
-                                        <div>
-                                            <h3 class="font-semibold mb-2 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>">File Information</h3>
-                                            <div class="space-y-2">
-                                                <p><span class="<?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">File Name:</span> <span id="info-filename" class="<?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>"></span></p>
-                                                <p><span class="<?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">File Size:</span> <span id="info-filesize" class="<?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>"></span></p>
-                                                <p><span class="<?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">File Type:</span> <span id="info-filetype" class="<?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>"></span></p>
-                                                <p><span class="<?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">Dimensions:</span> <span id="info-dimensions" class="<?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>">-</span></p>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Watermark Option -->
-                                        <div>
-                                            <?php if ($watermarkEnabled): ?>
-                                                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 <?php echo $darkMode ? 'bg-blue-900 text-blue-200' : ''; ?>">
-                                                    <div class="flex items-center">
-                                                        <input type="checkbox" id="apply_watermark" name="apply_watermark" class="h-5 w-5 text-blue-600" checked>
-                                                        <label for="apply_watermark" class="ml-2 <?php echo $darkMode ? 'text-blue-200' : 'text-blue-700'; ?>">
-                                                            Apply watermark to this media
-                                                        </label>
-                                                    </div>
-                                                    <p class="mt-2 text-sm">
-                                                        <a href="<?php echo $adminUrl; ?>/settings/watermark.php" class="underline">Configure watermark settings</a>
-                                                    </p>
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="bg-gray-50 border-l-4 border-gray-500 text-gray-700 p-4 <?php echo $darkMode ? 'bg-gray-800 text-gray-300 border-gray-600' : ''; ?>">
-                                                    <p>Watermarking is currently disabled.</p>
-                                                    <p class="mt-2 text-sm">
-                                                        <a href="<?php echo $adminUrl; ?>/settings/watermark.php" class="underline">Enable and configure watermark</a>
-                                                    </p>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
+                                <!-- Image Preview -->
+                                <div id="image_preview" class="mt-3 hidden">
+                                    <h4 class="text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?> mb-2">Preview:</h4>
+                                    <div class="flex items-center">
+                                        <img id="preview_image" src="#" alt="Preview" class="max-w-xs max-h-64 border rounded">
+                                        <div id="image_info" class="ml-4 text-sm"></div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Collection (Multiple Files) Section -->
-                            <div id="collection_section" class="hidden">
-                                <div class="border-2 border-dashed rounded-md p-6 text-center <?php echo $darkMode ? 'border-gray-600' : 'border-gray-300'; ?> mb-4">
-                                    <div id="collection-preview" class="mb-4 hidden">
-                                        <div id="collection-thumbnails" class="flex flex-wrap gap-2 justify-center mb-2">
-                                            <!-- Thumbnails will be inserted here by JavaScript -->
-                                        </div>
-                                        <p id="collection-count" class="text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">0 files selected</p>
-                                    </div>
-                                    
-                                    <div id="collection-prompt">
-                                        <i class="fas fa-images text-5xl mb-2 <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>"></i>
-                                        <p class="mb-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">Drag and drop multiple files here, or click to browse</p>
-                                        <p class="text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                            Create a collection of related files (images, videos, etc.)
-                                        </p>
-                                    </div>
-                                    
-                                    <input type="file" id="collection_files" name="collection_files[]" 
-                                        class="hidden" 
-                                        accept="image/*,video/*,audio/*,.pdf,.zip,.rar" multiple>
-                                    
-                                    <button type="button" id="browse_collection_button" 
-                                        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Browse Files
-                                    </button>
-                                </div>
+                            <!-- Resolution Settings -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h2 class="text-xl font-bold mb-4 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Resolution</h2>
                                 
-                                <!-- Collection Details -->
-                                <div id="collection_details" class="hidden">
-                                    <div class="bg-gray-50 border rounded-md p-4 <?php echo $darkMode ? 'bg-gray-800 border-gray-600' : 'border-gray-300'; ?>">
-                                        <h3 class="font-semibold mb-2 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>">Collection Information</h3>
-                                        <p class="mb-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                            <span id="collection-file-count">0</span> files selected for this collection
-                                        </p>
-                                        <ul id="collection-file-list" class="list-disc list-inside text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">
-                                            <!-- File list will be inserted here by JavaScript -->
-                                        </ul>
-                                        
-                                        <?php if ($watermarkEnabled): ?>
-                                            <div class="mt-4 flex items-center">
-                                                <input type="checkbox" id="apply_watermark_collection" name="apply_watermark" class="h-5 w-5 text-blue-600" checked>
-                                                <label for="apply_watermark_collection" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                                    Apply watermark to all collection items
-                                                </label>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Categories & Tags Tab -->
-                        <div id="categories-tags" class="tab-pane hidden">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Primary Category -->
-                                <div>
-                                    <label for="category_id" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">
-                                        Primary Category
-                                    </label>
-                                                                    <select id="category_id" name="category_id" 
-                                        class="w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>">
-                                        <option value="">-- Select Category --</option>
-                                        <?php echo buildCategoryOptions($categories); ?>
+                                <div class="mb-4">
+                                    <label for="resolution" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Select Resolution</label>
+                                    <select id="resolution" name="resolution" 
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                            onchange="toggleCustomResolution()">
+                                        <option value="">Auto-detect from file</option>
+                                        <?php foreach ($resolutions as $name => $value): ?>
+                                        <option value="<?php echo htmlspecialchars($name); ?>"><?php echo htmlspecialchars($name); ?> (<?php echo htmlspecialchars($value); ?>)</option>
+                                        <?php endforeach; ?>
+                                        <option value="custom">Custom Resolution</option>
                                     </select>
                                 </div>
                                 
-                                <!-- Additional Categories -->
-                                <div>
-                                    <label class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">
-                                        Additional Categories
-                                    </label>
-                                    <div class="border p-2 rounded-md max-h-60 overflow-y-auto <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'; ?>">
-                                        <?php foreach ($categories as $category): ?>
-                                            <div class="flex items-center py-1">
-                                                <input type="checkbox" id="category_<?php echo $category['id']; ?>" name="additional_categories[]" value="<?php echo $category['id']; ?>" 
-                                                    class="h-4 w-4 text-blue-600">
-                                                <label for="category_<?php echo $category['id']; ?>" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                                    <?php echo htmlspecialchars($category['name']); ?>
-                                                </label>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
-                                
-                                <!-- Tags - Enhanced with Autocomplete and Add-on-fly capability -->
-                                <div class="col-span-2">
-                                    <label for="tag_input" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">
-                                        Tags
-                                    </label>
-                                    <div class="tag-input-container relative">
-                                        <div id="selected-tags" class="flex flex-wrap gap-2 mb-2">
-                                            <!-- Selected tags will appear here -->
+                                <div id="custom_resolution" class="hidden">
+                                    <div class="flex flex-wrap gap-4">
+                                        <div class="w-1/3">
+                                            <label for="custom_width" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Width (px)</label>
+                                            <input type="number" id="custom_width" name="custom_width" 
+                                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                                   value="<?php echo htmlspecialchars($custom_width ?? ''); ?>" min="1">
                                         </div>
-                                        <div class="flex">
-                                            <input type="text" id="tag_input_field" 
-                                                class="w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>"
-                                                placeholder="Type to add tags (comma or enter to separate)">
-                                            <button type="button" id="add_tag_btn" 
-                                                class="ml-2 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                                Add
-                                            </button>
-                                        </div>
-                                        <input type="hidden" id="tag_input" name="tag_input" value="">
-                                        <div id="tag-suggestions" class="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto hidden <?php echo $darkMode ? 'bg-gray-700 border-gray-600' : ''; ?>">
-                                            <!-- Tag suggestions will appear here -->
+                                        <div class="w-1/3">
+                                            <label for="custom_height" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Height (px)</label>
+                                            <input type="number" id="custom_height" name="custom_height" 
+                                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                                   value="<?php echo htmlspecialchars($custom_height ?? ''); ?>" min="1">
                                         </div>
                                     </div>
-                                    <p class="mt-1 text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                        Enter tags separated by commas or press Enter after each tag. You can also create new tags on the fly.
-                                    </p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Advanced Tab -->
-                        <div id="advanced" class="tab-pane hidden">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Orientation -->
-                                <div>
-                                    <label class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">Orientation</label>
-                                    <div class="flex space-x-4">
-                                        <div class="flex items-center">
-                                            <input type="radio" id="orientation_portrait" name="orientation" value="portrait" class="h-4 w-4 text-blue-600" checked>
-                                            <label for="orientation_portrait" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                                Portrait
-                                            </label>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <input type="radio" id="orientation_landscape" name="orientation" value="landscape" class="h-4 w-4 text-blue-600">
-                                            <label for="orientation_landscape" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                                Landscape
-                                            </label>
-                                        </div>
-                                    </div>
+                                                        <!-- Media Properties Section -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h2 class="text-xl font-bold mb-4 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Media Properties</h2>
+                            </div>
+                            
+                            <!-- Orientation -->
+                            <div class="mb-4">
+                                <label for="orientation" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Orientation</label>
+                                <select id="orientation" name="orientation"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="auto" selected>Auto-detect</option>
+                                    <option value="portrait" <?php echo (isset($orientation) && $orientation == 'portrait') ? 'selected' : ''; ?>>Portrait</option>
+                                    <option value="landscape" <?php echo (isset($orientation) && $orientation == 'landscape') ? 'selected' : ''; ?>>Landscape</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Size Type -->
+                            <div class="mb-4">
+                                <label for="size_type" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Size Type</label>
+                                <select id="size_type" name="size_type"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="small" <?php echo (isset($size_type) && $size_type == 'small') ? 'selected' : ''; ?>>Small</option>
+                                    <option value="medium" <?php echo (!isset($size_type) || $size_type == 'medium') ? 'selected' : ''; ?>>Medium</option>
+                                    <option value="large" <?php echo (isset($size_type) && $size_type == 'large') ? 'selected' : ''; ?>>Large</option>
+                                    <option value="xl" <?php echo (isset($size_type) && $size_type == 'xl') ? 'selected' : ''; ?>>Extra Large</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Background Color -->
+                            <div class="mb-4">
+                                <label for="background_color" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Background Color</label>
+                                <div class="flex items-center mt-1">
+                                    <input type="color" id="background_color" name="background_color"
+                                           class="h-8 w-8 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                           value="<?php echo htmlspecialchars($background_color ?? '#FFFFFF'); ?>">
+                                    <input type="text" id="background_color_hex" 
+                                           class="ml-2 block w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                           value="<?php echo htmlspecialchars($background_color ?? '#FFFFFF'); ?>" 
+                                           oninput="document.getElementById('background_color').value = this.value">
                                 </div>
-                                
-                                <!-- Background Color -->
-                                <div>
-                                    <label for="background_color" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">
-                                        Background Color
-                                    </label>
-                                    <div class="flex">
-                                        <input type="color" id="background_color" name="background_color" value="#FFFFFF" 
-                                            class="h-10 w-20 p-1 border rounded-md">
-                                        <select id="predefined_colors" 
-                                            class="ml-2 w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>">
-                                            <option value="">-- Predefined Colors --</option>
-                                            <?php foreach ($colors as $color): ?>
-                                                <option value="<?php echo $color['hex_code']; ?>" data-color="<?php echo $color['hex_code']; ?>">
-                                                    <?php echo htmlspecialchars($color['color_name']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
+                            </div>
+                            
+                            <!-- Tags with Auto Suggestion -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label for="tag_input" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?> mb-2">Tags (comma separated)</label>
+                                <div class="relative">
+                                    <input type="text" id="tag_input" name="tag_input"
+                                          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                          value="<?php echo htmlspecialchars($tag_input ?? ''); ?>"
+                                          placeholder="nature, sunset, beach, water">
+                                    <div id="tag_suggestions" class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto hidden <?php echo $darkMode ? 'bg-gray-700' : ''; ?>"></div>
                                 </div>
-                                
-                                <!-- Owner & License -->
-                                <div>
-                                    <label for="owner" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">Owner/Creator</label>
-                                    <input type="text" id="owner" name="owner" 
-                                        class="w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>"
-                                        placeholder="Original creator or copyright owner">
-                                </div>
-                                
-                                <div>
-                                    <label for="license" class="block font-medium mb-1 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-700'; ?>">License</label>
-                                    <input type="text" id="license" name="license" 
-                                        class="w-full p-2 border rounded-md <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300'; ?>"
-                                        placeholder="e.g., Creative Commons, Royalty Free">
-                                </div>
-                                
-                                <!-- AI Enhanced -->
-                                <div class="col-span-2">
+                                <p class="mt-1 text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                    Enter tags separated by commas. New tags will be automatically created.
+                                </p>
+                                <div id="tag_preview" class="mt-2 flex flex-wrap gap-2"></div>
+                            </div>
+                            
+                            <!-- Colors -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?> mb-2">Associated Colors</label>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <?php foreach ($colors as $color): ?>
                                     <div class="flex items-center">
-                                        <input type="checkbox" id="ai_enhanced" name="ai_enhanced" class="h-5 w-5 text-blue-600">
-                                        <label for="ai_enhanced" class="ml-2 <?php echo $darkMode ? 'text-gray-300' : 'text-gray-700'; ?>">
-                                            AI Enhanced Content
+                                        <input type="checkbox" id="color_<?php echo $color['id']; ?>" name="colors[]" value="<?php echo $color['id']; ?>"
+                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="color_<?php echo $color['id']; ?>" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                            <span class="inline-block w-4 h-4 border border-gray-300 mr-1" style="background-color: <?php echo $color['hex_code']; ?>;"></span>
+                                            <?php echo htmlspecialchars($color['color_name']); ?>
                                         </label>
                                     </div>
-                                    <p class="mt-1 text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                        Mark if this content has been created or enhanced using AI tools
-                                    </p>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Live Preview Section -->
-                    <div id="live-preview-section" class="mt-8 border-t pt-6 <?php echo $darkMode ? 'border-gray-600' : 'border-gray-200'; ?>">
-                        <h3 class="text-lg font-semibold mb-4 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>">
-                            <i class="fas fa-eye mr-2"></i> Live Preview
-                        </h3>
-                        
-                        <div class="bg-white rounded-md shadow-md overflow-hidden <?php echo $darkMode ? 'bg-gray-800' : ''; ?>">
-                            <div class="p-4">
-                                <h4 id="preview-title" class="text-xl font-bold mb-2 <?php echo $darkMode ? 'text-gray-200' : 'text-gray-800'; ?>">Media Title</h4>
-                                <p id="preview-description" class="text-sm mb-4 <?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">Media description will appear here.</p>
-                                
-                                <div class="flex justify-center mb-4">
-                                    <div id="preview-media" class="rounded-md overflow-hidden flex items-center justify-center" style="height: 300px; background-color: #f0f0f0;">
-                                        <i class="fas fa-image text-6xl <?php echo $darkMode ? 'text-gray-600' : 'text-gray-400'; ?>"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span id="preview-category" class="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 <?php echo $darkMode ? 'bg-blue-900 text-blue-200' : ''; ?>">
-                                        Category
-                                    </span>
-                                    <div id="preview-tags" class="flex flex-wrap gap-1">
-                                        <!-- Preview tags will appear here -->
-                                    </div>
-                                </div>
-                                
-                                <div class="flex justify-between text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <span id="preview-owner">Owner: <?php echo $currentUser; ?></span>
-                                    <span id="preview-date">Date: <?php echo date('Y-m-d', strtotime($currentDateTime)); ?></span>
-                                </div>
-                                
-                                <div class="mt-2 text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-500'; ?>">
-                                    <span id="preview-resolution">Resolution: Not selected</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Form Buttons -->
-                    <div class="flex justify-between pt-6 border-t <?php echo $darkMode ? 'border-gray-600' : 'border-gray-200'; ?>">
-                        <button type="reset" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
-                            <i class="fas fa-undo mr-2"></i> Reset Form
-                        </button>
-                        
-                        <div>
-                            <button type="button" id="preview_button" class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors mr-2">
-                                <i class="fas fa-eye mr-2"></i> Preview
-                            </button>
                             
-                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                                <i class="fas fa-save mr-2"></i> Save Media
-                            </button>
+                            <!-- Owner and License -->
+                            <div class="mb-4">
+                                <label for="owner" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Owner/Creator</label>
+                                <input type="text" id="owner" name="owner"
+                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                       value="<?php echo htmlspecialchars($owner ?? ''); ?>">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="license" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">License</label>
+                                <select id="license" name="license"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="">Select License</option>
+                                    <?php foreach ($licenses as $lic): ?>
+                                    <option value="<?php echo $lic['name']; ?>" <?php echo (isset($license) && $license == $lic['name']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($lic['name']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                                                        <!-- Additional Options Section -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h2 class="text-xl font-bold mb-4 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Additional Options</h2>
+                            </div>
+                            
+                            <!-- Flags -->
+                            <div class="col-span-1 md:col-span-2 mb-4 space-y-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="featured" name="featured" value="1" <?php echo (isset($featured) && $featured) ? 'checked' : ''; ?>
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="featured" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                        Mark as Featured
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="status" name="status" value="1" <?php echo (!isset($status) || $status) ? 'checked' : ''; ?>
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="status" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                        Active (Visible on Site)
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="paid_content" name="paid_content" value="1" <?php echo (isset($paid_content) && $paid_content) ? 'checked' : ''; ?>
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="paid_content" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                        Paid Content
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="ai_enhanced" name="ai_enhanced" value="1" <?php echo (isset($ai_enhanced) && $ai_enhanced) ? 'checked' : ''; ?>
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="ai_enhanced" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                        AI Enhanced
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Watermark -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label for="watermark_text" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Watermark Text</label>
+                                <input type="text" id="watermark_text" name="watermark_text"
+                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                       value="<?php echo htmlspecialchars($watermark_text ?? ''); ?>"
+                                       placeholder="e.g., © WallPix.Top">
+                                <p class="mt-1 text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                    Leave empty for no watermark
+                                </p>
+                            </div>
+                            
+                            <!-- AI Description -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label for="ai_description" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">AI Description</label>
+                                <textarea id="ai_description" name="ai_description" rows="3"
+                                          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"><?php echo htmlspecialchars($ai_description ?? ''); ?></textarea>
+                                <p class="mt-1 text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                    Optional AI-generated description
+                                </p>
+                            </div>
+                            
+                            <!-- Live Preview -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h2 class="text-xl font-bold mb-4 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Live Preview</h2>
+                                <div class="bg-gray-100 <?php echo $darkMode ? 'bg-gray-700' : ''; ?> p-4 rounded-lg">
+                                    <h3 class="text-lg font-semibold mb-2 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>" id="preview_title">Title Preview</h3>
+                                    <div class="flex flex-col md:flex-row gap-4">
+                                        <div class="w-full md:w-1/2">
+                                            <div class="aspect-w-3 aspect-h-4 bg-white <?php echo $darkMode ? 'bg-gray-600' : ''; ?> rounded-lg flex items-center justify-center overflow-hidden" id="preview_container">
+                                                <div class="text-center p-4 text-gray-400">
+                                                    <i class="fas fa-image text-4xl mb-2"></i>
+                                                    <p>Image preview will appear here</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="w-full md:w-1/2">
+                                            <div class="text-gray-800 <?php echo $darkMode ? 'text-gray-200' : ''; ?> space-y-2">
+                                                <p id="preview_description" class="text-sm">Description preview will appear here</p>
+                                                <div class="flex flex-wrap gap-1 mt-2" id="preview_tags"></div>
+                                                <div class="mt-2">
+                                                    <span class="font-semibold">Category:</span>
+                                                    <span id="preview_category">-</span>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <span class="font-semibold">Orientation:</span>
+                                                    <span id="preview_orientation">-</span>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <span class="font-semibold">Resolution:</span>
+                                                    <span id="preview_resolution">-</span>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <span class="font-semibold">License:</span>
+                                                    <span id="preview_license">-</span>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <span class="font-semibold">Status:</span>
+                                                    <span id="preview_status" class="px-2 py-1 rounded text-xs">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </form>
+                    
+                    <div class="px-6 py-4 bg-gray-50 <?php echo $darkMode ? 'bg-gray-700' : ''; ?> border-t border-gray-200 <?php echo $darkMode ? 'border-gray-600' : ''; ?> flex flex-wrap justify-end gap-3">
+                        <button type="submit" name="save_and_add_another" class="btn bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">
+                            <i class="fas fa-plus mr-1"></i> Save and Add Another
+                        </button>
+                        <button type="submit" name="save_and_return" class="btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+                            <i class="fas fa-save mr-1"></i> Save and Return
+                        </button>
+                    </div>
+                </div>
+            </form>
+                        <!-- Batch Upload Form -->
+            <form action="add.php" method="post" enctype="multipart/form-data" id="batchUploadForm" class="upload-form hidden">
+                <input type="hidden" name="upload_mode" value="batch">
+                <div class="bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?> shadow-md rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Batch Upload Section -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h2 class="text-xl font-bold mb-4 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Batch Upload</h2>
+                                <p class="text-gray-600 <?php echo $darkMode ? 'text-gray-400' : ''; ?> mb-4">
+                                    Upload multiple files at once. Each file will be created as a separate media item with the common properties defined below.
+                                </p>
+                            </div>
+                            
+                            <!-- File Upload Field -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label for="batch_files" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Select Multiple Files *</label>
+                                <input type="file" id="batch_files" name="batch_files[]" multiple required
+                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                <p class="mt-1 text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                    Hold Ctrl/Cmd to select multiple files. Supported formats: JPG, JPEG, PNG, GIF, WEBP, SVG, MP4, WEBM, OGG.
+                                </p>
+                                <div class="mt-3">
+                                    <div id="batch_preview_count" class="text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?> mb-2">No files selected</div>
+                                    <div id="batch_file_list" class="mt-2 max-h-40 overflow-y-auto"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Category -->
+                            <div class="mb-4">
+                                <label for="batch_category_id" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Category *</label>
+                                <select id="batch_category_id" name="category_id" required
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="">Select Category</option>
+                                    <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo $category['id']; ?>">
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <!-- Orientation -->
+                            <div class="mb-4">
+                                <label for="batch_orientation" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Orientation</label>
+                                <select id="batch_orientation" name="orientation"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="auto" selected>Auto-detect from each file</option>
+                                    <option value="portrait">Force Portrait for All</option>
+                                    <option value="landscape">Force Landscape for All</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Resolution Settings -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h3 class="text-lg font-semibold mb-2 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Resolution</h3>
+                                
+                                <div class="mb-4">
+                                    <label for="batch_resolution" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Select Resolution</label>
+                                    <select id="batch_resolution" name="resolution" 
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                            onchange="toggleBatchCustomResolution()">
+                                        <option value="">Auto-detect from each file</option>
+                                        <?php foreach ($resolutions as $name => $value): ?>
+                                        <option value="<?php echo htmlspecialchars($name); ?>"><?php echo htmlspecialchars($name); ?> (<?php echo htmlspecialchars($value); ?>)</option>
+                                        <?php endforeach; ?>
+                                        <option value="custom">Custom Resolution</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="batch_custom_resolution" class="hidden mb-4">
+                                    <div class="flex flex-wrap gap-4">
+                                        <div class="w-1/3">
+                                            <label for="batch_custom_width" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Width (px)</label>
+                                            <input type="number" id="batch_custom_width" name="custom_width" 
+                                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                                   min="1">
+                                        </div>
+                                        <div class="w-1/3">
+                                            <label for="batch_custom_height" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Height (px)</label>
+                                            <input type="number" id="batch_custom_height" name="custom_height" 
+                                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                                   min="1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                                        <!-- Tags with Auto Suggestion -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label for="batch_tag_input" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?> mb-2">Tags (comma separated)</label>
+                                <div class="relative">
+                                    <input type="text" id="batch_tag_input" name="tag_input"
+                                          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                          placeholder="nature, sunset, beach, water">
+                                    <div id="batch_tag_suggestions" class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto hidden <?php echo $darkMode ? 'bg-gray-700' : ''; ?>"></div>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                    These tags will be applied to all uploaded files.
+                                </p>
+                                <div id="batch_tag_preview" class="mt-2 flex flex-wrap gap-2"></div>
+                            </div>
+                            
+                            <!-- Associated Colors -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?> mb-2">Associated Colors</label>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <?php foreach ($colors as $color): ?>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="batch_color_<?php echo $color['id']; ?>" name="colors[]" value="<?php echo $color['id']; ?>"
+                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="batch_color_<?php echo $color['id']; ?>" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                            <span class="inline-block w-4 h-4 border border-gray-300 mr-1" style="background-color: <?php echo $color['hex_code']; ?>;"></span>
+                                            <?php echo htmlspecialchars($color['color_name']); ?>
+                                        </label>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                    These colors will be applied to all uploaded files.
+                                </p>
+                            </div>
+                            
+                            <!-- Common Properties -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h3 class="text-lg font-semibold mb-2 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Common Properties</h3>
+                                <p class="text-sm text-gray-600 <?php echo $darkMode ? 'text-gray-400' : ''; ?> mb-4">
+                                    These properties will be applied to all uploaded files.
+                                </p>
+                            </div>
+                            
+                            <!-- Background Color -->
+                            <div class="mb-4">
+                                <label for="batch_background_color" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Background Color</label>
+                                <div class="flex items-center mt-1">
+                                    <input type="color" id="batch_background_color" name="background_color"
+                                           class="h-8 w-8 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                           value="#FFFFFF">
+                                    <input type="text" id="batch_background_color_hex" 
+                                           class="ml-2 block w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                           value="#FFFFFF" 
+                                           oninput="document.getElementById('batch_background_color').value = this.value">
+                                </div>
+                            </div>
+                            
+                            <!-- Size Type -->
+                            <div class="mb-4">
+                                <label for="batch_size_type" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Size Type</label>
+                                <select id="batch_size_type" name="size_type"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="small">Small</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="large">Large</option>
+                                    <option value="xl">Extra Large</option>
+                                </select>
+                            </div>
+                                                        <!-- Owner -->
+                            <div class="mb-4">
+                                <label for="batch_owner" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Owner/Creator</label>
+                                <input type="text" id="batch_owner" name="owner"
+                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                            </div>
+                            
+                            <!-- License -->
+                            <div class="mb-4">
+                                <label for="batch_license" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">License</label>
+                                <select id="batch_license" name="license"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>">
+                                    <option value="">Select License</option>
+                                    <?php foreach ($licenses as $lic): ?>
+                                    <option value="<?php echo $lic['name']; ?>">
+                                        <?php echo htmlspecialchars($lic['name']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <!-- Flags -->
+                            <div class="col-span-1 md:col-span-2 mb-4 space-y-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="batch_featured" name="featured" value="1"
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="batch_featured" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                        Mark All as Featured
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="batch_status" name="status" value="1" checked
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="batch_status" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                        Active (Visible on Site)
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="batch_paid_content" name="paid_content" value="1"
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="batch_paid_content" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                        Mark All as Paid Content
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="batch_ai_enhanced" name="ai_enhanced" value="1"
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="batch_ai_enhanced" class="ml-2 block text-sm text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">
+                                        Mark All as AI Enhanced
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Watermark -->
+                            <div class="col-span-1 md:col-span-2 mb-4">
+                                <label for="batch_watermark_text" class="block text-sm font-medium text-gray-700 <?php echo $darkMode ? 'text-gray-300' : ''; ?>">Watermark Text</label>
+                                <input type="text" id="batch_watermark_text" name="watermark_text"
+                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm <?php echo $darkMode ? 'bg-gray-700 border-gray-600 text-white' : ''; ?>"
+                                       placeholder="e.g., © WallPix.Top">
+                                <p class="mt-1 text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                    Leave empty for no watermark
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="px-6 py-4 bg-gray-50 <?php echo $darkMode ? 'bg-gray-700' : ''; ?> border-t border-gray-200 <?php echo $darkMode ? 'border-gray-600' : ''; ?> flex flex-wrap justify-end gap-3">
+                        <button type="submit" name="process_batch" class="btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+                            <i class="fas fa-upload mr-1"></i> Upload All Files
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <?php if ($batch_mode && $success && !empty($batch_results)): ?>
+            <div id="batch-results" class="mt-8">
+                <div class="bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?> shadow-md rounded-lg overflow-hidden">
+                    <div class="px-6 py-4">
+                        <h2 class="text-xl font-bold mb-4 text-gray-800 <?php echo $darkMode ? 'text-white' : ''; ?>">Batch Upload Results</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 <?php echo $darkMode ? 'divide-gray-700' : ''; ?>">
+                                <thead class="bg-gray-50 <?php echo $darkMode ? 'bg-gray-700' : ''; ?>">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 <?php echo $darkMode ? 'text-gray-300' : ''; ?> uppercase tracking-wider">
+                                            File
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 <?php echo $darkMode ? 'text-gray-300' : ''; ?> uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 <?php echo $darkMode ? 'text-gray-300' : ''; ?> uppercase tracking-wider">
+                                            Details
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white <?php echo $darkMode ? 'bg-gray-800' : ''; ?> divide-y divide-gray-200 <?php echo $darkMode ? 'divide-gray-700' : ''; ?>">
+                                    <?php foreach ($batch_results as $result): ?>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 <?php echo $darkMode ? 'text-white' : ''; ?>">
+                                            <?php echo htmlspecialchars($result['file']); ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <?php if ($result['status'] === 'success'): ?>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Success
+                                            </span>
+                                            <?php else: ?>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                Failed
+                                            </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 <?php echo $darkMode ? 'text-gray-400' : ''; ?>">
+                                            <?php if ($result['status'] === 'success'): ?>
+                                            Media ID: <?php echo $result['media_id']; ?>
+                                            <?php else: ?>
+                                            Error: <?php echo htmlspecialchars($result['message'] ?? 'Unknown error'); ?>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-50 <?php echo $darkMode ? 'bg-gray-700' : ''; ?> border-t border-gray-200 <?php echo $darkMode ? 'border-gray-600' : ''; ?>">
+                        <div class="text-sm">
+                            <span class="font-medium">Total files:</span> <?php echo count($batch_results); ?> | 
+                            <span class="font-medium">Successful:</span> <?php echo count(array_filter($batch_results, function($item) { return $item['status'] === 'success'; })); ?> | 
+                            <span class="font-medium">Failed:</span> <?php echo count(array_filter($batch_results, function($item) { return $item['status'] === 'failed'; })); ?>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
-
-<!-- JavaScript for Add Media Page -->
+<!-- JavaScript for dynamic features -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab Navigation
-    const tabLinks = document.querySelectorAll('.tab-link');
-    const tabPanes = document.querySelectorAll('.tab-pane');
+    // Store all available tags
+    const availableTags = <?php echo $tags_json; ?>;
     
-    tabLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all tabs and panes
-            tabLinks.forEach(l => l.classList.remove('active', 'border-blue-500', 'text-blue-600'));
-            tabPanes.forEach(p => p.classList.add('hidden'));
-            
-            // Add active class to current tab
-            this.classList.add('active', 'border-blue-500', 'text-blue-600');
-            
-            // Show current tab pane
-            const tabId = this.getAttribute('data-tab');
-            document.getElementById(tabId).classList.remove('hidden');
-        });
-    });
-    
-    // Toggle between file upload and collection upload
-    window.toggleUploadMethod = function() {
-        const uploadType = document.querySelector('input[name="upload_type"]:checked').value;
-        const fileSection = document.getElementById('file_upload_section');
-        const collectionSection = document.getElementById('collection_section');
+    // Switch between upload modes
+    window.switchUploadMode = function(mode) {
+        const singleForm = document.getElementById('singleUploadForm');
+        const batchForm = document.getElementById('batchUploadForm');
         
-        if (uploadType === 'file') {
-            fileSection.classList.remove('hidden');
-            collectionSection.classList.add('hidden');
+        if (mode === 'single') {
+            singleForm.classList.remove('hidden');
+            singleForm.classList.add('active');
+            batchForm.classList.add('hidden');
+            batchForm.classList.remove('active');
         } else {
-            fileSection.classList.add('hidden');
-            collectionSection.classList.remove('hidden');
+            singleForm.classList.add('hidden');
+            singleForm.classList.remove('active');
+            batchForm.classList.remove('hidden');
+            batchForm.classList.add('active');
         }
     };
     
-    // Initialize upload method toggle
-    toggleUploadMethod();
-    
-    // File Upload Functionality
-    const mediaFileInput = document.getElementById('media_file');
-    const browseButton = document.getElementById('browse_button');
-    const uploadPreview = document.getElementById('upload-preview');
-    const uploadPrompt = document.getElementById('upload-prompt');
-    const previewImage = document.getElementById('preview-image');
-    const fileName = document.getElementById('file-name');
-    const fileDetails = document.getElementById('file_details');
-    
-    // File information elements
-    const infoFilename = document.getElementById('info-filename');
-    const infoFilesize = document.getElementById('info-filesize');
-    const infoFiletype = document.getElementById('info-filetype');
-    const infoDimensions = document.getElementById('info-dimensions');
-    
-    // Browse button click handler
-    browseButton.addEventListener('click', function() {
-        mediaFileInput.click();
+    // Set the correct mode on page load based on radio button
+    const uploadModeRadios = document.querySelectorAll('input[name="upload_mode"]');
+    uploadModeRadios.forEach(radio => {
+        if (radio.checked) {
+            switchUploadMode(radio.value);
+        }
     });
     
-    // File input change handler
-    mediaFileInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
+    // Media file preview for single upload
+    const mediaFileInput = document.getElementById('media_file');
+    const previewContainer = document.getElementById('image_preview');
+    const previewImage = document.getElementById('preview_image');
+    const imageInfo = document.getElementById('image_info');
+    
+    if (mediaFileInput) {
+        mediaFileInput.addEventListener('change', function() {
             const file = this.files[0];
             
-            // Update file name display
-            fileName.textContent = file.name;
-            
-            // Show file preview for images
-            if (file.type.match('image.*')) {
+            if (file) {
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    uploadPreview.classList.remove('hidden');
-                    uploadPrompt.classList.add('hidden');
-                    
-                    // Get image dimensions
-                    const img = new Image();
-                    img.onload = function() {
-                        infoDimensions.textContent = this.width + ' x ' + this.height + ' pixels';
+                    if (file.type.startsWith('image/')) {
+                        previewImage.src = e.target.result;
+                        previewContainer.classList.remove('hidden');
                         
-                        // Auto-select orientation based on dimensions
-                        if (this.width > this.height) {
-                            document.getElementById('orientation_landscape').checked = true;
-                        } else {
-                            document.getElementById('orientation_portrait').checked = true;
-                        }
-                    };
-                    img.src = e.target.result;
+                        // Create a temporary image to get dimensions
+                        const img = new Image();
+                        img.onload = function() {
+                            imageInfo.innerHTML = `<strong>Dimensions:</strong> ${img.width}x${img.height} pixels<br><strong>Size:</strong> ${formatFileSize(file.size)}`;
+                            
+                            // Set orientation automatically based on dimensions
+                            const orientationSelect = document.getElementById('orientation');
+                            if (img.width > img.height) {
+                                orientationSelect.value = 'landscape';
+                            } else {
+                                orientationSelect.value = 'portrait';
+                            }
+                            
+                            // Update live preview
+                            updateLivePreview();
+                        };
+                        img.src = e.target.result;
+                        
+                        // Also update preview container
+                        document.getElementById('preview_container').innerHTML = `<img src="${e.target.result}" alt="Preview" class="object-contain max-h-full max-w-full">`;
+                    } else if (file.type.startsWith('video/')) {
+                        // Handle video files
+                        previewContainer.classList.remove('hidden');
+                        previewImage.style.display = 'none';
+                        
+                        // Display video info
+                        imageInfo.innerHTML = `<strong>File type:</strong> ${file.type}<br><strong>Size:</strong> ${formatFileSize(file.size)}`;
+                        
+                        // Create video preview
+                        const video = document.createElement('video');
+                        video.src = e.target.result;
+                        video.controls = true;
+                        video.muted = true;
+                        video.className = 'max-w-xs max-h-64 border rounded';
+                        
+                        // Replace image with video in preview
+                        const parent = previewImage.parentNode;
+                        parent.insertBefore(video, previewImage);
+                        
+                        // Update main preview container
+                        document.getElementById('preview_container').innerHTML = '';
+                        const previewVideo = document.createElement('video');
+                        previewVideo.src = e.target.result;
+                        previewVideo.controls = true;
+                        previewVideo.muted = true;
+                        previewVideo.className = 'object-contain max-h-full max-w-full';
+                        document.getElementById('preview_container').appendChild(previewVideo);
+                    }
                 };
                 
                 reader.readAsDataURL(file);
-            } else if (file.type.match('video.*')) {
-                // For video files, show a video player or thumbnail
-                previewImage.src = '/assets/images/file-thumbnails/video-icon.png'; // Default video icon
-                uploadPreview.classList.remove('hidden');
-                uploadPrompt.classList.add('hidden');
             } else {
-                // For non-image/video files, show generic icon
-                previewImage.src = getFileTypeIcon(file.type);
-                uploadPreview.classList.remove('hidden');
-                uploadPrompt.classList.add('hidden');
-            }
-            
-            // Update file information
-            infoFilename.textContent = file.name;
-            infoFilesize.textContent = formatFileSize(file.size);
-            infoFiletype.textContent = file.type || 'Unknown';
-            
-            // Show file details section
-            fileDetails.classList.remove('hidden');
-            
-            // Update live preview
-            updateLivePreview();
-        }
-    });
-    
-    // Collection Upload Functionality
-    const collectionFilesInput = document.getElementById('collection_files');
-    const browseCollectionButton = document.getElementById('browse_collection_button');
-    const collectionPreview = document.getElementById('collection-preview');
-    const collectionPrompt = document.getElementById('collection-prompt');
-    const collectionThumbnails = document.getElementById('collection-thumbnails');
-    const collectionCount = document.getElementById('collection-count');
-    const collectionDetails = document.getElementById('collection_details');
-    const collectionFileCount = document.getElementById('collection-file-count');
-    const collectionFileList = document.getElementById('collection-file-list');
-    
-    // Browse collection button click handler
-    browseCollectionButton.addEventListener('click', function() {
-        collectionFilesInput.click();
-    });
-    
-    // Collection files input change handler
-    collectionFilesInput.addEventListener('change', function() {
-        if (this.files && this.files.length > 0) {
-            const files = this.files;
-            
-            // Clear previous thumbnails and file list
-            collectionThumbnails.innerHTML = '';
-            collectionFileList.innerHTML = '';
-            
-            // Update file count
-            collectionCount.textContent = `${files.length} files selected`;
-            collectionFileCount.textContent = files.length;
-            
-            // Process each file
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                
-                // Create thumbnail if it's an image
-                if (file.type.match('image.*')) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const thumbnail = document.createElement('div');
-                        thumbnail.classList.add('w-16', 'h-16', 'overflow-hidden', 'rounded');
-                        
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('w-full', 'h-full', 'object-cover');
-                        
-                        thumbnail.appendChild(img);
-                        collectionThumbnails.appendChild(thumbnail);
-                    };
-                    
-                    reader.readAsDataURL(file);
-                } else {
-                    // For non-image files, show type icon
-                    const thumbnail = document.createElement('div');
-                    thumbnail.classList.add('w-16', 'h-16', 'overflow-hidden', 'rounded', 'flex', 'items-center', 'justify-center', 'bg-gray-200');
-                    
-                    const icon = document.createElement('i');
-                    if (file.type.match('video.*')) {
-                        icon.classList.add('fas', 'fa-video');
-                    } else if (file.type.match('audio.*')) {
-                        icon.classList.add('fas', 'fa-music');
-                    } else {
-                        icon.classList.add('fas', 'fa-file');
-                    }
-                    
-                    thumbnail.appendChild(icon);
-                    collectionThumbnails.appendChild(thumbnail);
-                }
-                
-                // Add to file list
-                const listItem = document.createElement('li');
-                listItem.textContent = `${file.name} (${formatFileSize(file.size)})`;
-                collectionFileList.appendChild(listItem);
-            }
-            
-            // Show collection preview and details
-            collectionPreview.classList.remove('hidden');
-            collectionPrompt.classList.add('hidden');
-            collectionDetails.classList.remove('hidden');
-            
-            // Update live preview
-            updateLivePreview();
-            
-            // If the first file is an image, use it for orientation
-            if (files[0].type.match('image.*')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        // Auto-select orientation based on dimensions
-                        if (this.width > this.height) {
-                            document.getElementById('orientation_landscape').checked = true;
-                        } else {
-                            document.getElementById('orientation_portrait').checked = true;
-                        }
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(files[0]);
-            }
-        }
-    });
-    
-    // Drag and drop functionality for single file
-    const uploadArea = document.querySelector('#file_upload_section .border-dashed');
-    
-    uploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        this.classList.add('border-blue-500');
-    });
-    
-    uploadArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-blue-500');
-    });
-    
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-blue-500');
-        
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            mediaFileInput.files = e.dataTransfer.files;
-            
-            // Trigger change event
-            const event = new Event('change');
-            mediaFileInput.dispatchEvent(event);
-        }
-    });
-    
-    // Drag and drop functionality for collection
-    const collectionArea = document.querySelector('#collection_section .border-dashed');
-    
-    collectionArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        this.classList.add('border-blue-500');
-    });
-    
-    collectionArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-blue-500');
-    });
-    
-    collectionArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-blue-500');
-        
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            collectionFilesInput.files = e.dataTransfer.files;
-            
-            // Trigger change event
-            const event = new Event('change');
-            collectionFilesInput.dispatchEvent(event);
-        }
-    });
-    
-    // Tags Functionality with Auto-complete
-    const tagInputField = document.getElementById('tag_input_field');
-    const tagInputHidden = document.getElementById('tag_input');
-    const selectedTagsContainer = document.getElementById('selected-tags');
-    const tagSuggestions = document.getElementById('tag-suggestions');
-    const addTagButton = document.getElementById('add_tag_btn');
-    
-    // All available tags from PHP
-    const availableTags = <?php echo json_encode(array_map(function($tag) { return $tag['name']; }, $tags)); ?>;
-    
-    // Selected tags array
-    let selectedTags = [];
-    
-    // Function to add a tag
-    function addTag(tagName) {
-        tagName = tagName.trim();
-        
-        if (tagName && !selectedTags.includes(tagName)) {
-            // Add to selected tags array
-            selectedTags.push(tagName);
-            
-            // Create tag element
-            const tagElement = document.createElement('div');
-            tagElement.className = 'flex items-center bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-sm <?php echo $darkMode ? "bg-blue-900 text-blue-200" : ""; ?>';
-            tagElement.innerHTML = `
-                <span>${tagName}</span>
-                <button type="button" class="ml-1 text-xs" data-tag="${tagName}">×</button>
-            `;
-            
-            // Add remove button functionality
-            tagElement.querySelector('button').addEventListener('click', function() {
-                const tagToRemove = this.getAttribute('data-tag');
-                selectedTags = selectedTags.filter(tag => tag !== tagToRemove);
-                this.parentElement.remove();
-                updateHiddenInput();
-                updateLivePreview();
-            });
-            
-            // Add to container
-            selectedTagsContainer.appendChild(tagElement);
-            
-            // Clear input field
-            tagInputField.value = '';
-            
-            // Update hidden input
-            updateHiddenInput();
-            
-            // Update live preview
-            updateLivePreview();
-        }
-    }
-    
-    // Function to update hidden input
-    function updateHiddenInput() {
-        tagInputHidden.value = selectedTags.join(',');
-    }
-    
-    // Function to show tag suggestions
-    function showTagSuggestions(query) {
-        query = query.toLowerCase();
-        
-        // Filter tags that start with the query
-        const filteredTags = availableTags.filter(tag => 
-            tag.toLowerCase().includes(query) && !selectedTags.includes(tag)
-        );
-        
-        // Clear suggestions
-        tagSuggestions.innerHTML = '';
-        
-        if (filteredTags.length > 0 && query.length >= 2) {
-            tagSuggestions.classList.remove('hidden');
-            
-            // Add filtered tags to suggestions
-            filteredTags.forEach(tag => {
-                const suggestionItem = document.createElement('div');
-                suggestionItem.className = 'p-2 cursor-pointer hover:bg-gray-100 <?php echo $darkMode ? "hover:bg-gray-600 text-gray-300" : "text-gray-700"; ?>';
-                suggestionItem.textContent = tag;
-                
-                suggestionItem.addEventListener('click', function() {
-                    addTag(tag);
-                    tagSuggestions.classList.add('hidden');
-                });
-                
-                tagSuggestions.appendChild(suggestionItem);
-            });
-        } else {
-            tagSuggestions.classList.add('hidden');
-        }
-    }
-    
-    // Tag input keyup event for suggestions
-    tagInputField.addEventListener('input', function() {
-        showTagSuggestions(this.value);
-    });
-    
-    // Tag input keydown event for comma and enter
-    tagInputField.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ',') {
-            e.preventDefault();
-            
-            // Get tags from input (comma separated)
-            const inputTags = this.value.split(',');
-            
-            // Add each tag
-            inputTags.forEach(tag => {
-                if (tag.trim()) {
-                    addTag(tag);
-                }
-            });
-            
-            // Hide suggestions
-            tagSuggestions.classList.add('hidden');
-        }
-    });
-    
-    // Add tag button click
-    addTagButton.addEventListener('click', function() {
-        // Get tags from input (comma separated)
-        const inputTags = tagInputField.value.split(',');
-        
-        // Add each tag
-        inputTags.forEach(tag => {
-            if (tag.trim()) {
-                addTag(tag);
+                previewContainer.classList.add('hidden');
             }
         });
-        
-        // Hide suggestions
-        tagSuggestions.classList.add('hidden');
-    });
+    }
     
-    // Click outside to hide suggestions
+    // Batch file preview
+    const batchFilesInput = document.getElementById('batch_files');
+    const batchPreviewCount = document.getElementById('batch_preview_count');
+    const batchFileList = document.getElementById('batch_file_list');
+    
+    if (batchFilesInput) {
+        batchFilesInput.addEventListener('change', function() {
+            const files = this.files;
+            
+            if (files.length > 0) {
+                batchPreviewCount.textContent = `${files.length} file(s) selected`;
+                batchFileList.innerHTML = '';
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const listItem = document.createElement('div');
+                    listItem.className = 'text-sm py-1 flex justify-between';
+                    
+                    const fileTypeIcon = file.type.startsWith('image/') ? 'fa-image' : (file.type.startsWith('video/') ? 'fa-video' : 'fa-file');
+                    
+                    listItem.innerHTML = `
+                        <div>
+                            <i class="fas ${fileTypeIcon} mr-1"></i>
+                            ${file.name} 
+                        </div>
+                        <div class="text-gray-500">${formatFileSize(file.size)}</div>
+                    `;
+                    
+                    batchFileList.appendChild(listItem);
+                }
+            } else {
+                batchPreviewCount.textContent = 'No files selected';
+                batchFileList.innerHTML = '';
+            }
+        });
+    }
+    
+    // Toggle custom resolution for single upload
+    window.toggleCustomResolution = function() {
+        const resolutionSelect = document.getElementById('resolution');
+        const customResolution = document.getElementById('custom_resolution');
+        
+        if (resolutionSelect.value === 'custom') {
+            customResolution.classList.remove('hidden');
+        } else {
+            customResolution.classList.add('hidden');
+        }
+        
+        updateLivePreview();
+    };
+    
+    // Toggle custom resolution for batch upload
+    window.toggleBatchCustomResolution = function() {
+        const resolutionSelect = document.getElementById('batch_resolution');
+        const customResolution = document.getElementById('batch_custom_resolution');
+        
+        if (resolutionSelect.value === 'custom') {
+            customResolution.classList.remove('hidden');
+        } else {
+            customResolution.classList.add('hidden');
+        }
+    };
+    
+    // Tag input and auto-suggestion for single upload
+    const tagInput = document.getElementById('tag_input');
+    const tagSuggestions = document.getElementById('tag_suggestions');
+    const tagPreview = document.getElementById('tag_preview');
+    
+    if (tagInput) {
+        tagInput.addEventListener('input', function() {
+            updateTagPreview();
+            showTagSuggestions(this, tagSuggestions);
+        });
+    }
+    
+    // Tag input and auto-suggestion for batch upload
+    const batchTagInput = document.getElementById('batch_tag_input');
+    const batchTagSuggestions = document.getElementById('batch_tag_suggestions');
+    const batchTagPreview = document.getElementById('batch_tag_preview');
+    
+    if (batchTagInput) {
+        batchTagInput.addEventListener('input', function() {
+            updateBatchTagPreview();
+            showTagSuggestions(this, batchTagSuggestions);
+        });
+    }
+    
+    // Show tag suggestions based on current input
+    function showTagSuggestions(inputElement, suggestionsElement) {
+        const currentInput = inputElement.value;
+        const lastTag = currentInput.split(',').pop().trim().toLowerCase();
+        
+        if (lastTag.length >= 1) {
+            const matchingSuggestions = availableTags.filter(tag => 
+                tag.toLowerCase().startsWith(lastTag)
+            );
+            
+            if (matchingSuggestions.length > 0) {
+                suggestionsElement.innerHTML = '';
+                matchingSuggestions.forEach(tag => {
+                    const div = document.createElement('div');
+                    div.className = `px-3 py-2 cursor-pointer hover:bg-gray-100 ${!darkMode ? '' : 'hover:bg-gray-600 text-white'}`;
+                    div.textContent = tag;
+                    div.addEventListener('click', () => {
+                        // Replace the last tag with the selected one
+                        const tags = currentInput.split(',');
+                        tags.pop();
+                        tags.push(tag);
+                        inputElement.value = tags.join(', ') + ', ';
+                        suggestionsElement.classList.add('hidden');
+                        inputElement.focus();
+                        
+                        // Update appropriate tag preview
+                        if (inputElement === tagInput) {
+                            updateTagPreview();
+                        } else {
+                            updateBatchTagPreview();
+                        }
+                    });
+                    suggestionsElement.appendChild(div);
+                });
+                suggestionsElement.classList.remove('hidden');
+            } else {
+                suggestionsElement.classList.add('hidden');
+            }
+        } else {
+            suggestionsElement.classList.add('hidden');
+        }
+    }
+    
+    // Hide suggestions when clicking outside
     document.addEventListener('click', function(e) {
-        if (!tagInputField.contains(e.target) && !tagSuggestions.contains(e.target)) {
+        if (tagSuggestions && e.target !== tagInput) {
             tagSuggestions.classList.add('hidden');
         }
-    });
-    
-    // Predefined colors dropdown
-    const backgroundColorInput = document.getElementById('background_color');
-    const predefinedColorsSelect = document.getElementById('predefined_colors');
-    
-    predefinedColorsSelect.addEventListener('change', function() {
-        if (this.value) {
-            backgroundColorInput.value = this.value;
-            // Update preview background
-            updateLivePreview();
+        if (batchTagSuggestions && e.target !== batchTagInput) {
+            batchTagSuggestions.classList.add('hidden');
         }
     });
     
-    // Resolution selection
-    const resolutionSelect = document.getElementById('resolution_id');
+    // Update the visual preview of tags for single form
+    function updateTagPreview() {
+        if (!tagInput || !tagPreview) return;
+        
+        const tags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+        tagPreview.innerHTML = '';
+        
+        tags.forEach(tag => {
+            const span = document.createElement('span');
+            span.className = 'inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded';
+            span.textContent = tag;
+            tagPreview.appendChild(span);
+        });
+    }
     
-    // Live preview functionality
+    // Update the visual preview of tags for batch form
+    function updateBatchTagPreview() {
+        if (!batchTagInput || !batchTagPreview) return;
+        
+        const tags = batchTagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+        batchTagPreview.innerHTML = '';
+        
+        tags.forEach(tag => {
+            const span = document.createElement('span');
+            span.className = 'inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded';
+            span.textContent = tag;
+            batchTagPreview.appendChild(span);
+        });
+    }
+    
+    // Live Preview Updates for single upload
     const titleInput = document.getElementById('title');
     const descriptionInput = document.getElementById('description');
     const categorySelect = document.getElementById('category_id');
-    const ownerInput = document.getElementById('owner');
-    const publishDateInput = document.getElementById('publish_date');
+    const orientationSelect = document.getElementById('orientation');
+    const resolutionSelect = document.getElementById('resolution');
+    const customWidthInput = document.getElementById('custom_width');
+    const customHeightInput = document.getElementById('custom_height');
+    const licenseSelect = document.getElementById('license');
+    const statusCheckbox = document.getElementById('status');
     
-    // Preview elements
-    const previewTitle = document.getElementById('preview-title');
-    const previewDescription = document.getElementById('preview-description');
-    const previewMedia = document.getElementById('preview-media');
-    const previewCategory = document.getElementById('preview-category');
-    const previewTags = document.getElementById('preview-tags');
-    const previewOwner = document.getElementById('preview-owner');
-    const previewDate = document.getElementById('preview-date');
-    const previewResolution = document.getElementById('preview-resolution');
-    
-    // Function to update live preview
     function updateLivePreview() {
-        // Update title and description
-        previewTitle.textContent = titleInput.value || 'Media Title';
-        previewDescription.textContent = descriptionInput.value || 'Media description will appear here.';
+        if (!document.getElementById('preview_title')) return;
         
-        // Update media preview
-        if (document.querySelector('input[name="upload_type"]:checked').value === 'file') {
-            if (mediaFileInput.files && mediaFileInput.files[0]) {
-                const file = mediaFileInput.files[0];
-                
-                if (file.type.match('image.*')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewMedia.innerHTML = `<img src="${e.target.result}" alt="Preview" class="max-h-full max-w-full">`;
-                        
-                        // Set background color
-                        previewMedia.style.backgroundColor = backgroundColorInput.value;
-                    };
-                    reader.readAsDataURL(file);
-                } else if (file.type.match('video.*')) {
-                    previewMedia.innerHTML = `
-                        <div class="flex flex-col items-center justify-center">
-                            <i class="fas fa-video text-5xl mb-2 <?php echo $darkMode ? 'text-gray-500' : 'text-gray-400'; ?>"></i>
-                            <span class="<?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">${file.name}</span>
-                        </div>
-                    `;
-                } else {
-                    // Show generic icon for non-image/video files
-                    previewMedia.innerHTML = `
-                        <div class="flex flex-col items-center justify-center">
-                            <i class="fas fa-file text-5xl mb-2 <?php echo $darkMode ? 'text-gray-500' : 'text-gray-400'; ?>"></i>
-                            <span class="<?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">${file.name}</span>
-                        </div>
-                    `;
-                }
-            }
-        } else if (document.querySelector('input[name="upload_type"]:checked').value === 'collection') {
-            if (collectionFilesInput.files && collectionFilesInput.files.length > 0) {
-                const files = collectionFilesInput.files;
-                
-                // Create a grid preview for collection
-                let previewHTML = '<div class="grid grid-cols-2 md:grid-cols-3 gap-2">';
-                
-                // Add up to 6 thumbnails
-                const maxPreviews = Math.min(files.length, 6);
-                for (let i = 0; i < maxPreviews; i++) {
-                    const file = files[i];
-                    
-                    if (file.type.match('image.*')) {
-                        // For images, we need to read the file
-                        const reader = new FileReader();
-                        reader.onload = (function(idx) {
-                            return function(e) {
-                                document.getElementById(`collection-preview-${idx}`).innerHTML = `
-                                    <img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover">
-                                `;
-                            };
-                        })(i);
-                        reader.readAsDataURL(file);
-                        
-                        previewHTML += `
-                            <div id="collection-preview-${i}" class="h-24 bg-gray-100 <?php echo $darkMode ? 'bg-gray-700' : ''; ?> flex items-center justify-center overflow-hidden">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </div>
-                        `;
-                    } else if (file.type.match('video.*')) {
-                        previewHTML += `
-                            <div class="h-24 bg-gray-100 <?php echo $darkMode ? 'bg-gray-700' : ''; ?> flex items-center justify-center">
-                                <i class="fas fa-video"></i>
-                            </div>
-                        `;
-                    } else {
-                        previewHTML += `
-                            <div class="h-24 bg-gray-100 <?php echo $darkMode ? 'bg-gray-700' : ''; ?> flex items-center justify-center">
-                                <i class="fas fa-file"></i>
-                            </div>
-                        `;
-                    }
-                }
-                
-                // If there are more files than we showed
-                if (files.length > 6) {
-                    previewHTML += `
-                        <div class="h-24 bg-gray-100 <?php echo $darkMode ? 'bg-gray-700' : ''; ?> flex items-center justify-center">
-                            <span class="<?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">+${files.length - 6} more</span>
-                        </div>
-                    `;
-                }
-                
-                previewHTML += '</div>';
-                previewMedia.innerHTML = previewHTML;
-            }
-        }
+        // Update title
+        document.getElementById('preview_title').textContent = titleInput.value || 'Title Preview';
+        
+        // Update description
+        document.getElementById('preview_description').textContent = descriptionInput.value || 'Description preview will appear here';
         
         // Update category
-        if (categorySelect.value) {
-            const selectedOption = categorySelect.options[categorySelect.selectedIndex];
-            previewCategory.textContent = selectedOption.textContent;
-            previewCategory.classList.remove('hidden');
-        } else {
-            previewCategory.classList.add('hidden');
+        const selectedCategory = categorySelect.options[categorySelect.selectedIndex];
+        document.getElementById('preview_category').textContent = selectedCategory ? selectedCategory.text : '-';
+        
+        // Update orientation
+        let orientationText = 'Auto-detect';
+        if (orientationSelect.value === 'portrait') {
+            orientationText = 'Portrait';
+        } else if (orientationSelect.value === 'landscape') {
+            orientationText = 'Landscape';
         }
-        
-        // Update tags
-        previewTags.innerHTML = '';
-        selectedTags.forEach(tag => {
-            const tagSpan = document.createElement('span');
-            tagSpan.className = 'px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 <?php echo $darkMode ? "bg-green-900 text-green-200" : ""; ?>';
-            tagSpan.textContent = tag;
-            previewTags.appendChild(tagSpan);
-        });
-        
-        // Update owner and date
-        previewOwner.textContent = 'Owner: ' + (ownerInput.value || '<?php echo $currentUser; ?>');
-        previewDate.textContent = 'Date: ' + (publishDateInput.value || '<?php echo date('Y-m-d', strtotime($currentDateTime)); ?>');
+        document.getElementById('preview_orientation').textContent = orientationText;
         
         // Update resolution
-        if (resolutionSelect.value) {
-            const selectedResolution = resolutionSelect.options[resolutionSelect.selectedIndex].text;
-            previewResolution.textContent = 'Resolution: ' + selectedResolution;
+        const resolutionPreview = document.getElementById('preview_resolution');
+        if (resolutionSelect.value === 'custom' && customWidthInput.value && customHeightInput.value) {
+            resolutionPreview.textContent = `${customWidthInput.value} × ${customHeightInput.value}`;
+        } else if (resolutionSelect.value && resolutionSelect.value !== 'custom') {
+            const selectedOption = resolutionSelect.options[resolutionSelect.selectedIndex];
+            resolutionPreview.textContent = `${selectedOption.text}`;
         } else {
-            previewResolution.textContent = 'Resolution: Not selected';
+            resolutionPreview.textContent = 'Auto-detected';
         }
+        
+        // Update license
+        const selectedLicense = licenseSelect.options[licenseSelect.selectedIndex];
+        document.getElementById('preview_license').textContent = selectedLicense ? selectedLicense.text : '-';
+        
+        // Update status
+        const statusElement = document.getElementById('preview_status');
+        if (statusCheckbox.checked) {
+            statusElement.textContent = 'Active';
+            statusElement.className = 'px-2 py-1 rounded text-xs bg-green-100 text-green-800';
+        } else {
+            statusElement.textContent = 'Inactive';
+            statusElement.className = 'px-2 py-1 rounded text-xs bg-red-100 text-red-800';
+        }
+        
+        // Update tag preview
+        updateTagPreview();
     }
     
-    // Add event listeners to form elements for live preview
-    const formElements = [
-        titleInput, descriptionInput, categorySelect, ownerInput, publishDateInput, 
-        backgroundColorInput, resolutionSelect
+    // Add event listeners for live preview updates
+    const previewElements = [
+        titleInput, descriptionInput, categorySelect, orientationSelect,
+        resolutionSelect, customWidthInput, customHeightInput,
+        licenseSelect, statusCheckbox
     ];
     
-    formElements.forEach(element => {
-        element.addEventListener('input', updateLivePreview);
-        element.addEventListener('change', updateLivePreview);
+    previewElements.forEach(el => {
+        if(el) {
+            el.addEventListener('input', updateLivePreview);
+            el.addEventListener('change', updateLivePreview);
+        }
     });
     
-    // Preview button functionality
-    const previewButton = document.getElementById('preview_button');
-    previewButton.addEventListener('click', function() {
-        const previewSection = document.getElementById('live-preview-section');
-        previewSection.scrollIntoView({ behavior: 'smooth' });
+    // Initialize live preview
+    if (document.getElementById('preview_title')) {
         updateLivePreview();
-    });
+    }
     
-    // Helper function to check if a URL is an image
-    function isImageUrl(url) {
-        return /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url);
+    // Background color sync for single upload
+    const backgroundColorInput = document.getElementById('background_color');
+    const backgroundColorHex = document.getElementById('background_color_hex');
+    
+    if (backgroundColorInput && backgroundColorHex) {
+        backgroundColorInput.addEventListener('input', function() {
+            backgroundColorHex.value = this.value;
+        });
+        
+        backgroundColorHex.addEventListener('input', function() {
+            backgroundColorInput.value = this.value;
+        });
+    }
+    
+    // Background color sync for batch upload
+    const batchBackgroundColorInput = document.getElementById('batch_background_color');
+    const batchBackgroundColorHex = document.getElementById('batch_background_color_hex');
+    
+    if (batchBackgroundColorInput && batchBackgroundColorHex) {
+        batchBackgroundColorInput.addEventListener('input', function() {
+            batchBackgroundColorHex.value = this.value;
+        });
+        
+        batchBackgroundColorHex.addEventListener('input', function() {
+            batchBackgroundColorInput.value = this.value;
+        });
     }
     
     // Helper function to format file size
@@ -1906,79 +1777,25 @@ document.addEventListener('DOMContentLoaded', function() {
         if (bytes === 0) return '0 Bytes';
         
         const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
-    // Helper function to get file type icon
-    function getFileTypeIcon(mimeType) {
-        // This would be expanded in a real application to return appropriate icons
-        if (mimeType.startsWith('image/')) {
-            return '/assets/images/file-thumbnails/image-icon.png';
-        } else if (mimeType.startsWith('video/')) {
-            return '/assets/images/file-thumbnails/video-icon.png';
-        } else if (mimeType.startsWith('audio/')) {
-            return '/assets/images/file-thumbnails/audio-icon.png';
-        } else if (mimeType === 'application/pdf') {
-            return '/assets/images/file-thumbnails/pdf-icon.png';
-        } else {
-            return '/assets/images/file-thumbnails/file-icon.png';
+    // Check if we need to scroll to batch results
+    if (window.location.hash === '#batch-results') {
+        const batchResults = document.getElementById('batch-results');
+        if (batchResults) {
+            batchResults.scrollIntoView({ behavior: 'smooth' });
         }
     }
-    
-    // Settings submenu toggle
-    const settingsToggle = document.querySelector('.settings-toggle');
-    const settingsSubmenu = document.querySelector('.settings-submenu');
-    
-    if (settingsToggle) {
-        settingsToggle.addEventListener('click', function() {
-            settingsSubmenu.classList.toggle('hidden');
-        });
-    }
-    
-    // Mobile sidebar toggle
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebar = document.querySelector('.sidebar');
-    
-    if (sidebarToggle && sidebar) {
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('hidden');
-        });
-    }
-    
-    // Form validation
-    const addMediaForm = document.getElementById('addMediaForm');
-    addMediaForm.addEventListener('submit', function(e) {
-        let valid = true;
-        
-        // Basic validation
-        if (!titleInput.value.trim()) {
-            alert('Title is required');
-            titleInput.focus();
-            valid = false;
-        } else if (document.querySelector('input[name="upload_type"]:checked').value === 'file' && 
-                  (!mediaFileInput.files || mediaFileInput.files.length === 0)) {
-            alert('Please select a file to upload');
-            valid = false;
-        } else if (document.querySelector('input[name="upload_type"]:checked').value === 'collection' && 
-                  (!collectionFilesInput.files || collectionFilesInput.files.length === 0)) {
-            alert('Please select at least one file for the collection');
-            valid = false;
-        }
-        
-        if (!valid) {
-            e.preventDefault();
-        }
-    });
-    
-    // Initialize the live preview
-    updateLivePreview();
 });
 </script>
+<!-- Content ends -->
 
 <?php
-// Include admin footer
-require_once __DIR__ . '/../../theme/admin/footer.php';
+// Include the footer
+include_once __DIR__ . '/../../theme/admin/footer.php';
 ?>
+                                

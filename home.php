@@ -54,7 +54,7 @@ $featured_media_count = $site_settings['featured_media_count'] ?? 10;
     <?php include 'theme/homepage/footer.php'; ?>
 
     <!-- زر إمكانية الوصول -->
-    <div id="accessibility-toggle" class="accessibility-button" aria-label="Accessibility options">
+    <div id="accessibility-toggle" class="accessibility-button" role="button" aria-label="Accessibility options" tabindex="0">
         <i class="fas fa-universal-access"></i>
     </div>
 

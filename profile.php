@@ -730,15 +730,15 @@ if ($active_tab === 'subscription') {
                     <i class="fas fa-cog fa-2x mb-2"></i>
                     <p class="font-semibold text-lg">Settings</p>
                 </a>
-                <a href="?tab=favorites" class="mini-card card-favorites">
+                <a href="my-favorites.php" class="mini-card card-favorites">
                     <i class="fas fa-heart fa-2x mb-2"></i>
                     <p class="font-semibold text-lg">My Favorites</p>
                 </a>
-                <a href="?tab=downloads" class="mini-card card-downloads">
+                <a href="my-downloads.php" class="mini-card card-downloads">
                     <i class="fas fa-download fa-2x mb-2"></i>
                     <p class="font-semibold text-lg">My Downloads</p>
                 </a>
-                <a href="?tab=subscription" class="mini-card card-subscription">
+                <a href="/subscription.php" class="mini-card card-subscription">
                     <i class="fas fa-crown fa-2x mb-2"></i>
                     <p class="font-semibold text-lg">Subscription</p>
                 </a>
@@ -756,7 +756,7 @@ if ($active_tab === 'subscription') {
                     <p class="font-semibold text-lg">Site Management</p>
                 </a>
                 <?php endif; ?>
-                <a href="#delete-modal" class="mini-card card-delete" id="show-delete-modal">
+                <a href="/delete-account.php" class="mini-card card-delete">
                     <i class="fas fa-trash-alt fa-2x mb-2"></i>
                     <p class="font-semibold text-lg">Delete Account</p>
                 </a>
@@ -765,9 +765,9 @@ if ($active_tab === 'subscription') {
             <!-- Tab Menu -->
             <div class="tab-menu" role="tablist">
                 <a href="?tab=settings" class="<?php echo $active_tab === 'settings' ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $active_tab === 'settings' ? 'true' : 'false'; ?>">Settings</a>
-                <a href="?tab=favorites" class="<?php echo $active_tab === 'favorites' ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $active_tab === 'favorites' ? 'true' : 'false'; ?>">My Favorites</a>
-                <a href="?tab=downloads" class="<?php echo $active_tab === 'downloads' ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $active_tab === 'downloads' ? 'true' : 'false'; ?>">My Downloads</a>
-                                <a href="?tab=subscription" class="<?php echo $active_tab === 'subscription' ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $active_tab === 'subscription' ? 'true' : 'false'; ?>">Subscription</a>
+                <a href="/my-favorites.php" class="<?php echo $active_tab === 'favorites' ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $active_tab === 'favorites' ? 'true' : 'false'; ?>">My Favorites</a>
+                <a href="/my-downloads.php" class="<?php echo $active_tab === 'downloads' ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $active_tab === 'my-downloads' ? 'true' : 'false'; ?>">My Downloads</a>
+                <a href="/subscription.php" class="<?php echo $active_tab === 'subscription' ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $active_tab === 'subscription' ? 'true' : 'false'; ?>">Subscription</a>
                 <a href="?tab=security" class="<?php echo $active_tab === 'security' ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $active_tab === 'security' ? 'true' : 'false'; ?>">Security</a>
             </div>
 
@@ -852,7 +852,7 @@ if ($active_tab === 'subscription') {
                 </div>
                 
                 <!-- Downloads Tab -->
-                <div class="tab-pane <?php echo $active_tab === 'downloads' ? 'active' : ''; ?>" id="downloads" role="tabpanel">
+                <div class="tab-pane <?php echo $active_tab === 'my-downloads.php' ? 'active' : ''; ?>" id="downloads" role="tabpanel">
                     <h2>My Downloads</h2>
                     <p>Wallpapers and images you've downloaded.</p>
                     
@@ -1135,7 +1135,7 @@ if ($active_tab === 'subscription') {
             
             // Dynamic content loading for favorites/downloads tabs to improve performance
             const favoriteTab = document.querySelector('a[href="?tab=favorites"]');
-            const downloadTab = document.querySelector('a[href="?tab=downloads"]');
+            const downloadTab = document.querySelector('a[href="?tab=my-downloads.php"]');
             
             if (favoriteTab && downloadTab) {
                 // Add loading indicators or progressive loading if needed

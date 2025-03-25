@@ -88,8 +88,8 @@ include '../theme/admin/slidbar.php';
                 <?php echo $lang['dashboard'] ?? 'Dashboard'; ?>
             </h1>
             <p class="mt-2 text-sm <?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>">
-                <?php echo $lang['welcome'] ?? 'Welcome'; ?>, <?php echo htmlspecialchars($currentUser); ?>!
-                <span class="ml-2"><?php echo $currentDateTime; ?></span>
+                <?php echo $lang['welcome'] ?? 'Welcome'; ?>, <?php echo htmlspecialchars($_SESSION['user_name'] ?? ''); ?>!
+                <span class="ml-2"><?php echo date('Y-m-d H:i:s'); ?></span>
             </p>
         </div>
         
@@ -154,7 +154,7 @@ include '../theme/admin/slidbar.php';
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium <?php echo $darkMode ? 'text-gray-400' : 'text-gray-600'; ?>"><?php echo $lang['current_date'] ?? 'Current Date'; ?></p>
-                        <p class="text-xl font-bold mt-2"><?php echo $currentDateTime; ?></p>
+                        <p class="text-xl font-bold mt-2"><?php echo date('Y-m-d H:i:s'); ?></p>
                     </div>
                     <div class="bg-yellow-100 p-3 rounded-full <?php echo $darkMode ? 'bg-yellow-900' : ''; ?>">
                         <i class="fas fa-calendar text-yellow-500"></i>

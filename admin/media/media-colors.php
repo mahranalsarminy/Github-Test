@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     isset($_POST['hex_code']) && !empty($_POST['hex_code'])) {
                     
                     $color_name = trim($db->real_escape_string($_POST['color_name']));
-                    $hex_code = trim($db->real_escape_string($_ENV['hex_code']));
+                    $hex_code = trim($db->real_escape_string($_POST['hex_code'])); // FIXED: Changed from $_ENV['hex_code'] to $_POST['hex_code']
                     
                     // Validate hex code format
                     if (!preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex_code)) {
@@ -271,8 +271,7 @@ if ($result) {
 $db->close();
 
 // Current date and time info as provided
-$currentDateTime = '2025-03-21 17:45:01'; // UTC
-$currentUser = 'mahranalsarminy';
+$currentDateTime = date('Y-m-d H:i:s');
 ?>
 
 <div class="content-wrapper p-4 sm:ml-64">
@@ -298,7 +297,6 @@ $currentUser = 'mahranalsarminy';
                 <p><?php echo htmlspecialchars($errorMessage); ?></p>
             </div>
         <?php endif; ?>
-
         <!-- Tabs -->
         <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
             <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="colorTabs" role="tablist">
